@@ -692,7 +692,7 @@ function temaUygula(){
 }
 
 /* ---------- gezinme ---------- */
-const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler','hizmet'],ayarlar:['Ayarlar','ayar']};
+const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler ve Fiyatlar','hizmet'],ayarlar:['Ayarlar','ayar']};
 let ekran='bugun',seciliGun=BUGUN,aramaMetni='';
 function navCiz(){
   const n=acikGorevler().length,rs=randevusuzlar().seansli.length;
@@ -1107,10 +1107,11 @@ function gorevBitir(gid,b){const g=V.gorevler.find(x=>x.id===gid);g.bitti=b;kayd
 /* ---------- ekran: hizmetler ---------- */
 function ekranHizmetler(){
   return `<div class="panel">
-    <div class="panel-ust"><h2>${I('hizmet')}Hizmetler</h2><span style="display:flex;gap:6px"><button class="btn btn-ikincil" style="height:36px" ${V.hizmetler.length>1?'':'disabled'} onclick="hizmetAZ(this)">A→Z</button><button class="btn btn-ana" style="height:36px" onclick="hizmetFormu()">${I('arti')}Yeni hizmet</button></span></div>
+    <div class="panel-ust"><h2>${I('hizmet')}Hizmetler ve Fiyatlar</h2><span style="display:flex;gap:6px"><button class="btn btn-ikincil" style="height:36px" ${V.hizmetler.length>1?'':'disabled'} onclick="hizmetAZ(this)">A→Z</button><button class="btn btn-ana" style="height:36px" onclick="hizmetFormu()">${I('arti')}Yeni hizmet</button></span></div>
     <div class="tablo-bas hiz-bas"><div>Hizmet</div><div>Fiyat</div><div>Sıra</div><div></div></div>
     ${V.hizmetler.map((h,i,a)=>`<div class="hiz-satir" onclick="hizmetFormu('${h.id}')"><div class="ad" style="font-size:14px">${k(h.ad)}</div><div class="soluk">${h.fiyat?tl(h.fiyat):'—'}</div><div class="sira-btn" onclick="event.stopPropagation()"><button aria-label="Yukarı taşı" ${i?'':'disabled'} onclick="hizmetTasi('${h.id}',-1)">↑</button><button aria-label="Aşağı taşı" ${i<a.length-1?'':'disabled'} onclick="hizmetTasi('${h.id}',1)">↓</button></div><div class="soluk ikon">${I('kalem')}</div></div>`).join('')||'<div class="bos">Hizmet yok.</div>'}
   </div>
+  <div class="panel" style="margin-top:14px"><button class="liste-btn" onclick="sektorHizmetEkle(this)">${I('yenile')}${k(SK().ad)} sektörünün hazır hizmetlerini ekle<span class="sag">${I('sag')}</span></button></div>
   <p class="not" style="margin:12px 4px">Oklarla sırayı değiştirin; randevu formunda ve müşteri kartında hizmetler bu sırayla listelenir. Düzenlemek ya da silmek için hizmete dokunun. Fiyatlar yalnız size görünür.</p>`;
 }
 // sıra kalıcı: her hizmette "sira" alanı; sırası olmayanlar (yeni eklenen) sona
@@ -1153,10 +1154,8 @@ function ekranAyarlar(){
         </div>
       </div>
       <div class="panel">
-        <button class="liste-btn" onclick="git('hizmetler')">${I('hizmet')}Hizmetler ve fiyatlar<span class="sag">${V.hizmetler.length} ${I('sag')}</span></button>
         <button class="liste-btn" onclick="disaAktar()">${I('indir')}Müşteri listesini Excel'e aktar<span class="sag">${I('sag')}</span></button>
         <button class="liste-btn" onclick="islemGecmisi()">${I('saat')}İşlem geçmişi<span class="sag">${I('sag')}</span></button>
-        <button class="liste-btn" onclick="sektorHizmetEkle(this)">${I('yenile')}Seçili sektörün hazır hizmetlerini ekle<span class="sag">${I('sag')}</span></button>
       </div>
       <div class="panel">
         <div class="liste-btn" style="cursor:default">${I('kisiler')}<span style="min-width:0;overflow:hidden;text-overflow:ellipsis">${k(KULLANICI?.email||'')}</span><span class="sag senk"><i></i><span>Kaydedildi</span></span></div>
@@ -1172,7 +1171,7 @@ function ayarKaydet(){
   kaydet();temaUygula();ciz();bildir('Ayarlar kaydedildi');
 }
 function sektorHizmetEkle(b){
-  const s=SEKTORLER[document.getElementById('aSektor').value]||SK();
+  const s=SK();
   const var_=new Set(V.hizmetler.map(h=>h.ad.toLocaleLowerCase('tr')));
   const eklenecek=s.hizmetler.filter(x=>!var_.has(x[0].toLocaleLowerCase('tr')));
   if(!eklenecek.length)return bildir('Bu sektörün hizmetleri zaten ekli');
