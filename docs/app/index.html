@@ -176,6 +176,9 @@ main{padding:26px 32px 60px;max-width:1200px}
 .toplu.gitti{opacity:.6}
 .toplu-ust{display:flex;align-items:center;gap:10px}
 .toplu-ust .orta{flex:1;min-width:0}
+.toplu-dil{display:flex;gap:2px;flex:none;border:1px solid var(--cizgi);border-radius:8px;padding:2px}
+.toplu-dil button{min-width:30px;height:28px;border-radius:6px;font-size:12px;font-weight:700;color:var(--soluk)}
+.toplu-dil button.secili{background:var(--ana-acik);color:var(--vurgu)}
 .toplu textarea{margin-top:8px;min-height:76px;font-size:13px}
 .zaman{position:relative;margin:10px 18px 18px 74px}
 .saatsatir{height:60px;border-top:1px solid var(--cizgi);position:relative;cursor:pointer}
@@ -806,11 +809,13 @@ function topluHatirlat(t){
     <p class="not" style="margin-top:14px">${list.length} randevu${gitti?`, ${gitti} tanesine gönderildi`:''}. Mesajlar müşteri kartı ve randevu bilgileriyle hazır; isterseniz değiştirin. "Gönder"e basınca WhatsApp açılır, orada gönderip buraya dönün, sıradaki kendiliğinden öne çıkar.</p>
     ${list.map(r=>{const m=M(r.mid);return `<div class="toplu ${r.hatirlatildi?'gitti':''}" id="tp-${r.id}">
       <div class="toplu-ust"><div class="avatar">${basHarf(m.ad)}</div><div class="orta"><div class="ad">${k(m.ad)}</div><div class="alt-yazi">${r.saat} · ${k(H(r.hid).ad)}${m.tel?'':' · <span style="color:var(--kirmizi)">telefon yok</span>'}</div></div>
+      <span class="toplu-dil">${Object.keys(DIL_AD).map(d=>`<button class="${d===MDIL(m)?'secili':''}" title="${DIL_AD[d]}" onclick="topluDil(this,'${r.id}','${d}')">${d==='ar'?'ع':'TR'}</button>`).join('')}</span>
       <button class="btn ${r.hatirlatildi?'btn-ikincil':'btn-wa'}" style="flex:none" ${m.tel?'':'disabled'} onclick="topluGonder('${r.id}',this)">${r.hatirlatildi?I('tamam')+'Gönderildi':I('mesaj')+'Gönder'}</button></div>
       <textarea id="tm-${r.id}" dir="auto">${k(hatirlatMesaji(r))}</textarea>
     </div>`}).join('')}`);
   topluSiradaki();
 }
+function topluDil(b,rid,d){b.parentNode.querySelectorAll('button').forEach(x=>x.classList.toggle('secili',x===b));document.getElementById('tm-'+rid).value=hatirlatMesaji(R(rid),d)}
 function topluGonder(rid,b){
   const r=R(rid),metin=(document.getElementById('tm-'+rid)?.value||'').trim();
   if(!metin)return bildir('Mesaj boş');
