@@ -236,6 +236,8 @@ main{padding:26px 32px 60px;max-width:1200px}
 .kucuk-sayi{width:32px;height:32px;padding:0}
 
 .mobil-nav{display:none}
+.hafta,.zaman{touch-action:pan-y}
+.kaydir-ipucu{display:none}
 
 /* giriş ekranı */
 .giris{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
@@ -291,6 +293,7 @@ main{padding:26px 32px 60px;max-width:1200px}
   .gun{height:58px;border-radius:10px}.ok{width:26px}
   .gun-bilgi{padding:12px 14px 4px}
   .gun-bilgi .not,.tarih-git{display:none}
+  .kaydir-ipucu{display:block;font-size:11.5px;color:var(--cok-soluk);padding:0 14px 2px}
   .zaman{margin:10px 10px 16px 54px}
   .saatsatir span{left:-50px;width:40px}
   .tablo-bas{display:none}
@@ -743,6 +746,7 @@ function ekranTakvim(){
       <span style="display:flex;gap:6px"><input class="tarih-git" type="date" value="${seciliGun}" onchange="if(this.value){seciliGun=this.value;ciz()}" style="height:34px;width:150px;font-size:13px" aria-label="Tarihe git"><button class="btn btn-ikincil" style="height:34px" onclick="seciliGun=BUGUN;ciz()">Bugün</button></span></div>
     <div class="hafta"><button class="ok" onclick="seciliGun=gunEkle(seciliGun,-7);ciz()" aria-label="Önceki hafta">${I('sol')}</button>${gunler}<button class="ok" onclick="seciliGun=gunEkle(seciliGun,7);ciz()" aria-label="Sonraki hafta">${I('sag')}</button></div>
     <div class="gun-bilgi"><b>${guzelTarih(seciliGun)} · ${list.length} randevu</b><span class="not">Boş saate tıklayarak randevu ekleyin</span></div>
+    <div class="kaydir-ipucu">Günü değiştirmek için sağa-sola kaydırın · boş saate dokunarak randevu ekleyin</div>
     <div class="zaman">${saatler}${bloklar}${cizgi}</div>
   </div>`;
 }
@@ -1158,6 +1162,38 @@ function gozEkle(){
   });
 }
 new MutationObserver(gozEkle).observe(document.body,{childList:true,subtree:true});gozEkle();
+/* ---------- takvim: parmakla sağa-sola kaydırma (çizelge = gün, üst şerit = hafta) ---------- */
+(function(){
+  const kok=document.getElementById('icerik');let d=null,sonKaydirma=0;
+  const sifirla=el=>{el.style.transition='transform .2s ease,opacity .2s ease';el.style.transform='';el.style.opacity=''};
+  kok.addEventListener('touchstart',e=>{
+    if(ekran!=='takvim'||e.touches.length!==1)return;
+    const el=e.target.closest('.hafta,.zaman');if(!el)return;
+    d={x:e.touches[0].clientX,y:e.touches[0].clientY,dx:0,yon:null,el,hafta:el.classList.contains('hafta')};
+  },{passive:true});
+  kok.addEventListener('touchmove',e=>{
+    if(!d)return;
+    const dx=e.touches[0].clientX-d.x,dy=e.touches[0].clientY-d.y;
+    if(!d.yon){if(Math.abs(dx)<10&&Math.abs(dy)<10)return;d.yon=Math.abs(dx)>Math.abs(dy)*1.2?'yatay':'dikey'}
+    if(d.yon!=='yatay')return;
+    if(e.cancelable)e.preventDefault();
+    d.dx=dx;d.el.style.transition='none';d.el.style.transform=`translateX(${dx*.6}px)`;d.el.style.opacity=String(1-Math.min(Math.abs(dx)/600,.4));
+  },{passive:false});
+  const bitir=()=>{
+    if(!d)return;const s=d;d=null;
+    if(s.yon!=='yatay')return;
+    sonKaydirma=Date.now();
+    if(Math.abs(s.dx)<60){sifirla(s.el);return}
+    const ileri=s.dx<0;
+    seciliGun=gunEkle(seciliGun,(s.hafta?7:1)*(ileri?1:-1));
+    ciz();
+    const yeni=document.querySelector(s.hafta?'.hafta':'.zaman');
+    if(yeni){yeni.style.transition='none';yeni.style.transform=`translateX(${ileri?40:-40}px)`;yeni.style.opacity='.4';requestAnimationFrame(()=>requestAnimationFrame(()=>sifirla(yeni)))}
+  };
+  kok.addEventListener('touchend',bitir);kok.addEventListener('touchcancel',bitir);
+  // kaydırma bitince yanlışlıkla "boş saate randevu ekle" açılmasın
+  kok.addEventListener('click',e=>{if(Date.now()-sonKaydirma<400){e.stopPropagation();e.preventDefault()}},true);
+})();
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 basla();
 </script>
