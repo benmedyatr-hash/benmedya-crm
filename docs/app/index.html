@@ -36,6 +36,7 @@ input,select,textarea{font:inherit;font-size:16px;width:100%;height:44px;padding
 textarea{height:auto;min-height:80px;padding:10px 12px;resize:vertical}
 input:focus,select:focus,textarea:focus{border-color:var(--ana);box-shadow:0 0 0 3px var(--ana-acik)}
 input[type=checkbox]{width:20px;height:20px;accent-color:var(--ana);cursor:pointer;flex:none}
+input[type=radio]{width:20px;height:20px;padding:0;margin:0;accent-color:var(--vurgu);cursor:pointer;flex:none}
 label{display:block;font-size:12px;font-weight:600;color:var(--soluk);margin:14px 0 6px;letter-spacing:.01em}
 svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 a{color:var(--vurgu);text-decoration:none}
@@ -1292,8 +1293,56 @@ function yeniSecim(){
   ac('Yeni kayıt',`
     <button class="secim" onclick="randevuFormu()"><div class="avatar">${I('takvim')}</div><div><b>Randevu</b><small>Takvime yeni randevu ekle</small></div></button>
     <button class="secim" onclick="musteriFormu()"><div class="avatar">${I('kisiler')}</div><div><b>Müşteri</b><small>Yeni müşteri kartı aç</small></div></button>
-    <button class="secim" onclick="satisFormu()"><div class="avatar">${I('para')}</div><div><b>Tek seferlik işlem</b><small>Randevusuz satış: ürün, tek seans, hizmet</small></div></button>
-    <button class="secim" onclick="gorevFormu()"><div class="avatar">${I('gorev')}</div><div><b>Hatırlatıcı</b><small>Arama, ödeme, iş takibi</small></div></button>`);
+    <button class="secim" onclick="tahsilatFormu()"><div class="avatar">${I('para')}</div><div><b>Tahsilat</b><small>Müşteri seçin, bekleyen ödemesinden tahsil edin</small></div></button>`);
+}
+/* ---------- tahsilat: yalnız bekleyen borca bağlı (serbest rakam yok) ---------- */
+function borcKalemleri(mid){
+  const l=[];
+  V.randevular.filter(r=>r.mid===mid&&borc(r)>0).forEach(r=>l.push({tur:'r',id:r.id,ad:H(r.hid).ad+' · '+kisaTarih(r.tarih)+' randevusu',kalan:borc(r),kismi:true}));
+  V.paketler.filter(p=>p.mid===mid).forEach(p=>{const k=paketBorc(p)||Number(p.pesinatBekleyen||0);if(k>0)l.push({tur:'p',id:p.id,ad:H(p.hid).ad+(p.tekIslem?' (tek işlem)':' ('+p.toplam+' seans)')+(paketBorc(p)?' · kalan':' · peşinat'),kalan:k,kismi:true})});
+  V.satislar.filter(x=>x.mid===mid&&satisBorc(x)>0).forEach(x=>l.push({tur:'s',id:x.id,ad:'Tek seferlik · '+x.aciklama,kalan:satisBorc(x),kismi:false}));
+  return l;
+}
+function tahsilatFormu(mid){
+  const borclu=V.musteriler.map(m=>({m,b:borcKalemleri(m.id).reduce((s,x)=>s+x.kalan,0)}));
+  const sirali=borclu.filter(x=>x.b>0).sort((a,b)=>a.m.ad.localeCompare(b.m.ad,'tr')).concat(borclu.filter(x=>!x.b).sort((a,b)=>a.m.ad.localeCompare(b.m.ad,'tr')));
+  ac('Tahsilat',`
+    <label>Müşteri</label>
+    <select id="thMus" onchange="tahsilatKalemCiz()"><option value="">Seçin</option>${sirali.map(({m,b})=>`<option value="${m.id}" ${m.id===mid?'selected':''}>${k(m.ad)}${b?' — '+tl(b)+' bekleyen':''}</option>`).join('')}</select>
+    <div id="thKalem"></div>`);
+  tahsilatKalemCiz();
+}
+function tahsilatKalemCiz(){
+  const mid=deger('thMus'),kutu=document.getElementById('thKalem');if(!kutu)return;
+  if(!mid){kutu.innerHTML='<p class="ipucu" style="margin-top:10px">Bekleyen ödemesi olan müşteriler listenin başında, tutarıyla görünür.</p>';return}
+  const l=borcKalemleri(mid);
+  if(!l.length){kutu.innerHTML=`<div class="kutu bos" style="padding:16px;margin-top:12px">Bu müşterinin bekleyen ödemesi yok. Tahsilat, randevu ücretinden ya da müşteri kartındaki hizmet bedelinden alınır.</div>
+    <button class="btn btn-ikincil btn-tam" style="margin-top:10px" onclick="musteriKarti('${mid}')">Müşteri kartını aç</button>`;return}
+  kutu.innerHTML=`<label>Neyin ödemesi?</label>
+    <div class="kutu">${l.map((x,i)=>`<label class="satir" style="cursor:pointer;margin:0"><span style="display:flex;align-items:center;gap:10px;color:var(--yazi)"><input type="radio" name="thSec" value="${i}" ${i?'':'checked'} onchange="tahsilatTutarAyarla()">${k(x.ad)}</span><b>${tl(x.kalan)}</b></label>`).join('')}</div>
+    <label>Alınan tutar (₺)</label><input type="number" id="thTut" min="1" inputmode="numeric">
+    <p class="ipucu" id="thIpucu"></p>
+    <button class="btn btn-geldi btn-tam btn-buyuk" style="margin-top:14px" onclick="tahsilatKaydet(this)">${I('tamam')}Tahsil edildi</button>
+    <button class="btn btn-ikincil btn-tam" style="margin-top:8px" onclick="musteriKarti('${mid}')">Müşteri kartı</button>`;
+  tahsilatTutarAyarla();
+}
+function tahsilatSecili(){const l=borcKalemleri(deger('thMus')),i=Number(document.querySelector('input[name=thSec]:checked')?.value||0);return l[i]}
+function tahsilatTutarAyarla(){
+  const x=tahsilatSecili(),t=document.getElementById('thTut');if(!x||!t)return;
+  t.value=x.kalan;t.max=x.kalan;t.readOnly=!x.kismi;
+  document.getElementById('thIpucu').textContent=x.kismi?'En fazla '+tl(x.kalan)+'. Daha az girilirse kalanı bekleyen ödemelerde kalır. Bugünkü tahsilata yazılır.':'Bu işlem tek seferde tahsil edilir: '+tl(x.kalan)+'. Bugünkü tahsilata yazılır.';
+}
+function tahsilatKaydet(b){
+  const mid=deger('thMus'),x=tahsilatSecili(),t=Math.round(Number(deger('thTut')||0)*100)/100;
+  if(!x)return hata('Ödeme kalemi seçin.');
+  if(!(t>0))return hata('Tutar 0 olamaz.');
+  if(t>x.kalan)return hata('Tutar kalan borçtan ('+tl(x.kalan)+') fazla olamaz.');
+  if(!x.kismi&&t!==x.kalan)return hata('Bu işlem yalnız tam tutarla ('+tl(x.kalan)+') tahsil edilir.');
+  if(!tahsilOnay(b,mid))return;
+  if(x.tur==='r'){const r=R(x.id);if(t>=borc(r)){r.odendi=true;r.odemeTarihi=BUGUN}else{r.alinan=Number(r.alinan||0)+t;r.alinanTarihi=BUGUN}}
+  else if(x.tur==='p'){const p=V.paketler.find(y=>y.id===x.id),pes=p.pesinatBekleyen&&t>=p.pesinatBekleyen;paketOdemeEkle(p,t,pes?'Peşinat':'Ödeme');if(pes)delete p.pesinatBekleyen}
+  else{const s_=S_(x.id);s_.odendi=true;s_.odemeTarihi=BUGUN}
+  kaydet();ciz();kapat();bildir(M(mid).ad+': '+tl(t)+' tahsil edildi');
 }
 
 /* ---------- tek seferlik işlem (randevusuz satış) ---------- */
@@ -1440,7 +1489,7 @@ function musteriKarti(mid){
   ac('Müşteri kartı',`<input type="hidden" id="kartMid" value="${mid}">
     <div class="profil"><div class="avatar buyuk">${basHarf(m.ad)}</div><div><b>${k(m.ad)}</b><small>${gecmis.length} randevu${gelmedi?` · <span style="color:var(--kirmizi)">${gelmedi} kez gelmedi</span>`:''}${m.kaynak?' · '+k(m.kaynak):''}</small></div></div>
     ${m.uyari?`<div class="uyari">${I('uyari')}<span>${k(S.uyari)}: ${k(m.uyari)}</span></div>`:''}
-    ${b?`<div class="uyari" style="background:var(--sari-acik);color:var(--sari)">${I('para')}<span>Bekleyen ödeme: ${tl(b)}</span></div>`:''}
+    ${b?`<div class="uyari" style="background:var(--sari-acik);color:var(--sari);align-items:center">${I('para')}<span style="flex:1">Bekleyen ödeme: ${tl(b)}</span><button class="btn btn-geldi" style="height:30px;padding:0 10px;font-size:12px" onclick="tahsilatFormu('${m.id}')">Tahsil et</button></div>`:''}
     <div class="alt-dugmeler">
       <button class="btn btn-ana" onclick="randevuFormu(null,null,'${m.id}')">${I('takvim')}Randevu ver</button>
       <button class="btn btn-wa" ${m.tel?'':'disabled'} onclick="waBos('${m.id}')">${I('mesaj')}WhatsApp</button>
