@@ -654,6 +654,8 @@ async function basla(){
     HAZIR=true;
     sb.rpc('giris_kaydet').then(()=>{},()=>{});
     // ilk açılış: sektörün hazır hizmetlerini ekle
+    // eski kayıtlı telefonlar tek seferlik yeni biçime (0542 504 2256)
+    {let deg=0;V.musteriler.forEach(m=>{const f=telBicim(m.tel);if(m.tel&&f!==m.tel){m.tel=f;deg++}});if(deg)setTimeout(kaydet,0)}
     if(!AYAR.kuruldu){if(!V.hizmetler.length)SK().hizmetler.forEach(x=>V.hizmetler.push({id:yeniId(),ad:x[0],sure:x[1],fiyat:x[2]}));AYAR.kuruldu=true;kaydet()}
     document.getElementById('hesapEposta').textContent=KULLANICI.email;
     temaUygula();ciz();
