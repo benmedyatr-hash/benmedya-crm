@@ -294,9 +294,11 @@ main{padding:26px 32px 60px;max-width:1200px}
   .ust-sol{gap:11px}
   .ust .marka .logo{display:none}
   .ust .marka-yazi small{display:none}
-  .crm-etiket{display:block;font-size:16px;font-weight:700;letter-spacing:.16em;line-height:1;color:var(--ana);pointer-events:none;user-select:none;-webkit-user-select:none}
+  .crm-etiket{display:block;font-size:16px;font-weight:700;letter-spacing:.03em;line-height:1;margin-right:-7px;color:var(--ana);pointer-events:none;user-select:none;-webkit-user-select:none}
   .dikey-cizgi{display:block;width:1px;height:24px;background:var(--cizgi);pointer-events:none}
   .ust-sag{gap:12px}
+  body.crm-gizli .crm-etiket,body.crm-gizli .dikey-cizgi{display:none}
+  body.crm-gizli .ust .marka-yazi b{max-width:66vw}
   .ust .marka-yazi b{max-width:48vw}
   .cikis-ust{width:40px;padding:0;justify-content:center;border-radius:11px}.cikis-ust span{display:none}
   .cikis-ust.onay{width:auto;padding:0 12px}.cikis-ust.onay span{display:inline}
@@ -531,6 +533,15 @@ async function sifremiUnuttum(){
   const{error}=await sb.auth.resetPasswordForEmail(ep,{redirectTo:location.origin+location.pathname});
   document.getElementById('girisMesaj').innerHTML=error?`<div class="uyari">${I('uyari')}<span>${k(HATA_TR(error.message))}</span></div>`:`<div class="bilgi">Şifre yenileme bağlantısı ${k(ep)} adresine gönderildi. Gelen kutunuzu (ve gereksiz klasörünü) kontrol edin.</div>`;
 }
+// uzun firma adı sığmıyorsa "CRM" etiketini gizle, yeri ada kalsın
+function crmSigdir(){
+  document.body.classList.remove('crm-gizli');
+  const b=document.querySelector('.ust .marka-yazi b');
+  if(!b||innerWidth>900)return;
+  if(b.scrollWidth>b.clientWidth+1)document.body.classList.add('crm-gizli');
+}
+addEventListener('resize',()=>{clearTimeout(crmSigdir._z);crmSigdir._z=setTimeout(crmSigdir,150)});
+if(document.fonts)document.fonts.ready.then(crmSigdir);
 function cikisDokun(b){
   if(b.classList.contains('onay')){cikis();return}
   b.classList.add('onay');b.querySelector('span').textContent='Çıkmak için tekrar dokunun';if(innerWidth<901)b.querySelector('span').textContent='Tekrar dokunun';
@@ -637,6 +648,7 @@ function temaUygula(){
   document.querySelectorAll('.firmaAd').forEach(e=>e.textContent=AYAR.firma||'Firma Adı');
   document.querySelectorAll('.firmaHarf').forEach(e=>e.textContent=(AYAR.firma||'F').trim()[0].toLocaleUpperCase('tr'));
   document.title=(AYAR.firma||'Firma Adı')+' · CRM';
+  crmSigdir();
 }
 
 /* ---------- gezinme ---------- */
