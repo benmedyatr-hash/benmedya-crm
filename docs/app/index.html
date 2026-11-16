@@ -1555,6 +1555,8 @@ function randevuKaydet(rid){
     V.randevular.push({id:yeniId(),durum:'bekliyor',odendi:false,...veri,tarih:gunEkle(veri.tarih,i*aralik),paketli:pk,ucret:pk?0:fiyat,kapora:i?0:veri.kapora,kaporaTarihi:i?null:veri.kaporaTarihi});
   }
   kaydet();kapat();if(ekran==='takvim')seciliGun=veri.tarih;ciz();bildir(rid?'Randevu güncellendi':adet>1?adet+' randevu eklendi':'Randevu eklendi');
+  // yeni hizmetin ilk randevusu verildiyse anlaşma mesajını öner (isteğe bağlı: "Şimdi değil" ile kapanır)
+  if(!rid&&paketli&&M(mid).tel&&V.paketler.some(p=>p.mid===mid&&p.hid===hid&&!p.anlasma&&!p.kullanilan))anlasmaFormu(mid,true);
 }
 function randevuDetay(rid){
   const r=R(rid),m=M(r.mid),h=H(r.hid),b=borc(r);
@@ -1631,6 +1633,7 @@ function musteriKarti(mid){
       <a class="btn btn-ikincil" ${m.tel?`href="tel:${k(String(m.tel).replace(/\s/g,''))}"`:'style="opacity:.35;pointer-events:none"'}>Ara</a>
       <button class="btn btn-ikincil" onclick="musteriFormu('${m.id}')">${I('kalem')}Düzenle</button>
     </div>
+    ${paketler.length?`<button class="btn btn-wa btn-tam" style="margin-top:10px" ${m.tel?'':'disabled'} onclick="anlasmaFormu('${m.id}')">${I('mesaj')}Anlaşma bilgisini gönder${paketler.some(p=>p.anlasma)?` <span style="font-weight:500;opacity:.85">· ${gunAy(paketler.map(p=>p.anlasma||'').sort().pop())} gönderildi</span>`:''}</button>`:''}
     <div class="bolum">Bilgiler</div>
     <div class="kutu">
       <div class="satir"><span>Telefon</span><b>${k(m.tel)||'—'}</b></div>
@@ -1666,7 +1669,7 @@ function musteriKarti(mid){
 }
 /* ---------- işlem geçmişi (log) — veritabanı tutar, değiştirilemez / silinemez ---------- */
 const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',satis:'Tek seferlik işlem',firma:'Firma'};
-const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',gelmediSeans:'gelmediği seans',adAr:'Arapça adı',dil:'mesaj dili',dogumKampanya:'doğum günü indirimi',sablonDogumIndirim:'indirimli doğum günü mesajı',dogumIndirim:'doğum günü indirimi',dogumGecerlilik:'indirim geçerliliği',alinan:'randevuda alınan',alinanTarihi:'alınma tarihi',odemeler:'ödemeler',pesinatBekleyen:'bekleyen peşinat',tekIslem:'tek işlem',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
+const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',gelmediSeans:'gelmediği seans',adAr:'Arapça adı',dil:'mesaj dili',dogumKampanya:'doğum günü indirimi',sablonDogumIndirim:'indirimli doğum günü mesajı',dogumIndirim:'doğum günü indirimi',dogumGecerlilik:'indirim geçerliliği',alinan:'randevuda alınan',alinanTarihi:'alınma tarihi',odemeler:'ödemeler',pesinatBekleyen:'bekleyen peşinat',tekIslem:'tek işlem',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati',anlasma:'anlaşma mesajı'};
 function logDeger(a,v){
   if(v===undefined||v===null||v==='')return '—';
   if(a==='durum')return DURUM[v]||v;
@@ -1780,6 +1783,55 @@ function paketKaydet(mid,randevuVer){
   paketleriEkle(mid,l);kaydet();ciz();
   if(randevuVer)randevuFormu(null,null,mid,null,l[0].hid);else musteriKarti(mid);
   bildir(l.length+' hizmet eklendi');
+}
+/* ---------- anlaşma bilgilendirme mesajı: hizmet, seans, bedel, ilk/sıradaki seans, peşinat, kalan (isteğe bağlı) ---------- */
+const ARA={giris:'مرحباً {ad}،\nشكراً لاختيارك {firma}. إليك ملخص اتفاقنا:',toplam:'المبلغ الإجمالي {tutar}',ilk:'الجلسة الأولى: {tarih} الساعة {saat}',sonraki:'الجلسة القادمة ({n}): {tarih} الساعة {saat}',
+  pesinat:'العربون: {tutar} تم دفعه',pesinatBek:'العربون: {tutar}',odenen:'المدفوع: {tutar}',kalan:'المتبقي: {tutar}',tamam:'تم الدفع بالكامل',kapanis:'لأي استفسار يمكنك الرد على هذه الرسالة. مع أطيب التحيات،\n{firma}'};
+const arSeans=n=>n===1?'جلسة واحدة':n===2?'جلستان':n<=10?arRakam(n)+' جلسات':arRakam(n)+' جلسة';
+const tamTarih=(t,dil)=>{const d=new Date(t+'T12:00');return dil==='ar'?arRakam(d.toLocaleDateString('ar',{weekday:'long',day:'numeric',month:'long',year:'numeric'})):String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()+' '+d.toLocaleDateString('tr-TR',{weekday:'long'})};
+const anlasmaPaketleri=mid=>V.paketler.filter(p=>p.mid===mid&&(p.kullanilan<p.toplam||paketBorc(p)>0||p.pesinatBekleyen));
+const doldur=(t,v)=>String(t||'').replace(/\{(\w+)\}/g,(_,x)=>v[x]??'');
+function anlasmaMetni(mid,pids,dil){
+  const m=M(mid),ar=dil==='ar',T=n=>ar?arTutar(n):tl(n),s=[];
+  s.push(ar?doldur(ARA.giris,{ad:ilkAd(m.ad),firma:AYAR.firma}):`Merhaba ${ilkAd(m.ad)},\n${AYAR.firma} olarak, bizi tercih ettiğiniz için teşekkür ederiz. Anlaşmamızın özeti:`);
+  pids.map(id=>V.paketler.find(p=>p.id===id)).filter(Boolean).forEach(p=>{
+    const ad=hizmetAdiDil(p.hid,dil),tutar=Number(p.tutar)||0,odenen=paketOdenen(p),kalan=paketBorc(p);
+    const sn=p.tekIslem?(ar?'جلسة واحدة':'tek işlem'):(ar?arSeans(p.toplam):p.toplam+' seans');
+    const sat=[`• ${ad}: ${sn}${tutar?' · '+(ar?doldur(ARA.toplam,{tutar:T(tutar)}):'toplam '+T(tutar)):''}`];
+    const r=planliSeanslar(mid,p.hid)[0];
+    if(r){const ilk=!p.kullanilan,v={tarih:tamTarih(r.tarih,dil),saat:ar?arRakam(r.saat):r.saat,n:ar?arRakam(p.kullanilan+1):p.kullanilan+1};
+      sat.push('   '+(ar?doldur(ilk?ARA.ilk:ARA.sonraki,v):ilk?`İlk seans: ${v.tarih}, saat ${v.saat}`:`Sıradaki seans (${v.n}.): ${v.tarih}, saat ${v.saat}`))}
+    const od=[],sadecePes=paketOdemeleri(p).length&&paketOdemeleri(p).every(x=>/peşinat/i.test(x.not||''));
+    if(odenen>0)od.push(sadecePes?(ar?doldur(ARA.pesinat,{tutar:T(odenen)}):`Peşinat: ${T(odenen)} alındı`):(ar?doldur(ARA.odenen,{tutar:T(odenen)}):`Ödenen: ${T(odenen)}`));
+    if(p.pesinatBekleyen)od.push(ar?doldur(ARA.pesinatBek,{tutar:T(p.pesinatBekleyen)}):`Peşinat: ${T(p.pesinatBekleyen)}`);
+    if(tutar)od.push(kalan?(ar?doldur(ARA.kalan,{tutar:T(kalan)}):`Kalan: ${T(kalan)}`):(ar?ARA.tamam:'Ödemeniz tamamlandı'));
+    if(od.length)sat.push('   '+od.join(' · '));
+    s.push(sat.join('\n'));
+  });
+  s.push(ar?doldur(ARA.kapanis,{firma:AYAR.firma}):`Sorunuz olursa bu mesaja yanıt yazabilirsiniz. İyi günler dileriz.\n${AYAR.firma}`);
+  return s.join('\n\n');
+}
+let anDil='tr';
+function anlasmaFormu(mid,sonra){
+  const m=M(mid),l=anlasmaPaketleri(mid).length?anlasmaPaketleri(mid):V.paketler.filter(p=>p.mid===mid);anDil=MDIL(m);
+  if(!l.length)return bildir('Bu müşteride hizmet yok');
+  ac('Anlaşma mesajı',`
+    <p class="not" style="margin-top:14px">${k(m.ad)} · ${k(m.tel)||'telefon yok'}</p>
+    <label>Mesaj dili</label>
+    <div style="display:flex;gap:6px">${Object.entries(DIL_AD).map(([d,a])=>`<button class="btn ${d===anDil?'btn-ince':'btn-ikincil'} an-dil" data-dil="${d}" style="height:32px;font-size:12.5px;padding:0 12px" onclick="anDil=this.dataset.dil;document.querySelectorAll('.an-dil').forEach(x=>x.className='btn '+(x===this?'btn-ince':'btn-ikincil')+' an-dil');anlasmaYenile('${mid}')">${a}</button>`).join('')}</div>
+    <label>Mesaja eklenecek hizmetler</label>
+    <div class="kutu">${l.map(p=>`<label class="satir" style="cursor:pointer;justify-content:flex-start;gap:10px"><input type="checkbox" class="an-p" value="${p.id}" checked onchange="anlasmaYenile('${mid}')" style="width:18px;height:18px;flex:none"><span>${k(H(p.hid).ad)}${p.anlasma?` <span class="etiket e-odendi" style="margin-left:4px">${gunAy(p.anlasma)} gönderildi</span>`:''}</span></label>`).join('')}</div>
+    <label>Mesaj (değiştirebilirsiniz)</label><textarea id="anMetin" dir="auto" style="min-height:230px">${k(anlasmaMetni(mid,l.map(p=>p.id),anDil))}</textarea>
+    <p class="ipucu">Hizmet bedeli, seans sayısı, peşinat ve kalan tutar müşteri kartından; ilk seans tarihi verilen randevudan alınır. Randevu verilmemişse tarih satırı yazılmaz.</p>
+    <button class="btn btn-wa btn-tam btn-buyuk" style="margin-top:16px" ${m.tel?'':'disabled'} onclick="anlasmaGonder('${mid}')">${I('mesaj')}WhatsApp'ta aç</button>
+    <button class="btn btn-ikincil btn-tam" style="margin-top:8px" onclick="${sonra?'kapat()':`musteriKarti('${mid}')`}">${sonra?'Şimdi değil':'Geri'}</button>`);
+}
+const anlasmaSecili=()=>[...document.querySelectorAll('.an-p:checked')].map(x=>x.value);
+function anlasmaYenile(mid){document.getElementById('anMetin').value=anlasmaSecili().length?anlasmaMetni(mid,anlasmaSecili(),anDil):''}
+function anlasmaGonder(mid){
+  const metin=deger('anMetin'),sec=anlasmaSecili();if(!metin)return hata('Mesaj boş.');
+  window.open(waLink(M(mid).tel,metin),'_blank');
+  sec.forEach(id=>{const p=V.paketler.find(x=>x.id===id);if(p)p.anlasma=BUGUN});kaydet();ciz();musteriKarti(mid);bildir('Anlaşma mesajı WhatsApp\'ta açıldı');
 }
 
 /* ---------- hatırlatıcı ---------- */
