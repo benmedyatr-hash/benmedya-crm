@@ -258,7 +258,7 @@ async function firmaAc(){
   }catch(e){hata(e.message);$('fK').disabled=false;$('fK').textContent='Firmayı aç'}
 }
 function kimlikGoster(ad,ep,pw,baslik){
-  const metin=`${ad} - CRM giriş bilgileri\n\nAdres: ${ADRES}\nE-posta: ${ep}\nŞifre: ${pw||'(mevcut şifreniz)'}\n\nTelefona kurmak için:\n- iPhone: Safari ile açın, alttaki Paylaş simgesine dokunup "Ana Ekrana Ekle"yi seçin.\n- Android: Chrome ile açın, sağ üstteki üç noktadan "Ana ekrana ekle"yi seçin.\nUygulamayı ana ekrandaki simgeden açıp giriş yapın. Ayarlar > Bildirimler'den "Bu telefonda bildirimleri aç"a basın; randevu bildirimleri telefonunuza gelir.\n\nİlk girişten sonra Ayarlar > Şifre değiştir'den şifrenizi değiştirebilirsiniz.`;
+  const metin=`${ad} - CRM giriş bilgileri\n\nAdres: ${ADRES}\nE-posta: ${ep}\nŞifre: ${pw||'(mevcut şifreniz)'}\n\nTelefona kurmak için:\n- iPhone: Safari ile açın, alttaki Paylaş simgesine dokunup "Ana Ekrana Ekle"yi seçin.\n- Android: Chrome ile açın, sağ üstteki üç noktadan "Ana ekrana ekle"yi seçin.\nUygulamayı ana ekrandaki simgeden açıp giriş yapın. menüdeki Bildirimler'den "Bu telefonda bildirimleri aç"a basın; randevu bildirimleri telefonunuza gelir.\n\nİlk girişten sonra Ayarlar > Şifre değiştir'den şifrenizi değiştirebilirsiniz.`;
   ac(baslik||'Firma açıldı',`<div class="bilgi">${k(ad)} hazır.${pw?'':' Bu e-posta zaten kayıtlıydı; mevcut şifresiyle girer.'}</div>
     <div class="kimlik" id="km">${k(metin)}</div>
     <div class="iki" style="margin-top:12px"><button class="btn btn-ana" onclick="navigator.clipboard.writeText($('km').textContent).then(()=>{this.textContent='Kopyalandı ✓'})">Kopyala</button><button class="btn btn-ikincil" onclick="kapat()">Kapat</button></div>`);

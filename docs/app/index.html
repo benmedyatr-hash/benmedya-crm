@@ -692,14 +692,14 @@ function temaUygula(){
 }
 
 /* ---------- gezinme ---------- */
-const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler','hizmet'],ayarlar:['Ayarlar','ayar']};
+const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler','hizmet'],ayarlar:['Ayarlar','ayar']};
 let ekran='bugun',seciliGun=BUGUN,aramaMetni='';
 function navCiz(){
   const n=acikGorevler().length,rs=randevusuzlar().seansli.length;
   const y=s=>`<button class="${s===ekran?'aktif':''}" onclick="git('${s}')">${I(EKRANLAR[s][1])}${EKRANLAR[s][0]}${s==='gorevler'&&n?`<span class="rozet">${n}</span>`:''}${s==='randevusuz'&&rs?`<span class="rozet">${rs}</span>`:''}</button>`;
   document.getElementById('yanNav').innerHTML=['bugun','takvim','|','musteriler','randevulu','randevusuz','|','tahsilat','gorevler','hizmetler'].map(s=>s==='|'?'<div class="ayrac"></div>':y(s)).join('');
   const bA=PUSH_DURUM==='acik',zd=`<span class="zil-durum ${bA?'acik':'kapali'}" title="${bA?'Bu cihazda bildirimler açık':'Bu cihazda bildirimler kapalı'}">${bA?ZIL_ACIK:ZIL_KAPALI}</span>`;
-  document.getElementById('yanAlt').innerHTML=`<button onclick="bildirimGit()">${I('zil')}Bildirimler${zd}</button>`+y('ayarlar')+`<button class="cikis-btn" onclick="menuKapat();cikis()">${I('cikis')}Çıkış yap</button>`;
+  document.getElementById('yanAlt').innerHTML=`<button class="${ekran==='bildirimler'?'aktif':''}" onclick="git('bildirimler')">${I('zil')}Bildirimler${zd}</button>`+y('ayarlar')+`<button class="cikis-btn" onclick="menuKapat();cikis()">${I('cikis')}Çıkış yap</button>`;
   const m=(s,ad)=>`<button class="sekme ${s===ekran||(s==='bugun'&&false)?'aktif':''}" onclick="git('${s}')"><span class="kap">${I(EKRANLAR[s][1])}</span>${ad}${s==='gorevler'&&n?`<span class="nokta">${n}</span>`:''}</button>`;
   document.getElementById('mobilNav').innerHTML=m('bugun','Özet')+m('takvim','Takvim')+`<button class="orta-arti" onclick="yeniSecim()" aria-label="Yeni kayıt">${I('arti')}</button>`+m('musteriler','Müşteriler')+m('gorevler','Hatırlatıcı');
   
@@ -1141,7 +1141,6 @@ function ekranAyarlar(){
         <button class="btn btn-ana btn-tam" style="margin-top:20px" onclick="ayarKaydet()">${I('tamam')}Kaydet</button>
       </div>
     </div>
-    ${bildirimPaneli()}
     </div>
     <div class="sutun">
       <div class="panel">
@@ -1197,7 +1196,7 @@ function ciz(){
   document.getElementById('ustTarih').textContent=guzelTarih(BUGUN);
   document.getElementById('mBaslik').textContent=ad;
   document.getElementById('mTarih').textContent=gunAy(BUGUN)+', '+GUNLER[new Date().getDay()];
-  document.getElementById('icerik').innerHTML={bugun:ekranBugun,takvim:ekranTakvim,musteriler:ekranMusteriler,randevulu:ekranRandevulu,randevusuz:ekranRandevusuz,tahsilat:ekranTahsilat,gorevler:ekranGorevler,hizmetler:ekranHizmetler,ayarlar:ekranAyarlar}[ekran]();
+  document.getElementById('icerik').innerHTML={bugun:ekranBugun,takvim:ekranTakvim,musteriler:ekranMusteriler,randevulu:ekranRandevulu,randevusuz:ekranRandevusuz,bildirimler:ekranBildirimler,tahsilat:ekranTahsilat,gorevler:ekranGorevler,hizmetler:ekranHizmetler,ayarlar:ekranAyarlar}[ekran]();
 }
 
 /* ---------- pencere yardımcıları ---------- */
@@ -1577,12 +1576,12 @@ async function pushBasla(){
   await pushDurumBul();
   navCiz();
   if(PUSH_DURUM==='acik'){try{const r=await navigator.serviceWorker.ready;const s=await r.pushManager.getSubscription();if(s)await aboneKaydet(s)}catch(e){console.error(e)}}
-  if(['bugun','ayarlar'].includes(ekran)&&!document.getElementById('perde').classList.contains('acik'))ciz();
+  if(ekran==='bildirimler'&&!document.getElementById('perde').classList.contains('acik'))ciz();
 }
 async function pushAc(b){
   if(PUSH_DURUM==='ana-ekran')return anaEkranYardim();
   if(PUSH_DURUM==='destek-yok')return bildir('Bu tarayıcı bildirim desteklemiyor');
-  if(PUSH_DURUM==='engelli')return git('ayarlar');
+  if(PUSH_DURUM==='engelli')return git('bildirimler');
   if(b)b.disabled=true;
   try{
     const izin=await Notification.requestPermission(); // iPhone: dokunuşun hemen ardından sorulmalı
@@ -1619,14 +1618,15 @@ function anaEkranYardim(){
       <div class="satir"><span>1</span><b style="text-align:left;flex:1;margin-left:12px">Safari'de alttaki <u>Paylaş</u> simgesine (yukarı oklu kare) dokunun</b></div>
       <div class="satir"><span>2</span><b style="text-align:left;flex:1;margin-left:12px">"<u>Ana Ekrana Ekle</u>"yi seçip "Ekle"ye basın</b></div>
       <div class="satir"><span>3</span><b style="text-align:left;flex:1;margin-left:12px">Ana ekrandaki CRM simgesinden açıp giriş yapın</b></div>
-      <div class="satir"><span>4</span><b style="text-align:left;flex:1;margin-left:12px">Ayarlar → Bildirimler → "Bu telefonda bildirimleri aç"</b></div>
+      <div class="satir"><span>4</span><b style="text-align:left;flex:1;margin-left:12px">Menü (☰) → Bildirimler → "Bu telefonda bildirimleri aç"</b></div>
     </div>
     <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="kapat()">Tamam</button>`);
 }
 const ZIL_YOL='<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>';
 const ZIL_ACIK=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ZIL_YOL}</svg>`;
 const ZIL_KAPALI=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ZIL_YOL}<path d="M3 3l18 18"/></svg>`;
-function bildirimGit(){git('ayarlar');setTimeout(()=>{const p=document.getElementById('bildirimPanel');if(!p)return;const ust=(document.querySelector('.ust')?.offsetHeight||0)+8;window.scrollTo({top:p.getBoundingClientRect().top+scrollY-ust,behavior:'smooth'});p.classList.remove('vurgu');void p.offsetWidth;p.classList.add('vurgu')},40)}
+// bildirimler tek yerde: kendi sayfası (Ayarlar'da yok)
+function ekranBildirimler(){return `<div style="max-width:640px">${bildirimPaneli()}</div>`}
 function bildirimPaneli(){
   const d=PUSH_DURUM,dk=Number(AYAR.bildirimDk);
   const etiket={acik:'Bu cihazda açık',kapali:'Bu cihazda kapalı',engelli:'İzin verilmedi','ana-ekran':'Ana ekrana ekleyin','destek-yok':'Desteklenmiyor',bilinmiyor:''}[d];
