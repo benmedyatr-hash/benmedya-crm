@@ -1,5 +1,5 @@
 // Yönetim panelini "uygulama olarak kur" için. Veri önbelleğe alınmaz; önce ağ, olmazsa önbellek.
-const SURUM = 'crm-yonetim-v2';
+const SURUM = 'crm-yonetim-v3';
 const ISKELET = ['./', 'index.html', '../ayar.js', '../sektorler.js', 'manifest.webmanifest', 'ikon-192.png'];
 
 self.addEventListener('install', e => {
