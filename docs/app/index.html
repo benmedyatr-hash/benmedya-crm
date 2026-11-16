@@ -1138,7 +1138,8 @@ function randevuFormu(rid,tarih,mid,saat){
     <select id="fMus"><option value="">Seçin</option>${V.musteriler.slice().sort((a,b)=>a.ad.localeCompare(b.ad,'tr')).map(m=>`<option value="${m.id}" ${m.id===r.mid?'selected':''}>${k(m.ad)}</option>`).join('')}<option value="__yeni">+ Yeni müşteri ekle</option></select>
     <div id="yeniMus" style="display:none" class="iki"><div><label>Ad Soyad</label><input id="fYAd" autocomplete="off"></div><div><label>Telefon</label><input id="fYTel" inputmode="tel" autocomplete="off"></div></div>
     <label>Hizmet</label>
-    <select id="fHiz"><option value="">Seçin</option>${V.hizmetler.map(h=>`<option value="${h.id}" ${h.id===r.hid?'selected':''}>${k(h.ad)} · ${h.sure} dk</option>`).join('')}</select>
+    <select id="fHiz"><option value="">Seçin</option>${V.hizmetler.map(h=>`<option value="${h.id}" ${h.id===r.hid?'selected':''}>${k(h.ad)} · ${h.sure} dk</option>`).join('')}<option value="__yeni">+ Yeni hizmet ekle</option></select>
+    <div id="yeniHiz" style="display:none"><label>Yeni hizmetin adı</label><input id="fYHAd" autocomplete="off" placeholder="Örn. Lazer epilasyon (tüm bacak)"><p class="ipucu">Hizmetler listenize de eklenir; süre ve ücreti aşağıdan girin.</p></div>
     <div id="paketBilgi"></div>
     <div class="iki"><div><label>Tarih</label><input type="date" id="fTar" value="${r.tarih}"></div><div><label>Saat</label><input type="time" id="fSaat" value="${r.saat}" step="300"></div></div>
     <div class="iki"><div><label>Süre (dk)</label><input type="number" min="5" step="5" id="fSure" value="${r.sure}" inputmode="numeric"></div><div><label>Ücret (₺)</label><input type="number" min="0" id="fUcr" value="${r.ucret===''?'':r.ucret}" inputmode="numeric"></div></div>
@@ -1158,7 +1159,11 @@ function randevuFormu(rid,tarih,mid,saat){
     document.getElementById('cakisma').innerHTML=c?`<div class="uyari">${I('uyari')}<span>Bu saatte ${k(M(c.mid).ad)} ile randevunuz var (${c.saat}–${bitis(c.saat,c.sure)}). Yine de kaydedebilirsiniz.</span></div>`:'';
     document.getElementById('fMus').dataset.paket=paketVar?'1':'';
   };
-  document.getElementById('fHiz').onchange=()=>{const h=H(deger('fHiz'));if(h.sure)document.getElementById('fSure').value=h.sure;document.getElementById('fUcr').value=h.fiyat||0;kontrol()};
+  document.getElementById('fHiz').onchange=()=>{
+    const y=deger('fHiz')==='__yeni';document.getElementById('yeniHiz').style.display=y?'block':'none';
+    if(y){document.getElementById('fYHAd').focus();if(!deger('fSure'))document.getElementById('fSure').value=30}
+    else{const h=H(deger('fHiz'));if(h.sure)document.getElementById('fSure').value=h.sure;document.getElementById('fUcr').value=h.fiyat||0}
+    kontrol()};
   document.getElementById('fMus').onchange=()=>{kontrol();if(deger('fMus')==='__yeni')document.getElementById('fYAd').focus()};
   ['fTar','fSaat','fSure'].forEach(i=>document.getElementById(i).addEventListener('input',kontrol));
   kontrol();
@@ -1168,8 +1173,11 @@ function randevuKaydet(rid){
   if(!mid)return hata('Müşteri seçin.');
   if(!deger('fHiz'))return hata('Hizmet seçin.');
   if(!deger('fTar')||!deger('fSaat'))return hata('Tarih ve saat girin.');
+  let hid=deger('fHiz');
+  if(hid==='__yeni'&&!deger('fYHAd'))return hata('Yeni hizmetin adını yazın.');
   if(mid==='__yeni'){const ad=deger('fYAd');if(!ad)return hata('Yeni müşterinin adını yazın.');mid=yeniId();V.musteriler.push({id:mid,ad,tel:deger('fYTel'),eposta:'',dogum:'',adres:'',ek:'',uyari:'',kaynak:'',not:''})}
-  const veri={mid,hid:deger('fHiz'),tarih:deger('fTar'),saat:deger('fSaat'),sure:Math.max(5,Number(deger('fSure')||H(deger('fHiz')).sure||30)),ucret:paketli?0:Number(deger('fUcr')||0),kapora:Number(deger('fKap')||0),not:deger('fNot'),paketli};
+  if(hid==='__yeni'){const ad=deger('fYHAd'),var_=V.hizmetler.find(h=>h.ad.toLocaleLowerCase('tr')===ad.toLocaleLowerCase('tr'));if(var_)hid=var_.id;else{hid=yeniId();V.hizmetler.push({id:hid,ad,sure:Math.max(5,Number(deger('fSure')||30)),fiyat:paketli?0:Math.max(0,Number(deger('fUcr')||0))})}}
+  const veri={mid,hid,tarih:deger('fTar'),saat:deger('fSaat'),sure:Math.max(5,Number(deger('fSure')||H(hid).sure||30)),ucret:paketli?0:Number(deger('fUcr')||0),kapora:Number(deger('fKap')||0),not:deger('fNot'),paketli};
   veri.kaporaTarihi=veri.kapora?((rid&&R(rid).kaporaTarihi)||BUGUN):null;
   if(rid)Object.assign(R(rid),veri);else V.randevular.push({id:yeniId(),durum:'bekliyor',odendi:false,...veri});
   kaydet();kapat();if(ekran==='takvim')seciliGun=veri.tarih;ciz();bildir(rid?'Randevu güncellendi':'Randevu eklendi');
@@ -1307,10 +1315,11 @@ function musteriFormu(mid){
     <label>${k(S.uyari)}</label><input id="mUy" value="${k(m.uyari)}" placeholder="Varsa yazın, kartta kırmızı görünür">
     <label>Not</label><textarea id="mNot">${k(m.not)}</textarea>
     <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="musteriKaydet('${mid||''}')">Kaydet</button>
+    ${mid?'':`<button class="btn btn-ince btn-tam btn-buyuk" style="margin-top:8px" onclick="musteriKaydet('',true)">${I('takvim')}Kaydet ve randevu ver</button>`}
     ${mid?`<button class="btn btn-sil btn-tam" style="margin-top:8px" onclick="if(ikiKez(this,'Tüm randevuları da silinir. Tekrar basın'))musteriSil('${mid}')">Müşteriyi sil</button>`:''}`);
   if(!mid)setTimeout(()=>document.getElementById('mAd')?.focus(),50);
 }
-function musteriKaydet(mid){
+function musteriKaydet(mid,randevuVer){
   const v={ad:deger('mAd'),tel:deger('mTel'),eposta:deger('mEp'),dogum:deger('mDog'),adres:deger('mAdr'),ek:deger('mEk'),kaynak:deger('mKay'),uyari:deger('mUy'),not:deger('mNot')};
   if(!v.ad)return hata('Ad soyad yazın.');
   const tn=v.tel.replace(/\D/g,'');
@@ -1318,7 +1327,7 @@ function musteriKaydet(mid){
   const ayni=tn&&V.musteriler.find(x=>x.id!==mid&&String(x.tel).replace(/\D/g,'').slice(-10)===tn.slice(-10));
   if(ayni&&!document.getElementById('mTel').dataset.onay){document.getElementById('mTel').dataset.onay='1';return hata('Bu numara '+ayni.ad+' adına kayıtlı. Yine de kaydetmek için tekrar Kaydet\'e basın.')}
   if(mid)Object.assign(V.musteriler.find(x=>x.id===mid),v);else{mid=yeniId();V.musteriler.push({id:mid,...v})}
-  kaydet();ciz();musteriKarti(mid);bildir('Müşteri kaydedildi');
+  kaydet();ciz();if(randevuVer)randevuFormu(null,null,mid);else musteriKarti(mid);bildir('Müşteri kaydedildi');
 }
 function musteriSil(mid){
   V.musteriler=V.musteriler.filter(x=>x.id!==mid);V.randevular=V.randevular.filter(x=>x.mid!==mid);V.paketler=V.paketler.filter(x=>x.mid!==mid);V.gorevler=V.gorevler.filter(x=>x.mid!==mid);V.satislar=V.satislar.filter(x=>x.mid!==mid);
