@@ -839,31 +839,34 @@ function waRandevu(rid){const r=R(rid);window.open(waLink(M(r.mid).tel,hatirlatM
 function waDogum(mid){dogumFormu(mid)}
 /* ---------- doğum günü kampanyası: kutlama ya da kutlama + tanımlı indirim ---------- */
 const dogumIndirimi=m=>m&&m.dogumKampanya&&m.dogumKampanya.oran>0&&m.dogumKampanya.sonTarih>=BUGUN?m.dogumKampanya:null;
-function dogumMetni(mid,oran,gun){
-  const m=M(mid),son=gunEkle(BUGUN,Math.max(0,gun));
-  if(MDIL(m)==='ar'){const g=gun<=0?AR.gecBugun:AR.gecTarih.replace('{tarih}',arTarih(son));return oran>0?sablon(AR.dogumIndirim,{ad:ilkAd(m.ad),firma:AYAR.firma,indirim:arRakam(oran),gecerlilik:g}):sablon(AR.dogum,{ad:ilkAd(m.ad),firma:AYAR.firma})}
+let dgDil='tr';
+function dogumMetni(mid,oran,gun,dil){
+  const m=M(mid),son=gunEkle(BUGUN,Math.max(0,gun));dil=dil||MDIL(m);
+  if(dil==='ar'){const g=gun<=0?AR.gecBugun:AR.gecTarih.replace('{tarih}',arTarih(son));return oran>0?sablon(AR.dogumIndirim,{ad:ilkAd(m.ad),firma:AYAR.firma,indirim:arRakam(oran),gecerlilik:g}):sablon(AR.dogum,{ad:ilkAd(m.ad),firma:AYAR.firma})}
   const gec=gun<=0?'Yalnız bugün':gunAy(son)+' tarihine kadar';
   return oran>0?sablon(AYAR.sablonDogumIndirim||VARSAYILAN_AYAR.sablonDogumIndirim,{ad:ilkAd(m.ad),firma:AYAR.firma,indirim:oran,gecerlilik:gec})
                :sablon(AYAR.sablonDogum,{ad:ilkAd(m.ad),firma:AYAR.firma});
 }
 function dogumFormu(mid){
-  const m=M(mid),o=Number(AYAR.dogumIndirim)||20,g=Number(AYAR.dogumGecerlilik)??7,var_=dogumIndirimi(m);
+  const m=M(mid),o=Number(AYAR.dogumIndirim)||20,g=Number(AYAR.dogumGecerlilik)??7,var_=dogumIndirimi(m);dgDil=MDIL(m);
   ac('Doğum günü',`
     <div class="profil"><div class="avatar buyuk">${basHarf(m.ad)}</div><div><b>${k(m.ad)}</b><small>${m.dogum?kisaTarih(m.dogum):''} · ${k(m.tel)||'telefon yok'}</small></div></div>
     ${var_?`<div class="bilgi">Bu müşteriye %${var_.oran} doğum günü indirimi zaten tanımlı (${gunAy(var_.sonTarih)} tarihine kadar).</div>`:''}
+    <label>Mesaj dili</label>
+    <div style="display:flex;gap:6px">${Object.entries(DIL_AD).map(([d,a])=>`<button class="btn ${d===dgDil?'btn-ince':'btn-ikincil'} dg-dil" data-dil="${d}" style="height:32px;font-size:12.5px;padding:0 12px" onclick="dgDil=this.dataset.dil;document.querySelectorAll('.dg-dil').forEach(x=>x.className='btn '+(x===this?'btn-ince':'btn-ikincil')+' dg-dil');dogumYenile('${mid}')">${a}</button>`).join('')}</div>
     <label>Mesaj türü</label>
     <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ikincil dg-tur" data-tur="0" onclick="dogumTur(this,'${mid}')">Sadece kutlama</button><button class="btn btn-ince dg-tur" data-tur="1" onclick="dogumTur(this,'${mid}')">Kutlama + indirim</button></div>
     <div id="dgIndirim">
       <div class="iki"><div><label>İndirim oranı (%)</label><select id="dgOran" onchange="dogumYenile('${mid}')">${[10,15,20,25,30,40,50].map(x=>`<option value="${x}" ${x===o?'selected':''}>%${x}</option>`).join('')}${[10,15,20,25,30,40,50].includes(o)?'':`<option value="${o}" selected>%${o}</option>`}</select></div>
       <div><label>Geçerlilik</label><select id="dgGun" onchange="dogumYenile('${mid}')">${[[0,'Yalnız bugün'],[7,'7 gün'],[15,'15 gün'],[30,'30 gün']].map(x=>`<option value="${x[0]}" ${x[0]===g?'selected':''}>${x[1]}</option>`).join('')}</select></div></div>
     </div>
-    <label>Mesaj (değiştirebilirsiniz)${MDIL(m)==='ar'?' · Arapça (müşteri kartındaki dil)':''}</label><textarea id="dgMetin" dir="auto" style="min-height:120px">${k(dogumMetni(mid,o,g))}</textarea>
+    <label>Mesaj (değiştirebilirsiniz)</label><textarea id="dgMetin" dir="auto" style="min-height:120px">${k(dogumMetni(mid,o,g,dgDil))}</textarea>
     <p class="ipucu">İndirimli mesaj gönderilince indirim müşteri kartına yazılır ve randevu kapatırken hatırlatılır.</p>
     <button class="btn btn-wa btn-tam btn-buyuk" style="margin-top:16px" ${m.tel?'':'disabled'} onclick="dogumGonder('${mid}')">${I('mesaj')}WhatsApp'ta aç</button>`);
 }
 function dogumTur(b,mid){document.querySelectorAll('.dg-tur').forEach(x=>x.className='btn btn-ikincil dg-tur');b.className='btn btn-ince dg-tur';document.getElementById('dgIndirim').style.display=b.dataset.tur==='1'?'':'none';dogumYenile(mid)}
 const dogumIndirimSecili=()=>document.querySelector('.dg-tur.btn-ince')?.dataset.tur==='1';
-function dogumYenile(mid){document.getElementById('dgMetin').value=dogumMetni(mid,dogumIndirimSecili()?Number(deger('dgOran')):0,Number(deger('dgGun')))}
+function dogumYenile(mid){document.getElementById('dgMetin').value=dogumMetni(mid,dogumIndirimSecili()?Number(deger('dgOran')):0,Number(deger('dgGun')),dgDil)}
 function dogumGonder(mid){
   const m=V.musteriler.find(x=>x.id===mid),metin=deger('dgMetin');if(!metin)return hata('Mesaj boş.');
   window.open(waLink(m.tel,metin),'_blank');
@@ -1074,6 +1077,7 @@ function ekranMusteriler(){
   </div>`;
 }
 function musteriSatirlari(list){
+  const alinanTop={};tahsilatOlaylari().forEach(x=>{if(x.mid)alinanTop[x.mid]=(alinanTop[x.mid]||0)+x.tutar});
   return list.map(m=>{
     const s=V.randevular.filter(r=>r.mid===m.id&&r.tarih>=BUGUN&&r.durum==='bekliyor').sort((a,b)=>(a.tarih+a.saat).localeCompare(b.tarih+b.saat))[0];
     const b=musteriBorc(m.id),pk=V.paketler.filter(p=>p.mid===m.id&&p.kullanilan<p.toplam).length;
@@ -1082,7 +1086,7 @@ function musteriSatirlari(list){
       <div class="soluk gizle">${k(m.tel)||'—'}</div>
       <div class="soluk gizle">${k(m.ek)||'—'}</div>
       <div class="soluk gizle">${s?goreceli(s.tarih)+', '+s.saat:'—'}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;justify-self:end">${b?`<span class="etiket e-borc">${tl(b)}</span>`:''}${pk?`<span class="etiket e-paket">${pk} paket</span>`:''}${m.uyari?`<span class="etiket e-uyari">${I('uyari').replace('class="i"','class="i" style="width:12px;height:12px"')}</span>`:''}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;justify-self:end">${alinanTop[m.id]?`<span class="etiket e-odendi" title="Alınan toplam">${tl(alinanTop[m.id])}</span>`:''}${b?`<span class="etiket e-borc" title="Kalan borç">${tl(b)}</span>`:''}${pk?`<span class="etiket e-paket">${pk} paket</span>`:''}${m.uyari?`<span class="etiket e-uyari">${I('uyari').replace('class="i"','class="i" style="width:12px;height:12px"')}</span>`:''}</div>
     </div>`}).join('')||'<div class="bos">Kayıt bulunamadı.</div>';
 }
 function listeYenile(){
