@@ -198,9 +198,13 @@ main{padding:26px 32px 60px;max-width:1200px}
 .mus .kim{display:flex;align-items:center;gap:12px;min-width:0}
 .mus .kim>div:last-child{min-width:0}
 .soluk{color:var(--soluk);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hiz-satir,.hiz-bas{display:grid;grid-template-columns:minmax(0,1fr) 110px 130px 40px;gap:14px;align-items:center;padding:0 18px}
+.hiz-satir,.hiz-bas{display:grid;grid-template-columns:minmax(0,1fr) 110px 130px 72px 40px;gap:14px;align-items:center;padding:0 18px}
 .hiz-satir{min-height:58px;border-bottom:1px solid var(--cizgi);cursor:pointer}
 .hiz-satir:last-child{border-bottom:0}
+.sira-btn{display:flex;gap:4px}
+.sira-btn button{width:32px;height:32px;border-radius:8px;border:1px solid var(--cizgi);background:var(--kart);display:grid;place-items:center;font-size:15px;color:var(--soluk)}
+.sira-btn button:disabled{opacity:.3;cursor:default}
+.sira-btn button:not(:disabled):hover{color:var(--vurgu);border-color:var(--vurgu)}
 
 /* ayarlar */
 .ayar-izgara{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
@@ -347,7 +351,7 @@ main{padding:26px 32px 60px;max-width:1200px}
   .mus .gizle{display:none}
   .arac{padding:12px 14px}
   .arac .btn span{display:none}.arac .btn{width:44px;height:44px;padding:0}
-  .hiz-satir{grid-template-columns:minmax(0,1fr) 60px 90px;padding:0 14px}
+  .hiz-satir{grid-template-columns:minmax(0,1fr) 54px 80px 72px;padding:0 14px;gap:8px}
   .hiz-satir .ikon,.hiz-bas{display:none}
   .gorev .zaman-etk{width:auto}
   .perde{align-items:flex-end;padding:0}
@@ -621,7 +625,7 @@ async function basla(){
       data.forEach(r=>{const l=TURLER[r.tur];if(l)yeni[l].push(r.veri)});
       if(data.length<1000)break;
     }
-    V=yeni;
+    V=yeni;hizmetSirala();
     AYAR={...VARSAYILAN_AYAR,...(f.ayar||{}),firma:f.ad};
     SNAP=anlik();AYAR_SNAP=JSON.stringify(ayarVeri());
     HAZIR=true;
@@ -654,7 +658,7 @@ async function tazele(){
     const yeni={hizmetler:[],musteriler:[],paketler:[],randevular:[],gorevler:[],satislar:[]};
     for(let bas=0;;bas+=1000){const{data,error}=await sb.from('kayitlar').select('tur,veri').eq('firma_id',FIRMA.id).order('tur').order('id').range(bas,bas+999);if(error)return;data.forEach(r=>{const l=TURLER[r.tur];if(l)yeni[l].push(r.veri)});if(data.length<1000)break}
     if(kayitZaman||kaydediliyor)return;
-    V=yeni;SNAP=anlik();yenidenCiz();
+    V=yeni;hizmetSirala();SNAP=anlik();yenidenCiz();
   }catch(e){}
 }
 
@@ -1087,11 +1091,23 @@ function gorevBitir(gid,b){const g=V.gorevler.find(x=>x.id===gid);g.bitti=b;kayd
 /* ---------- ekran: hizmetler ---------- */
 function ekranHizmetler(){
   return `<div class="panel">
-    <div class="panel-ust"><h2>${I('hizmet')}Hizmetler</h2><button class="btn btn-ana" style="height:36px" onclick="hizmetFormu()">${I('arti')}Yeni hizmet</button></div>
-    <div class="tablo-bas hiz-bas"><div>Hizmet</div><div>Süre</div><div>Fiyat</div><div></div></div>
-    ${V.hizmetler.map(h=>`<div class="hiz-satir" onclick="hizmetFormu('${h.id}')"><div class="ad" style="font-size:14px">${k(h.ad)}</div><div class="soluk">${h.sure} dk</div><div class="soluk">${h.fiyat?tl(h.fiyat):'Ücretsiz'}</div><div class="soluk ikon">${I('kalem')}</div></div>`).join('')||'<div class="bos">Hizmet yok.</div>'}
+    <div class="panel-ust"><h2>${I('hizmet')}Hizmetler</h2><span style="display:flex;gap:6px"><button class="btn btn-ikincil" style="height:36px" ${V.hizmetler.length>1?'':'disabled'} onclick="hizmetAZ(this)">A→Z</button><button class="btn btn-ana" style="height:36px" onclick="hizmetFormu()">${I('arti')}Yeni hizmet</button></span></div>
+    <div class="tablo-bas hiz-bas"><div>Hizmet</div><div>Süre</div><div>Fiyat</div><div>Sıra</div><div></div></div>
+    ${V.hizmetler.map((h,i,a)=>`<div class="hiz-satir" onclick="hizmetFormu('${h.id}')"><div class="ad" style="font-size:14px">${k(h.ad)}</div><div class="soluk">${h.sure} dk</div><div class="soluk">${h.fiyat?tl(h.fiyat):'Ücretsiz'}</div><div class="sira-btn" onclick="event.stopPropagation()"><button aria-label="Yukarı taşı" ${i?'':'disabled'} onclick="hizmetTasi('${h.id}',-1)">↑</button><button aria-label="Aşağı taşı" ${i<a.length-1?'':'disabled'} onclick="hizmetTasi('${h.id}',1)">↓</button></div><div class="soluk ikon">${I('kalem')}</div></div>`).join('')||'<div class="bos">Hizmet yok.</div>'}
   </div>
-  <p class="not" style="margin:12px 4px">Randevu açarken hizmet seçilince süre ve ücret kendiliğinden dolar. Fiyatlar yalnız size görünür.</p>`;
+  <p class="not" style="margin:12px 4px">Oklarla sırayı değiştirin; randevu formunda ve müşteri kartında hizmetler bu sırayla listelenir. Düzenlemek ya da silmek için hizmete dokunun. Fiyatlar yalnız size görünür.</p>`;
+}
+// sıra kalıcı: her hizmette "sira" alanı; sırası olmayanlar (yeni eklenen) sona
+function hizmetSirala(){V.hizmetler=V.hizmetler.map((h,i)=>[h,i]).sort((a,b)=>((a[0].sira??1e9)-(b[0].sira??1e9))||a[1]-b[1]).map(x=>x[0])}
+function siraYaz(){V.hizmetler.forEach((h,i)=>{h.sira=i})}
+function hizmetTasi(hid,yon){
+  hizmetSirala();const l=V.hizmetler,i=l.findIndex(h=>h.id===hid),j=i+yon;
+  if(i<0||j<0||j>=l.length)return;
+  [l[i],l[j]]=[l[j],l[i]];siraYaz();kaydet();ciz();
+}
+function hizmetAZ(b){
+  if(!ikiKez(b,'Ada göre sıralansın mı? Tekrar basın'))return;
+  V.hizmetler.sort((a,c)=>a.ad.localeCompare(c.ad,'tr'));siraYaz();kaydet();ciz();bildir('Hizmetler ada göre sıralandı');
 }
 
 /* ---------- ekran: ayarlar ---------- */
@@ -1363,7 +1379,7 @@ function musteriKarti(mid){
 }
 /* ---------- işlem geçmişi (log) — veritabanı tutar, değiştirilemez / silinemez ---------- */
 const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',satis:'Tek seferlik işlem',firma:'Firma'};
-const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
+const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
 function logDeger(a,v){
   if(v===undefined||v===null||v==='')return '—';
   if(a==='durum')return DURUM[v]||v;
