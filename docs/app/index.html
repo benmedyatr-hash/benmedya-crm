@@ -53,6 +53,7 @@ a{color:var(--vurgu);text-decoration:none}
 .yan nav button{display:flex;align-items:center;gap:12px;width:100%;height:42px;padding:0 12px;border-radius:9px;color:var(--yan-yazi);font-weight:500;margin-bottom:2px;position:relative}
 .yan nav button:hover{background:#221f26;color:#fff}
 .yan nav button.aktif{background:var(--yan-aktif);color:#fff}
+.yan nav .ayrac{height:1px;background:rgba(255,255,255,.24);margin:10px 6px}
 .yan nav button.aktif::before{content:"";position:absolute;left:-14px;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--ana)}
 .yan nav .rozet{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--ana);color:var(--ana-yazi);font-size:11px;font-weight:700;display:grid;place-items:center}
 .yan .yan-alt{margin-top:auto}
@@ -687,12 +688,12 @@ function temaUygula(){
 }
 
 /* ---------- gezinme ---------- */
-const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevusuz:['Randevusuz','saat'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler','hizmet'],ayarlar:['Ayarlar','ayar']};
+const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler','hizmet'],ayarlar:['Ayarlar','ayar']};
 let ekran='bugun',seciliGun=BUGUN,aramaMetni='';
 function navCiz(){
   const n=acikGorevler().length,rs=randevusuzlar().seansli.length;
   const y=s=>`<button class="${s===ekran?'aktif':''}" onclick="git('${s}')">${I(EKRANLAR[s][1])}${EKRANLAR[s][0]}${s==='gorevler'&&n?`<span class="rozet">${n}</span>`:''}${s==='randevusuz'&&rs?`<span class="rozet">${rs}</span>`:''}</button>`;
-  document.getElementById('yanNav').innerHTML=['bugun','takvim','musteriler','randevusuz','tahsilat','gorevler','hizmetler'].map(y).join('');
+  document.getElementById('yanNav').innerHTML=['bugun','takvim','musteriler','|','randevulu','randevusuz','|','tahsilat','gorevler','hizmetler'].map(s=>s==='|'?'<div class="ayrac"></div>':y(s)).join('');
   document.getElementById('yanAlt').innerHTML=y('ayarlar')+`<button class="cikis-btn" onclick="menuKapat();cikis()">${I('cikis')}Çıkış yap</button>`;
   const m=(s,ad)=>`<button class="sekme ${s===ekran||(s==='bugun'&&false)?'aktif':''}" onclick="git('${s}')"><span class="kap">${I(EKRANLAR[s][1])}</span>${ad}${s==='gorevler'&&n?`<span class="nokta">${n}</span>`:''}</button>`;
   document.getElementById('mobilNav').innerHTML=m('bugun','Özet')+m('takvim','Takvim')+`<button class="orta-arti" onclick="yeniSecim()" aria-label="Yeni kayıt">${I('arti')}</button>`+m('musteriler','Müşteriler')+m('gorevler','Hatırlatıcı');
@@ -990,6 +991,23 @@ function randevuDavet(mid){
     :`Merhaba ${ilkAd(m.ad)}, sizi yeniden aramızda görmek isteriz. Size uygun gün ve saati yazarsanız randevunuzu oluşturalım. ${AYAR.firma}`;
   window.open(waLink(m.tel,metin),'_blank');
 }
+// randevulu müşteriler: ileri tarihli (bugün dahil) bekleyen randevusu olanlar, sıradaki randevuya göre
+function ekranRandevulu(){
+  const ileri=V.randevular.filter(r=>r.durum==='bekliyor'&&r.tarih>=BUGUN).sort((a,b)=>(a.tarih+a.saat).localeCompare(b.tarih+b.saat));
+  const ilk=new Map();ileri.forEach(r=>{if(!ilk.has(r.mid))ilk.set(r.mid,{r,adet:0});ilk.get(r.mid).adet++});
+  const l=[...ilk.values()];
+  return `<div class="panel">
+    <div class="panel-ust"><h2>${I('takvim')}Randevulu müşteriler</h2><span class="sayi">${l.length} kişi</span></div>
+    <div class="panel-ic">${l.length?l.map(({r,adet})=>{const m=M(r.mid),sb=seansBilgi(r);return `<div class="kisa">
+      <div class="avatar">${basHarf(m.ad)}</div>
+      <div class="orta" onclick="musteriKarti('${m.id}')"><div class="ad">${k(m.ad)}</div>
+        <div class="alt-yazi">${goreceli(r.tarih)} ${r.saat} · ${k(H(r.hid).ad)}${adet>1?' · +'+(adet-1)+' randevu daha':''}</div>
+        ${sb?`<div class="etiketler"><span class="etiket e-paket">${sb.no}. seans / ${sb.toplam}</span></div>`:''}</div>
+      <button class="btn btn-ince" onclick="randevuDetay('${r.id}')">${I('takvim')}Randevu</button>
+    </div>`}).join(''):'<div class="bos">İleri tarihli randevusu olan müşteri yok.</div>'}</div>
+  </div>
+  <p class="not" style="margin:12px 4px">Bugün ve sonrası için bekleyen randevusu olan müşteriler, en yakın randevuya göre sıralı.</p>`;
+}
 function ekranRandevusuz(){
   const{seansli,diger}=randevusuzlar();
   return `<div class="izgara">
@@ -1174,7 +1192,7 @@ function ciz(){
   document.getElementById('ustTarih').textContent=guzelTarih(BUGUN);
   document.getElementById('mBaslik').textContent=ad;
   document.getElementById('mTarih').textContent=gunAy(BUGUN)+', '+GUNLER[new Date().getDay()];
-  document.getElementById('icerik').innerHTML={bugun:ekranBugun,takvim:ekranTakvim,musteriler:ekranMusteriler,randevusuz:ekranRandevusuz,tahsilat:ekranTahsilat,gorevler:ekranGorevler,hizmetler:ekranHizmetler,ayarlar:ekranAyarlar}[ekran]();
+  document.getElementById('icerik').innerHTML={bugun:ekranBugun,takvim:ekranTakvim,musteriler:ekranMusteriler,randevulu:ekranRandevulu,randevusuz:ekranRandevusuz,tahsilat:ekranTahsilat,gorevler:ekranGorevler,hizmetler:ekranHizmetler,ayarlar:ekranAyarlar}[ekran]();
 }
 
 /* ---------- pencere yardımcıları ---------- */
