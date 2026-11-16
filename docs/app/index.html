@@ -14,6 +14,7 @@
 <link rel="apple-touch-icon" href="ikon-180.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="../ayar.js"></script>
+<script src="../sektorler.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -408,15 +409,7 @@ const RENKLER=[
   {ad:'Antrasit',ana:'#33363d',koyu:'#22252b',acik:'#eeeff1'}
 ];
 
-const SEKTORLER={
-  genel:{ad:'Genel / Diğer',ek:'Ek bilgi',uyari:'Önemli not',ornekEk:['','','','',''],hizmetler:[['Hizmet',60,1000],['Görüşme',30,500],['Kontrol',30,400]]},
-  guzellik:{ad:'Güzellik & Bakım',ek:'Cilt / saç tipi',uyari:'Alerji / dikkat',ornekEk:['Karma','Kuru','Yağlı','','Hassas'],hizmetler:[['Lazer Epilasyon',60,2500],['Cilt Bakımı',75,1500],['Kaş Laminasyon',45,900],['İpek Kirpik',90,1800],['Manikür',45,500],['Bölgesel İncelme',60,1200]]},
-  saglik:{ad:'Sağlık & Klinik',ek:'Şikâyet',uyari:'Alerji / kronik hastalık',ornekEk:['Bel ağrısı','Diz','Boyun','','Omuz'],hizmetler:[['Muayene',20,1500],['Kontrol',15,750],['Fizik tedavi seansı',45,1200],['Diyet görüşmesi',40,1000],['Online görüşme',30,900]]},
-  oto:{ad:'Oto Servis & Bakım',ek:'Plaka / araç',uyari:'Önemli not',ornekEk:['33 ABC 123 · Fiat Egea','06 KLM 45 · Renault Clio','33 TR 909 · Ford Focus','','34 NB 777 · VW Passat'],hizmetler:[['Periyodik bakım',120,4500],['Yağ değişimi',45,2200],['Lastik değişimi',30,600],['Arıza tespiti',60,1000],['Detaylı yıkama',90,1500]]},
-  teknik:{ad:'Teknik Servis & Usta',ek:'Cihaz / marka',uyari:'Önemli not',ornekEk:['Kombi · Demirdöküm','Klima · Arçelik','Beyaz eşya','','Kombi · Vaillant'],hizmetler:[['Periyodik bakım',60,1200],['Arıza onarımı',60,1500],['Keşif',30,0],['Montaj',120,2500]]},
-  egitim:{ad:'Eğitim & Kurs',ek:'Seviye / sınıf',uyari:'Önemli not',ornekEk:['8. sınıf','Lise 2','A2 İngilizce','','Üniversite'],hizmetler:[['Özel ders',60,800],['Grup dersi',90,500],['Deneme sınavı',120,300],['Etüt',60,400]]},
-  danismanlik:{ad:'Danışmanlık & Ofis',ek:'Firma / unvan',uyari:'Önemli not',ornekEk:['Kaya İnşaat','Serbest meslek','Demir Gıda Ltd.','','Arslan Tekstil'],hizmetler:[['Danışmanlık',60,2000],['Ön görüşme',30,0],['Evrak teslimi',15,0],['Aylık takip',45,1500]]}
-};
+const SEKTORLER=window.SEKTORLER; // ortak liste: ../sektorler.js
 
 const VARSAYILAN_AYAR={firma:'Firma Adı',sektor:'genel',renk:0,
   sablonHatirlat:'Merhaba {ad}, {gun} saat {saat} için {hizmet} randevunuzu hatırlatmak isteriz. İyi günler dileriz. {firma}',
@@ -552,6 +545,7 @@ async function basla(){
     AYAR={...VARSAYILAN_AYAR,...(f.ayar||{}),firma:f.ad};
     SNAP=anlik();AYAR_SNAP=JSON.stringify(ayarVeri());
     HAZIR=true;
+    sb.rpc('giris_kaydet').then(()=>{},()=>{});
     // ilk açılış: sektörün hazır hizmetlerini ekle
     if(!AYAR.kuruldu){if(!V.hizmetler.length)SK().hizmetler.forEach(x=>V.hizmetler.push({id:yeniId(),ad:x[0],sure:x[1],fiyat:x[2]}));AYAR.kuruldu=true;kaydet()}
     document.getElementById('hesapEposta').textContent=KULLANICI.email;
@@ -819,7 +813,7 @@ function ekranAyarlar(){
       <div class="panel-ust"><h2>${I('bina')}Firma bilgileri</h2></div>
       <div class="ayar-ic">
         <label>Firma adı</label><input id="aFirma" value="${k(AYAR.firma)}" maxlength="40">
-        <label>Sektör</label><select id="aSektor">${Object.entries(SEKTORLER).map(([a,s])=>`<option value="${a}" ${a===AYAR.sektor?'selected':''}>${s.ad}</option>`).join('')}</select>
+        <label>Sektör</label><select id="aSektor">${sektorSecenekleri(AYAR.sektor)}</select>
         <p class="ipucu">Sektör, müşteri kartındaki alan adlarını değiştirir (örn. "Plaka / araç", "Cilt tipi").</p>
         <label>Ana renk</label>
         <div class="renkler">${RENKLER.map((c,i)=>`<button class="renk ${i===AYAR.renk?'secili':''}" style="background:${c.ana}" title="${c.ad}" onclick="AYAR.renk=${i};kaydet();temaUygula();ciz()"></button>`).join('')}</div>
@@ -839,6 +833,7 @@ function ekranAyarlar(){
       <div class="panel">
         <button class="liste-btn" onclick="git('hizmetler')">${I('hizmet')}Hizmetler ve fiyatlar<span class="sag">${V.hizmetler.length} ${I('sag')}</span></button>
         <button class="liste-btn" onclick="disaAktar()">${I('indir')}Müşteri listesini Excel'e aktar<span class="sag">${I('sag')}</span></button>
+        <button class="liste-btn" onclick="islemGecmisi()">${I('saat')}İşlem geçmişi<span class="sag">${I('sag')}</span></button>
         <button class="liste-btn" onclick="sektorHizmetEkle(this)">${I('yenile')}Seçili sektörün hazır hizmetlerini ekle<span class="sag">${I('sag')}</span></button>
       </div>
       <div class="panel">
@@ -1006,7 +1001,53 @@ function musteriKarti(mid){
         <span style="display:flex;gap:6px;flex:none"><button class="btn btn-ikincil kucuk-sayi" aria-label="Seans azalt" ${p.kullanilan<=0?'disabled':''} onclick="seans('${p.id}',-1)">−</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Seans ekle" ${p.kullanilan>=p.toplam?'disabled':''} onclick="seans('${p.id}',1)">+</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Paketi sil" onclick="if(ikiKez(this,'Sil?'))paketSil('${p.id}')">${I('carpi')}</button></span>
       </div></div>`).join(''):'<div class="kutu bos" style="padding:16px">Paket yok.</div>'}
     <div class="bolum">Randevu geçmişi</div>
-    ${gecmis.length?`<div class="kutu">${gecmis.map(r=>`<div class="satir" style="cursor:pointer" onclick="randevuDetay('${r.id}')"><span>${kisaTarih(r.tarih)}, ${r.saat}</span><b>${k(H(r.hid).ad)} <span class="etiket e-${r.durum}" style="margin-left:6px">${DURUM[r.durum]}</span>${borc(r)?` <span class="etiket e-borc">${tl(borc(r))}</span>`:''}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz randevu yok.</div>'}`);
+    ${gecmis.length?`<div class="kutu">${gecmis.map(r=>`<div class="satir" style="cursor:pointer" onclick="randevuDetay('${r.id}')"><span>${kisaTarih(r.tarih)}, ${r.saat}</span><b>${k(H(r.hid).ad)} <span class="etiket e-${r.durum}" style="margin-left:6px">${DURUM[r.durum]}</span>${borc(r)?` <span class="etiket e-borc">${tl(borc(r))}</span>`:''}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz randevu yok.</div>'}
+    <button class="btn btn-ikincil btn-tam" style="margin-top:14px" onclick="islemGecmisi('${m.id}')">${I('saat')}Bu müşterinin işlem geçmişi</button>`);
+}
+/* ---------- işlem geçmişi (log) — veritabanı tutar, değiştirilemez / silinemez ---------- */
+const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',firma:'Firma'};
+const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı'};
+function logDeger(a,v){
+  if(v===undefined||v===null||v==='')return '—';
+  if(a==='durum')return DURUM[v]||v;
+  if(['odendi','bitti','hatirlatildi','paketli'].includes(a))return v?'evet':'hayır';
+  if(['ucret','kapora','fiyat','odenen'].includes(a))return tl(v);
+  if(a==='mid')return M(v).ad; if(a==='hid')return H(v).ad;
+  if(a==='sektor')return (SEKTORLER[v]||{}).ad||v;
+  if(a==='renk')return (RENKLER[v]||{}).ad||v;
+  if((a==='tarih'||a==='dogum')&&/^\d{4}-\d\d-\d\d$/.test(v))return kisaTarih(v);
+  if(a==='sure')return v+' dk';
+  const s=String(v);return s.length>40?s.slice(0,40)+'…':s;
+}
+function logCumle(l){
+  if(l.islem==='giris')return 'Uygulamayı açtı';
+  if(l.islem==='yonetim')return 'Yönetim: '+(l.ozet||'');
+  if(l.islem==='ayar')return 'Ayarları değiştirdi'+(l.degisen?' ('+l.degisen.split(',').map(a=>ALAN_AD[a]||a).join(', ')+')':'');
+  let s=(TUR_AD[l.tur]||l.tur)+' '+({ekledi:'eklendi',guncelledi:'güncellendi',sildi:'silindi'}[l.islem]||l.islem)+(l.ozet?': '+l.ozet:'');
+  if(l.islem==='guncelledi'&&l.degisen){
+    const d=l.degisen.split(',');
+    s+=' · '+d.slice(0,3).map(a=>(ALAN_AD[a]||a)+(l.onceki&&l.sonraki?': '+logDeger(a,l.onceki[a])+' → '+logDeger(a,l.sonraki[a]):'')).join(' · ')+(d.length>3?' · +'+(d.length-3)+' alan':'');
+  }
+  return s;
+}
+let LOGLAR=[],logFiltre=null;
+async function islemGecmisi(mid){
+  logFiltre=mid||null;LOGLAR=[];
+  ac(mid?'İşlem geçmişi · '+k(M(mid).ad):'İşlem geçmişi',`<div id="logListe" style="margin-top:14px"><div class="bos">Yükleniyor…</div></div>
+    <button class="btn btn-ikincil btn-tam" id="logDaha" style="margin-top:12px;display:none" onclick="logYukle()">Daha eski kayıtlar</button>
+    <p class="ipucu" style="margin-top:12px">Bu kayıtları sistem kendiliğinden tutar. Kimse değiştiremez ya da silemez.</p>`);
+  await logYukle();
+}
+async function logYukle(){
+  let q=sb.from('islem_log').select('id,zaman,eposta,islem,tur,kayit_id,ozet,degisen,onceki,sonraki').eq('firma_id',FIRMA.id).order('id',{ascending:false}).limit(50);
+  if(LOGLAR.length)q=q.lt('id',LOGLAR[LOGLAR.length-1].id);
+  if(logFiltre)q=q.or(`and(tur.eq.musteri,kayit_id.eq.${logFiltre}),sonraki->>mid.eq.${logFiltre},onceki->>mid.eq.${logFiltre}`);
+  const{data,error}=await q;
+  const kutu=document.getElementById('logListe');if(!kutu)return;
+  if(error){kutu.innerHTML=`<div class="uyari">${I('uyari')}<span>${k(HATA_TR(error.message))}</span></div>`;return}
+  LOGLAR.push(...data);
+  kutu.innerHTML=LOGLAR.length?`<div class="kutu">${LOGLAR.map(l=>`<div class="satir" style="flex-direction:column;align-items:flex-start;gap:3px"><b style="text-align:left;font-weight:500">${k(logCumle(l))}</b><span style="font-size:12px">${new Date(l.zaman).toLocaleString('tr-TR',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})} · ${k(l.eposta||'sistem')}</span></div>`).join('')}</div>`:'<div class="bos">Henüz kayıt yok.</div>';
+  const d=document.getElementById('logDaha');if(d)d.style.display=data.length<50?'none':'';
 }
 function seans(pid,n){const p=V.paketler.find(x=>x.id===pid);p.kullanilan=Math.max(0,Math.min(p.toplam,p.kullanilan+n));kaydet();ciz();musteriKarti(p.mid)}
 function paketSil(pid){const p=V.paketler.find(x=>x.id===pid);V.paketler=V.paketler.filter(x=>x.id!==pid);kaydet();ciz();musteriKarti(p.mid)}

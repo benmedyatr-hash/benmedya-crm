@@ -1,6 +1,6 @@
 // Firma uygulamasını "uygulama olarak kur" için. Veri önbelleğe alınmaz; önce ağ, olmazsa önbellek.
-const SURUM = 'crm-app-v1';
-const ISKELET = ['./', 'index.html', '../ayar.js', 'manifest.webmanifest', 'ikon-192.png'];
+const SURUM = 'crm-app-v2';
+const ISKELET = ['./', 'index.html', '../ayar.js', '../sektorler.js', 'manifest.webmanifest', 'ikon-192.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(SURUM).then(c => c.addAll(ISKELET)).then(() => self.skipWaiting()));

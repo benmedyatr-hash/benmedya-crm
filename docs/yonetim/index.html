@@ -14,6 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="CRM Yönetim">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="../ayar.js"></script>
+<script src="../sektorler.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -129,7 +130,7 @@ const ADRES=(window.CRM_AYAR&&CRM_AYAR.adres)||location.origin+location.pathname
 const sb=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:true,storageKey:'crm-yonetim',lock:(ad,sure,fn)=>fn()}});
 // Yeni kullanıcı açarken yöneticinin oturumu bozulmasın diye ayrı, hafızasız bağlantı
 const sbKayit=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'crm-kayit-gecici',lock:(ad,sure,fn)=>fn()}});
-const SEKTOR={genel:'Genel / Diğer',guzellik:'Güzellik & Bakım',saglik:'Sağlık & Klinik',oto:'Oto Servis & Bakım',teknik:'Teknik Servis & Usta',egitim:'Eğitim & Kurs',danismanlik:'Danışmanlık & Ofis'};
+const SEKTOR=Object.fromEntries(Object.entries(window.SEKTORLER).map(([a,x])=>[a,x.ad])); // ortak liste: ../sektorler.js
 const RENK=['Bordo','Lacivert','Yeşil','Mor','Turuncu','Antrasit'];
 let FIRMALAR=[],ARA='';
 const k=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -202,7 +203,7 @@ function bitisUzat(ay){const m=$('fB').value;const d=new Date(((m&&m>bugun())?m:
 function yeniFirma(){
   ac('Yeni firma',`
     <label>Firma adı *</label><input id="fA" autocomplete="off">
-    <div class="iki"><div><label>Sektör</label><select id="fS">${Object.entries(SEKTOR).map(([a,b])=>`<option value="${a}">${b}</option>`).join('')}</select></div>
+    <div class="iki"><div><label>Sektör</label><select id="fS">${sektorSecenekleri('genel')}</select></div>
     <div><label>Renk</label><select id="fR">${RENK.map((r,i)=>`<option value="${i}">${r}</option>`).join('')}</select></div></div>
     ${bitisAlani(tarihEkle(1))}
     <label>Not (yalnız siz görürsünüz)</label><input id="fN" placeholder="Örn. aylık 500 ₺, Mersin" autocomplete="off">
@@ -256,7 +257,19 @@ function firmaDetay(id){
     <div class="bolum">Kullanıcı ekle (çalışan / ikinci cihaz hesabı)</div>
     <div class="iki"><div><label>E-posta</label><input id="fE" type="email" autocomplete="off"></div><div><label>Şifre</label><input id="fP" value="${sifreUret()}" autocomplete="off"></div></div>
     <button class="btn btn-ikincil btn-tam" style="margin-top:12px" onclick="uyeEkle('${id}')">+ Kullanıcı ekle</button>
-    <p class="alt" style="margin-top:16px;white-space:normal">Açılış: ${trTarih(f.olusturma)} · Son işlem: ${f.son_islem?trTarih(f.son_islem):'—'} · ${f.musteri} müşteri, ${f.randevu} randevu</p>`);
+    <p class="alt" style="margin-top:16px;white-space:normal">Açılış: ${trTarih(f.olusturma)} · Son işlem: ${f.son_islem?trTarih(f.son_islem):'—'} · ${f.musteri} müşteri, ${f.randevu} randevu</p>
+    <div class="bolum">İşlem geçmişi (son 50)</div>
+    <div id="yLog"><p class="alt">Yükleniyor…</p></div>
+    <p class="alt" style="margin-top:8px;white-space:normal">Müşteri adları ve kayıt içerikleri gizlilik için burada gösterilmez. Kayıtlar silinemez.</p>`);
+  yLogYukle(id);
+}
+const Y_TUR={musteri:"müşteri",hizmet:"hizmet",randevu:"randevu",paket:"paket",gorev:"hatırlatıcı",firma:"firma"};
+const Y_ISLEM={ekledi:"ekledi",guncelledi:"güncelledi",sildi:"sildi",giris:"uygulamayı açtı",ayar:"ayarları değiştirdi",yonetim:"yönetim işlemi"};
+async function yLogYukle(id){
+  const{data,error}=await sb.rpc("yonetici_log",{p_firma:id,p_adet:50});
+  const el=$("yLog");if(!el)return;
+  if(error){el.innerHTML="<p class=\"alt\">"+k(HATA(error.message))+"</p>";return}
+  el.innerHTML=data.length?data.map(l=>"<div class=\"kul\" style=\"align-items:flex-start\"><span>"+k((["giris","ayar","yonetim"].includes(l.islem)?"":(Y_TUR[l.tur]||l.tur||"")+" ")+(Y_ISLEM[l.islem]||l.islem))+(l.degisen?" <span class=\"alt\">("+k(l.degisen)+")</span>":"")+"<div class=\"alt\">"+k(l.eposta||"sistem")+"</div></span><span class=\"alt\" style=\"flex:none\">"+new Date(l.zaman).toLocaleString("tr-TR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+"</span></div>").join(""):"<p class=\"alt\">Henüz kayıt yok.</p>";
 }
 async function firmaKaydet(id){
   const ad=$('fA').value.trim();if(!ad)return hata('Firma adı boş olamaz.');
