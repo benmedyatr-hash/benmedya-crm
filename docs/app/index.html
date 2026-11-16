@@ -237,6 +237,14 @@ main{padding:26px 32px 60px;max-width:1200px}
 .bolum{font-size:11.5px;font-weight:600;color:var(--cok-soluk);text-transform:uppercase;letter-spacing:.06em;margin:22px 0 8px;display:flex;justify-content:space-between;align-items:center;min-height:30px}
 .kutu{border:1px solid var(--cizgi);border-radius:12px;padding:2px 14px}
 .paket{border:1px solid var(--cizgi);border-radius:12px;padding:14px;margin-bottom:8px}
+.hsec{border:1px solid var(--cizgi);border-radius:12px;overflow:hidden;margin-top:6px}
+.hsec-satir{display:grid;grid-template-columns:minmax(0,1fr) 92px 92px;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid var(--cizgi)}
+.hsec-satir:first-child{border-top:0}
+.hsec-satir.secili{background:var(--ana-acik)}
+.hsec-ad{display:flex;align-items:center;gap:10px;margin:0;font-size:13.5px;font-weight:500;color:var(--yazi);cursor:pointer;min-width:0}
+.hsec-ad span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hsec-satir select,.hsec-satir input[type=number]{height:36px;padding:0 8px;font-size:13px;margin:0;min-width:0}
+.hsec-satir:not(.secili) select,.hsec-satir:not(.secili) .hsec-ode{opacity:.45}
 .ilerleme{height:7px;background:#efeff1;border-radius:7px;overflow:hidden;margin:10px 0 8px}
 .ilerleme div{height:100%;background:var(--ana);border-radius:7px}
 .uyari{display:flex;gap:8px;align-items:flex-start;background:var(--kirmizi-acik);color:var(--kirmizi);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:12px;font-weight:500}
@@ -675,12 +683,12 @@ function temaUygula(){
 }
 
 /* ---------- gezinme ---------- */
-const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler','hizmet'],ayarlar:['Ayarlar','ayar']};
+const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevusuz:['Randevusuz','saat'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler','hizmet'],ayarlar:['Ayarlar','ayar']};
 let ekran='bugun',seciliGun=BUGUN,aramaMetni='';
 function navCiz(){
-  const n=acikGorevler().length;
-  const y=s=>`<button class="${s===ekran?'aktif':''}" onclick="git('${s}')">${I(EKRANLAR[s][1])}${EKRANLAR[s][0]}${s==='gorevler'&&n?`<span class="rozet">${n}</span>`:''}</button>`;
-  document.getElementById('yanNav').innerHTML=['bugun','takvim','musteriler','tahsilat','gorevler','hizmetler'].map(y).join('');
+  const n=acikGorevler().length,rs=randevusuzlar().seansli.length;
+  const y=s=>`<button class="${s===ekran?'aktif':''}" onclick="git('${s}')">${I(EKRANLAR[s][1])}${EKRANLAR[s][0]}${s==='gorevler'&&n?`<span class="rozet">${n}</span>`:''}${s==='randevusuz'&&rs?`<span class="rozet">${rs}</span>`:''}</button>`;
+  document.getElementById('yanNav').innerHTML=['bugun','takvim','musteriler','randevusuz','tahsilat','gorevler','hizmetler'].map(y).join('');
   document.getElementById('yanAlt').innerHTML=y('ayarlar')+`<button class="cikis-btn" onclick="menuKapat();cikis()">${I('cikis')}Çıkış yap</button>`;
   const m=(s,ad)=>`<button class="sekme ${s===ekran||(s==='bugun'&&false)?'aktif':''}" onclick="git('${s}')"><span class="kap">${I(EKRANLAR[s][1])}</span>${ad}${s==='gorevler'&&n?`<span class="nokta">${n}</span>`:''}</button>`;
   document.getElementById('mobilNav').innerHTML=m('bugun','Özet')+m('takvim','Takvim')+`<button class="orta-arti" onclick="yeniSecim()" aria-label="Yeni kayıt">${I('arti')}</button>`+m('musteriler','Müşteriler')+m('gorevler','Hatırlatıcı');
@@ -702,7 +710,7 @@ function waLink(tel,mesaj){
   return 'https://wa.me/'+n+'?text='+encodeURIComponent(mesaj);
 }
 function sablon(t,v){return String(t||'').replace(/\{(\w+)\}/g,(_,x)=>v[x]??'').replace(/\s+/g,' ').trim()}
-const randevuAlanlari=r=>{const m=M(r.mid);return{ad:ilkAd(m.ad),adsoyad:m.ad,gun:r.tarih===BUGUN?'bugün':r.tarih===gunEkle(BUGUN,1)?'yarın':gunAy(r.tarih),saat:r.saat,hizmet:H(r.hid).ad,firma:AYAR.firma,not:r.not||'',adres:m.adres||'',ucret:r.paketli?'':tl(r.ucret),kalan:tl(borc(r))}};
+const randevuAlanlari=r=>{const m=M(r.mid);const sb=seansBilgi(r);return{ad:ilkAd(m.ad),adsoyad:m.ad,gun:r.tarih===BUGUN?'bugün':r.tarih===gunEkle(BUGUN,1)?'yarın':gunAy(r.tarih),saat:r.saat,hizmet:H(r.hid).ad+(sb?' ('+sb.no+'. seans)':''),seans:sb?sb.no+'/'+sb.toplam:'',firma:AYAR.firma,not:r.not||'',adres:m.adres||'',ucret:r.paketli?'':tl(r.ucret),kalan:tl(borc(r))}};
 // randevu notu → düzgün cümle (baş harf büyük, sonda nokta)
 const notCumle=t=>{t=String(t||'').replace(/\s+/g,' ').trim();if(!t)return '';t=t[0].toLocaleUpperCase('tr')+t.slice(1);return /[.!?…]$/.test(t)?t:t+'.'};
 // hatırlatma = şablon + randevu notu (şablonda {not} yoksa not ilk cümleden sonra eklenir)
@@ -768,7 +776,7 @@ function waBos(mid){window.open(waLink(M(mid).tel,'Merhaba '+ilkAd(M(mid).ad)+',
 function etiketler(r){
   const m=M(r.mid);let e='';
   if(r.durum!=='bekliyor')e+=`<span class="etiket e-${r.durum}">${DURUM[r.durum]}</span>`;
-  if(r.paketli){const p=V.paketler.find(x=>x.mid===r.mid&&x.hid===r.hid);if(p)e+=`<span class="etiket e-paket">Paket ${p.kullanilan}/${p.toplam}</span>`}
+  if(r.paketli){const sb=seansBilgi(r);e+=`<span class="etiket e-paket">${sb?sb.no+'. seans / '+sb.toplam:'Paket'}</span>`}
   if(r.kapora&&r.durum==='bekliyor')e+=`<span class="etiket e-kapora">Kapora ${tl(r.kapora)}</span>`;
   if(borc(r))e+=`<span class="etiket e-borc">Ödenmedi ${tl(borc(r))}</span>`;
   if(r.hatirlatildi&&r.durum==='bekliyor')e+=`<span class="etiket e-bekliyor">${I('tamam').replace('class="i"','class="i" style="width:12px;height:12px"')}Hatırlatıldı</span>`;
@@ -793,9 +801,36 @@ function randevuSatir(r){
 }
 function durum(rid,d){
   const r=R(rid);r.durum=d;
-  if(d==='geldi'&&r.paketli){const p=acikPaket(r.mid,r.hid);if(p){p.kullanilan++;r.paketId=p.id}}
+  if(d==='geldi'&&r.paketli){const p=acikPaket(r.mid,r.hid);if(p){p.kullanilan++;r.paketId=p.id;r.seansNo=p.kullanilan}}
   kaydet();ciz();
+  if(randevusuzlar().seansli.some(o=>o.m.id===r.mid))bildir(M(r.mid).ad+': seansı devam ediyor, ileri randevusu yok → Randevusuz listesinde');
 }
+/* ---------- seanslar: müşterinin aldığı hizmet (paket) + randevuların seans sırası ---------- */
+const SEANS_MAX=12;
+const planliSeanslar=(mid,hid,haric)=>V.randevular.filter(x=>x.mid===mid&&x.hid===hid&&x.paketli&&x.durum==='bekliyor'&&x.id!==haric).sort((a,b)=>(a.tarih+a.saat).localeCompare(b.tarih+b.saat));
+function seansBilgi(r){
+  if(!r.paketli)return null;
+  if(r.durum==='geldi'){const p=V.paketler.find(x=>x.id===r.paketId);return p&&r.seansNo?{no:r.seansNo,toplam:p.toplam}:null}
+  if(r.durum!=='bekliyor')return null;
+  const p=acikPaket(r.mid,r.hid)||V.paketler.find(x=>x.mid===r.mid&&x.hid===r.hid);if(!p)return null;
+  const i=planliSeanslar(r.mid,r.hid).findIndex(x=>x.id===r.id);
+  return{no:p.kullanilan+i+1,toplam:p.toplam};
+}
+// müşteri formu ve "Hizmet ekle": birden fazla hizmet + her birine seans sayısı (en fazla 12)
+function hizmetSecici(){
+  if(!V.hizmetler.length)return '<p class="ipucu">Önce Hizmetler ekranından hizmet ekleyin.</p>';
+  const isaretle=`this.closest('.hsec-satir').classList.add('secili');this.closest('.hsec-satir').querySelector('input[type=checkbox]').checked=true`;
+  return `<div class="hsec">${V.hizmetler.map(h=>`<div class="hsec-satir" data-hid="${h.id}">
+      <label class="hsec-ad"><input type="checkbox" onchange="this.closest('.hsec-satir').classList.toggle('secili',this.checked)"><span>${k(h.ad)}</span></label>
+      <select class="hsec-seans" onchange="${isaretle}">${Array.from({length:SEANS_MAX},(_,i)=>`<option value="${i+1}">${i+1} seans</option>`).join('')}</select>
+      <input class="hsec-ode" type="number" min="0" inputmode="numeric" placeholder="Ödenen ₺" oninput="${isaretle}">
+    </div>`).join('')}</div>
+    <p class="ipucu">Birden fazla hizmet seçebilirsiniz; her hizmete en fazla ${SEANS_MAX} seans. Randevular seans sırasıyla ilerler (1. seans, 2. seans…). Ödenen tutar tahsilata yazılır, boş bırakılabilir.</p>`;
+}
+const hizmetSecimiOku=()=>[...document.querySelectorAll('.hsec-satir')].filter(s=>s.querySelector('input[type=checkbox]').checked)
+  .map(s=>({hid:s.dataset.hid,toplam:Math.min(SEANS_MAX,Math.max(1,Number(s.querySelector('.hsec-seans').value)||1)),odenen:Math.max(0,Number(s.querySelector('.hsec-ode').value||0))}));
+function paketleriEkle(mid,l){l.forEach(x=>V.paketler.push({id:yeniId(),mid,hid:x.hid,toplam:x.toplam,kullanilan:0,odenen:x.odenen,tarih:BUGUN}))}
+const siradakiHizmet=mid=>{const p=V.paketler.find(x=>x.mid===mid&&x.kullanilan+planliSeanslar(mid,x.hid).length<x.toplam);return p?p.hid:''};
 
 /* ---------- ekran: genel bakış ---------- */
 function yaklasanDogumGunleri(){const o=[];for(let i=0;i<7;i++){const t=gunEkle(BUGUN,i).slice(5);V.musteriler.forEach(m=>{if(m.dogum&&m.dogum.slice(5)===t)o.push({m,i})})}return o}
@@ -828,6 +863,10 @@ function ekranBugun(){
       <div class="panel-ic">${bugun.length?bugun.map(randevuSatir).join(''):`<div class="bos">Bugün için randevu yok.<br><br><button class="btn btn-ince" onclick="randevuFormu()">${I('arti')}Randevu ekle</button></div>`}</div>
     </div>
     <div class="sutun">
+      ${(()=>{const rs=randevusuzlar().seansli;return `<div class="panel">
+        <div class="panel-ust"><h2>${I('uyari')}Randevusu olmayan seanslı</h2><button class="btn btn-ince" style="height:32px;padding:0 10px;font-size:12.5px" onclick="git('randevusuz')">Tümü (${rs.length})</button></div>
+        <div class="panel-ic">${rs.length?rs.slice(0,4).map(randevusuzSatir).join(''):'<div class="bos">Seansı devam eden herkesin randevusu var.</div>'}</div>
+      </div>`})()}
       <div class="panel">
         <div class="panel-ust"><h2>${I('gorev')}Hatırlatıcılar</h2><button class="btn btn-ince" style="height:32px;padding:0 10px;font-size:12.5px" onclick="gorevFormu()">${I('arti')}Ekle</button></div>
         <div class="panel-ic">${gorevler.length?gorevler.slice(0,5).map(gorevSatir).join(''):'<div class="bos">Bekleyen hatırlatıcı yok.</div>'}</div>
@@ -920,6 +959,53 @@ function listeYenile(){
   const list=V.musteriler.filter(m=>!q||m.ad.toLocaleLowerCase('tr').includes(q)||(qr.length>=3&&String(m.tel).replace(/\D/g,'').includes(qr))||String(m.ek||'').toLocaleLowerCase('tr').includes(q)).sort((a,b)=>a.ad.localeCompare(b.ad,'tr'));
   document.getElementById('musListe').innerHTML=musteriSatirlari(list);
   document.querySelector('.panel-ust .sayi').textContent=(q?list.length+' / ':'')+V.musteriler.length+' kişi';
+}
+
+/* ---------- ekran: randevusuz müşteriler — seansı bitmeyen kimse boşta kalmasın ---------- */
+// ileri tarihli (bugün dahil) bekleyen randevusu olmayan müşteriler; gelmedi / işaretlenmemiş eski randevu da buraya düşer
+function randevusuzlar(){
+  const ileri=new Set(V.randevular.filter(r=>r.durum==='bekliyor'&&r.tarih>=BUGUN).map(r=>r.mid));
+  const seansli=[],diger=[];
+  V.musteriler.forEach(m=>{
+    if(ileri.has(m.id))return;
+    const acik=V.paketler.filter(p=>p.mid===m.id&&p.kullanilan<p.toplam);
+    const son=V.randevular.filter(r=>r.mid===m.id).sort((a,b)=>(b.tarih+b.saat).localeCompare(a.tarih+a.saat))[0]||null;
+    (acik.length?seansli:diger).push({m,acik,son});
+  });
+  const sira=(a,b)=>(a.son?a.son.tarih:'0').localeCompare(b.son?b.son.tarih:'0');
+  return{seansli:seansli.sort(sira),diger:diger.sort(sira)};
+}
+function randevusuzSatir(o){
+  const{m,acik,son}=o,p=acik[0];
+  const durum=son?(son.durum==='gelmedi'?`<span class="etiket e-gelmedi">Gelmedi · ${gunAy(son.tarih)}</span>`:son.durum==='bekliyor'?`<span class="etiket e-uyari">İşaretlenmedi · ${gunAy(son.tarih)}</span>`:`<span class="etiket e-geldi">Son geliş · ${gunAy(son.tarih)}</span>`):'<span class="etiket e-bekliyor">Hiç randevu yok</span>';
+  return `<div class="kisa">
+    <div class="avatar">${basHarf(m.ad)}</div>
+    <div class="orta" onclick="musteriKarti('${m.id}')"><div class="ad">${k(m.ad)}</div>
+      <div class="alt-yazi">${acik.length?acik.map(x=>`${k(H(x.hid).ad)} ${x.kullanilan}/${x.toplam}`).join(' · '):k(m.tel)||'Telefon yok'}</div>
+      <div class="etiketler">${durum}</div></div>
+    <button class="btn btn-wa" style="width:40px" title="WhatsApp'tan randevu için yaz" ${m.tel?'':'disabled'} onclick="randevuDavet('${m.id}')">${I('mesaj')}</button>
+    <button class="btn btn-ana" onclick="randevuFormu(null,null,'${m.id}',null,'${p?p.hid:''}')">${I('takvim')}Randevu</button>
+  </div>`;
+}
+function randevuDavet(mid){
+  const m=M(mid),p=V.paketler.find(x=>x.mid===mid&&x.kullanilan<x.toplam);
+  const metin=p?`Merhaba ${ilkAd(m.ad)}, ${H(p.hid).ad} için ${p.toplam-p.kullanilan} seansınız bulunmaktadır. Size uygun gün ve saati yazarsanız bir sonraki randevunuzu oluşturalım. ${AYAR.firma}`
+    :`Merhaba ${ilkAd(m.ad)}, sizi yeniden aramızda görmek isteriz. Size uygun gün ve saati yazarsanız randevunuzu oluşturalım. ${AYAR.firma}`;
+  window.open(waLink(m.tel,metin),'_blank');
+}
+function ekranRandevusuz(){
+  const{seansli,diger}=randevusuzlar();
+  return `<div class="izgara">
+    <div class="panel">
+      <div class="panel-ust"><h2>${I('uyari')}Seansı devam eden, randevusu yok</h2><span class="sayi">${seansli.length} kişi</span></div>
+      <div class="panel-ic">${seansli.length?seansli.map(randevusuzSatir).join(''):'<div class="bos">Seansı devam eden herkesin randevusu var.</div>'}</div>
+    </div>
+    <div class="panel">
+      <div class="panel-ust"><h2>${I('kisiler')}Diğer randevusuz müşteriler</h2><span class="sayi">${diger.length} kişi</span></div>
+      <div class="panel-ic">${diger.length?diger.map(randevusuzSatir).join(''):'<div class="bos">Randevusuz müşteri yok.</div>'}</div>
+    </div>
+  </div>
+  <p class="not" style="margin:12px 4px">İleri tarihli randevusu olmayan her müşteri burada görünür. "Gelmedi" işaretlenen ya da durumu işaretlenmeden geçmiş randevular da buraya düşer; seans eksilmez, yeni randevu verilene kadar listede kalır.</p>`;
 }
 
 /* ---------- ekran: tahsilat ---------- */
@@ -1077,7 +1163,7 @@ function ciz(){
   document.getElementById('ustTarih').textContent=guzelTarih(BUGUN);
   document.getElementById('mBaslik').textContent=ad;
   document.getElementById('mTarih').textContent=gunAy(BUGUN)+', '+GUNLER[new Date().getDay()];
-  document.getElementById('icerik').innerHTML={bugun:ekranBugun,takvim:ekranTakvim,musteriler:ekranMusteriler,tahsilat:ekranTahsilat,gorevler:ekranGorevler,hizmetler:ekranHizmetler,ayarlar:ekranAyarlar}[ekran]();
+  document.getElementById('icerik').innerHTML={bugun:ekranBugun,takvim:ekranTakvim,musteriler:ekranMusteriler,randevusuz:ekranRandevusuz,tahsilat:ekranTahsilat,gorevler:ekranGorevler,hizmetler:ekranHizmetler,ayarlar:ekranAyarlar}[ekran]();
 }
 
 /* ---------- pencere yardımcıları ---------- */
@@ -1131,8 +1217,9 @@ function satisSil(sid){V.satislar=V.satislar.filter(x=>x.id!==sid);kaydet();kapa
 function satisHatirlat(sid){const x=S_(sid),m=M(x.mid);window.open(waLink(m.tel,'Merhaba '+ilkAd(m.ad)+', '+gunAy(x.tarih)+' tarihli '+x.aciklama+' işleminizden kalan '+tl(x.tutar)+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma),'_blank')}
 
 /* ---------- randevu ---------- */
-function randevuFormu(rid,tarih,mid,saat){
-  const r=rid?R(rid):{mid:mid||'',hid:'',tarih:tarih||(ekran==='takvim'?seciliGun:BUGUN),saat:saat||'10:00',sure:'',ucret:'',kapora:'',not:''};
+function randevuFormu(rid,tarih,mid,saat,hid){
+  if(!rid&&mid&&hid===undefined)hid=siradakiHizmet(mid);
+  const r=rid?R(rid):{mid:mid||'',hid:hid||'',tarih:tarih||(ekran==='takvim'?seciliGun:BUGUN),saat:saat||'10:00',sure:'',ucret:'',kapora:'',not:''};
   ac(rid?'Randevuyu düzenle':'Yeni randevu',`
     <label>Müşteri</label>
     <select id="fMus"><option value="">Seçin</option>${V.musteriler.slice().sort((a,b)=>a.ad.localeCompare(b.ad,'tr')).map(m=>`<option value="${m.id}" ${m.id===r.mid?'selected':''}>${k(m.ad)}</option>`).join('')}<option value="__yeni">+ Yeni müşteri ekle</option></select>
@@ -1151,8 +1238,13 @@ function randevuFormu(rid,tarih,mid,saat){
   const kontrol=()=>{
     const m=deger('fMus'),h=deger('fHiz');
     document.getElementById('yeniMus').style.display=m==='__yeni'?'grid':'none';
-    const p=m&&h?acikPaket(m,h):null;paketVar=!!p||(rid&&r.paketli&&r.hid===h&&r.mid===m);
-    document.getElementById('paketBilgi').innerHTML=p?`<div class="bilgi">Paketten düşülecek: ${p.kullanilan}/${p.toplam} seans kullanıldı, ${p.toplam-p.kullanilan} kaldı. Ücret alınmaz.</div>`:'';
+    const p=m&&h?acikPaket(m,h):null,ayni=rid&&r.paketli&&r.hid===h&&r.mid===m;
+    const planli=p?planliSeanslar(m,h,rid).length:0,bos=p?p.toplam-p.kullanilan-planli:0;
+    paketVar=(!!p&&bos>0)||!!ayni;
+    const no=ayni&&seansBilgi(r)?seansBilgi(r).no:p?p.kullanilan+planli+1:0;
+    document.getElementById('paketBilgi').innerHTML=paketVar&&p
+      ?`<div class="bilgi">Bu randevu <b>${no}. seans</b> (${p.toplam} seanstan ${p.kullanilan} yapıldı${planli?`, ${planli} randevu planlı`:''}). Ücret alınmaz.</div>`
+      :p?`<div class="uyari">${I('uyari')}<span>Bu hizmetin ${p.toplam} seansının hepsine randevu verilmiş. Bu randevu ücretli sayılır; gerekirse müşteri kartından yeni seans ekleyin.</span></div>`:'';
     document.getElementById('fUcr').disabled=paketVar;if(paketVar)document.getElementById('fUcr').value=0;
     const t=deger('fTar'),s=deger('fSaat'),su=Number(deger('fSure')||0),bs=s?dakika(s):0;
     const c=V.randevular.find(x=>x.id!==rid&&x.tarih===t&&x.durum!=='gelmedi'&&bs<dakika(x.saat)+Number(x.sure)&&dakika(x.saat)<bs+su);
@@ -1166,7 +1258,7 @@ function randevuFormu(rid,tarih,mid,saat){
     kontrol()};
   document.getElementById('fMus').onchange=()=>{kontrol();if(deger('fMus')==='__yeni')document.getElementById('fYAd').focus()};
   ['fTar','fSaat','fSure'].forEach(i=>document.getElementById(i).addEventListener('input',kontrol));
-  kontrol();
+  if(!rid&&r.hid)document.getElementById('fHiz').onchange();else kontrol();
 }
 function randevuKaydet(rid){
   let mid=deger('fMus');const paketli=document.getElementById('fMus').dataset.paket==='1';
@@ -1194,6 +1286,7 @@ function randevuDetay(rid){
       <div class="satir"><span>Tarih</span><b>${guzelTarih(r.tarih)}</b></div>
       <div class="satir"><span>Saat</span><b>${r.saat} – ${bitis(r.saat,r.sure)} (${r.sure} dk)</b></div>
       <div class="satir"><span>Ücret</span><b>${r.paketli?'Paketten':tl(r.ucret)}</b></div>
+      ${seansBilgi(r)?`<div class="satir"><span>Seans</span><b>${seansBilgi(r).no}. seans / ${seansBilgi(r).toplam}</b></div>`:''}
       ${r.kapora?`<div class="satir"><span>Kapora</span><b>${tl(r.kapora)}</b></div>`:''}
       <div class="satir"><span>Durum</span><b><span class="etiket e-${r.durum}">${DURUM[r.durum]}</span></b></div>
       ${r.durum==='geldi'&&!r.paketli?`<div class="satir"><span>Ödeme</span><b>${r.odendi?'<span class="etiket e-odendi">Ödendi</span>':`<span class="etiket e-borc">${tl(b)} bekliyor</span>`}</b></div>`:''}
@@ -1205,10 +1298,21 @@ function randevuDetay(rid){
       :`<button class="btn btn-ikincil" onclick="durumGeriAl('${r.id}')">Durumu geri al</button><button class="btn btn-ikincil" onclick="randevuFormu(null,null,'${m.id}')">${I('arti')}Yeni randevu</button>`}
       <button class="btn btn-ikincil" onclick="randevuFormu('${r.id}')">${I('kalem')}Düzenle</button>
     </div>
+    ${musteriGecmisOzet(m.id,r.id)}
     <button class="btn btn-sil btn-tam" style="margin-top:8px" onclick="if(ikiKez(this,'Silmek için tekrar basın'))randevuSil('${r.id}')">Randevuyu sil</button>`);
 }
+// randevu kartında: müşteri tekrar geldiğinde daha önce aldığı hizmetler bir bakışta
+function musteriGecmisOzet(mid,haricRid){
+  const p=V.paketler.filter(x=>x.mid===mid).map(x=>`<div class="satir"><span>${k(H(x.hid).ad)}</span><b>${x.kullanilan}/${x.toplam} seans${x.kullanilan>=x.toplam?' <span class="etiket e-odendi">Tamamlandı</span>':''}</b></div>`);
+  const g=V.randevular.filter(x=>x.mid===mid&&x.id!==haricRid&&x.durum==='geldi').sort((a,b)=>(b.tarih+b.saat).localeCompare(a.tarih+a.saat)).slice(0,5)
+    .map(x=>`<div class="satir" style="cursor:pointer" onclick="randevuDetay('${x.id}')"><span>${kisaTarih(x.tarih)}</span><b>${k(H(x.hid).ad)}${x.seansNo?' · '+x.seansNo+'. seans':''}</b></div>`);
+  const s=V.satislar.filter(x=>x.mid===mid).sort((a,b)=>b.tarih.localeCompare(a.tarih)).slice(0,3).map(x=>`<div class="satir"><span>${kisaTarih(x.tarih)}</span><b>${k(x.aciklama)}</b></div>`);
+  if(!p.length&&!g.length&&!s.length)return '';
+  return `<div class="bolum">Daha önce aldığı hizmetler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="musteriKarti('${mid}')">Kartı aç</button></div>
+    <div class="kutu">${p.join('')}${g.join('')}${s.join('')}</div>`;
+}
 function odemeDegis(rid){const r=R(rid);r.odendi=!r.odendi;if(r.odendi)r.odemeTarihi=BUGUN;else delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
-function durumGeriAl(rid){const r=R(rid);if(r.paketId){const p=V.paketler.find(x=>x.id===r.paketId);if(p&&p.kullanilan>0)p.kullanilan--;delete r.paketId}r.durum='bekliyor';r.odendi=false;delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
+function durumGeriAl(rid){const r=R(rid);if(r.paketId){const p=V.paketler.find(x=>x.id===r.paketId);if(p&&p.kullanilan>0)p.kullanilan--;delete r.paketId;delete r.seansNo}r.durum='bekliyor';r.odendi=false;delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
 function randevuSil(rid){const r=R(rid);if(r.paketId&&r.durum==='geldi'){const p=V.paketler.find(x=>x.id===r.paketId);if(p&&p.kullanilan>0)p.kullanilan--}V.randevular=V.randevular.filter(x=>x.id!==rid);kaydet();kapat();ciz();bildir('Randevu silindi')}
 
 /* ---------- müşteri ---------- */
@@ -1241,14 +1345,16 @@ function musteriKarti(mid){
     </div>
     <div class="bolum">Hatırlatıcılar<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="gorevFormu(null,'${m.id}')">${I('arti')}Ekle</button></div>
     ${gorevler.length?`<div class="kutu">${gorevler.map(gorevSatir).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Açık hatırlatıcı yok.</div>'}
-    <div class="bolum">Paketler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="paketFormu('${m.id}')">${I('arti')}Paket ekle</button></div>
-    ${paketler.length?paketler.map(p=>`<div class="paket">
-      <div style="display:flex;justify-content:space-between;gap:10px;font-weight:600"><span>${k(H(p.hid).ad)}</span><span style="color:var(--vurgu);flex:none">${p.kullanilan}/${p.toplam}</span></div>
+    <div class="bolum">Aldığı hizmetler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="paketFormu('${m.id}')">${I('arti')}Hizmet ekle</button></div>
+    ${paketler.length?paketler.slice().sort((a,b)=>(a.kullanilan>=a.toplam)-(b.kullanilan>=b.toplam)||(b.tarih||'').localeCompare(a.tarih||'')).map(p=>{
+      const kalan=p.toplam-p.kullanilan,planli=planliSeanslar(p.mid,p.hid).length,bitti=kalan<=0,verilebilir=kalan-planli>0;
+      return `<div class="paket">
+      <div style="display:flex;justify-content:space-between;gap:10px;font-weight:600"><span>${k(H(p.hid).ad)}${bitti?' <span class="etiket e-odendi" style="margin-left:4px">Tamamlandı</span>':''}</span><span style="color:var(--vurgu);flex:none">${p.kullanilan}/${p.toplam} seans</span></div>
       <div class="ilerleme"><div style="width:${Math.round(p.kullanilan/p.toplam*100)}%"></div></div>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <span class="not">${p.toplam-p.kullanilan>0?(p.toplam-p.kullanilan)+' seans kaldı':'Paket tamamlandı'} · Ödenen ${tl(p.odenen)}</span>
-        <span style="display:flex;gap:6px;flex:none"><button class="btn btn-ikincil kucuk-sayi" aria-label="Seans azalt" ${p.kullanilan<=0?'disabled':''} onclick="seans('${p.id}',-1)">−</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Seans ekle" ${p.kullanilan>=p.toplam?'disabled':''} onclick="seans('${p.id}',1)">+</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Paketi sil" onclick="if(ikiKez(this,'Sil?'))paketSil('${p.id}')">${I('carpi')}</button></span>
-      </div></div>`).join(''):'<div class="kutu bos" style="padding:16px">Paket yok.</div>'}
+        <span class="not">${bitti?'Tüm seanslar yapıldı':kalan+' seans kaldı'}${planli?' · '+planli+' randevu planlı':''}${p.tarih?' · '+kisaTarih(p.tarih):''} · Ödenen ${tl(p.odenen)}</span>
+        <span style="display:flex;gap:6px;flex:none"><button class="btn btn-ince" style="height:32px;padding:0 10px;font-size:12px;${verilebilir?'':'visibility:hidden'}" onclick="randevuFormu(null,null,'${p.mid}',null,'${p.hid}')">${I('takvim')}Randevu</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Seans azalt" ${p.kullanilan<=0?'disabled':''} onclick="seans('${p.id}',-1)">−</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Seans ekle" ${p.kullanilan>=p.toplam?'disabled':''} onclick="seans('${p.id}',1)">+</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Sil" onclick="if(ikiKez(this,'Sil?'))paketSil('${p.id}')">${I('carpi')}</button></span>
+      </div></div>`}).join(''):'<div class="kutu bos" style="padding:16px">Henüz hizmet eklenmedi.</div>'}
     <div class="bolum">Tek seferlik işlemler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="satisFormu(null,'${m.id}')">${I('arti')}Ekle</button></div>
     ${satislar.length?`<div class="kutu">${satislar.map(x=>`<div class="satir" style="cursor:pointer" onclick="satisFormu('${x.id}')"><span>${kisaTarih(x.tarih)}</span><b>${k(x.aciklama)} · ${tl(x.tutar)}${x.odendi?'':` <span class="etiket e-borc">Ödenmedi</span>`}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Tek seferlik işlem yok.</div>'}
     <div class="bolum">Randevu geçmişi</div>
@@ -1257,7 +1363,7 @@ function musteriKarti(mid){
 }
 /* ---------- işlem geçmişi (log) — veritabanı tutar, değiştirilemez / silinemez ---------- */
 const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',satis:'Tek seferlik işlem',firma:'Firma'};
-const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
+const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
 function logDeger(a,v){
   if(v===undefined||v===null||v==='')return '—';
   if(a==='durum')return DURUM[v]||v;
@@ -1314,6 +1420,7 @@ function musteriFormu(mid){
     <div class="iki"><div><label>${k(S.ek)}</label><input id="mEk" value="${k(m.ek)}"></div><div><label>Nereden geldi</label><select id="mKay">${KAYNAKLAR.map(c=>`<option ${c===m.kaynak?'selected':''} value="${c}">${c||'Seçin'}</option>`).join('')}</select></div></div>
     <label>${k(S.uyari)}</label><input id="mUy" value="${k(m.uyari)}" placeholder="Varsa yazın, kartta kırmızı görünür">
     <label>Not</label><textarea id="mNot">${k(m.not)}</textarea>
+    ${mid?'':`<label>Aldığı hizmetler (isteğe bağlı)</label>${hizmetSecici()}`}
     <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="musteriKaydet('${mid||''}')">Kaydet</button>
     ${mid?'':`<button class="btn btn-ince btn-tam btn-buyuk" style="margin-top:8px" onclick="musteriKaydet('',true)">${I('takvim')}Kaydet ve randevu ver</button>`}
     ${mid?`<button class="btn btn-sil btn-tam" style="margin-top:8px" onclick="if(ikiKez(this,'Tüm randevuları da silinir. Tekrar basın'))musteriSil('${mid}')">Müşteriyi sil</button>`:''}`);
@@ -1326,26 +1433,27 @@ function musteriKaydet(mid,randevuVer){
   if(tn&&tn.length<10)return hata('Telefon numarası eksik görünüyor.');
   const ayni=tn&&V.musteriler.find(x=>x.id!==mid&&String(x.tel).replace(/\D/g,'').slice(-10)===tn.slice(-10));
   if(ayni&&!document.getElementById('mTel').dataset.onay){document.getElementById('mTel').dataset.onay='1';return hata('Bu numara '+ayni.ad+' adına kayıtlı. Yine de kaydetmek için tekrar Kaydet\'e basın.')}
-  if(mid)Object.assign(V.musteriler.find(x=>x.id===mid),v);else{mid=yeniId();V.musteriler.push({id:mid,...v})}
-  kaydet();ciz();if(randevuVer)randevuFormu(null,null,mid);else musteriKarti(mid);bildir('Müşteri kaydedildi');
+  const secilen=mid?[]:hizmetSecimiOku();
+  if(mid)Object.assign(V.musteriler.find(x=>x.id===mid),v);else{mid=yeniId();V.musteriler.push({id:mid,...v});paketleriEkle(mid,secilen)}
+  kaydet();ciz();if(randevuVer)randevuFormu(null,null,mid,null,secilen[0]?.hid);else musteriKarti(mid);bildir('Müşteri kaydedildi'+(secilen.length?', '+secilen.length+' hizmet eklendi':''));
 }
 function musteriSil(mid){
   V.musteriler=V.musteriler.filter(x=>x.id!==mid);V.randevular=V.randevular.filter(x=>x.mid!==mid);V.paketler=V.paketler.filter(x=>x.mid!==mid);V.gorevler=V.gorevler.filter(x=>x.mid!==mid);V.satislar=V.satislar.filter(x=>x.mid!==mid);
   kaydet();kapat();ciz();bildir('Müşteri silindi');
 }
 function paketFormu(mid){
-  ac('Yeni paket',`
-    <p class="not" style="margin-top:14px">${k(M(mid).ad)} için çok seanslı / çok seferli paket</p>
-    <label>Hizmet</label><select id="pHiz">${V.hizmetler.map(h=>`<option value="${h.id}">${k(h.ad)}</option>`).join('')}</select>
-    <div class="iki"><div><label>Seans / sefer sayısı</label><input type="number" min="1" id="pTop" value="8" inputmode="numeric"></div><div><label>Ödenen (₺)</label><input type="number" min="0" id="pOde" inputmode="numeric"></div></div>
-    <label>Daha önce kullanılan</label><input type="number" min="0" id="pKul" value="0" inputmode="numeric">
-    <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="paketKaydet('${mid}')">Kaydet</button>`);
+  ac('Hizmet ekle',`
+    <p class="not" style="margin-top:14px">${k(M(mid).ad)} için aldığı hizmetleri ve seans sayısını seçin</p>
+    ${hizmetSecici()}
+    <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="paketKaydet('${mid}')">Kaydet</button>
+    <button class="btn btn-ince btn-tam btn-buyuk" style="margin-top:8px" onclick="paketKaydet('${mid}',true)">${I('takvim')}Kaydet ve randevu ver</button>`);
 }
-function paketKaydet(mid){
-  if(!V.hizmetler.length)return hata('Önce bir hizmet ekleyin.');
-  const toplam=Math.max(1,Math.round(Number(deger('pTop')||1)));
-  V.paketler.push({id:yeniId(),mid,hid:deger('pHiz'),toplam,kullanilan:Math.min(toplam,Math.max(0,Math.round(Number(deger('pKul')||0)))),odenen:Number(deger('pOde')||0),tarih:BUGUN});
-  kaydet();ciz();musteriKarti(mid);bildir('Paket eklendi');
+function paketKaydet(mid,randevuVer){
+  const l=hizmetSecimiOku();
+  if(!l.length)return hata('En az bir hizmet seçin.');
+  paketleriEkle(mid,l);kaydet();ciz();
+  if(randevuVer)randevuFormu(null,null,mid,null,l[0].hid);else musteriKarti(mid);
+  bildir(l.length+' hizmet eklendi');
 }
 
 /* ---------- hatırlatıcı ---------- */
