@@ -1483,6 +1483,9 @@ function randevuFormu(rid,tarih,mid,saat,hid){
     <div class="iki"><div><label>Süre (dk)</label><input type="number" min="5" step="5" id="fSure" value="${r.sure}" inputmode="numeric"></div><div><label>Ücret (₺)</label><input type="number" min="0" id="fUcr" value="${r.ucret===''?'':r.ucret}" inputmode="numeric"></div></div>
     <label>Alınan kapora (₺)</label><input type="number" min="0" id="fKap" value="${r.kapora||''}" inputmode="numeric" placeholder="Yoksa boş bırakın">
     <div id="cakisma"></div>
+    ${rid?'':`<div class="iki"><div><label>Randevu sayısı</label><select id="fAdet">${Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1} randevu</option>`).join('')}</select></div>
+      <div id="fAralikKap" style="visibility:hidden"><label>Aralık</label><select id="fAralik"><option value="7">Her hafta</option><option value="14">2 haftada bir</option><option value="21">3 haftada bir</option><option value="28">4 haftada bir</option><option value="30">Her ay (30 gün)</option></select></div></div>
+    <div id="tekrarListe"></div>`}
     <label>Not</label><textarea id="fNot">${k(r.not)}</textarea>
     <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="randevuKaydet('${rid||''}')">Kaydet</button>`);
   let paketVar=false;
@@ -1501,6 +1504,22 @@ function randevuFormu(rid,tarih,mid,saat,hid){
     const c=V.randevular.find(x=>x.id!==rid&&x.tarih===t&&x.durum!=='gelmedi'&&bs<dakika(x.saat)+Number(x.sure)&&dakika(x.saat)<bs+su);
     document.getElementById('cakisma').innerHTML=c?`<div class="uyari">${I('uyari')}<span>Bu saatte ${k(M(c.mid).ad)} ile randevunuz var (${c.saat}–${bitis(c.saat,c.sure)}). Yine de kaydedebilirsiniz.</span></div>`:'';
     document.getElementById('fMus').dataset.paket=paketVar?'1':'';
+    document.getElementById('fMus').dataset.bos=p&&paketVar?bos:0;
+    // tekrarlı randevu: oluşacak tarihlerin önizlemesi
+    const adetEl=document.getElementById('fAdet');
+    if(adetEl){
+      const n=Number(adetEl.value),ar=Number(deger('fAralik')||7);
+      document.getElementById('fAralikKap').style.visibility=n>1?'visible':'hidden';
+      let html='';
+      if(n>1&&t&&s){
+        html=`<label>Oluşacak randevular</label><div class="kutu">${Array.from({length:n},(_,i)=>{
+          const tt=gunEkle(t,i*ar),cc=V.randevular.find(x=>x.tarih===tt&&x.durum!=='gelmedi'&&bs<dakika(x.saat)+Number(x.sure)&&dakika(x.saat)<bs+su);
+          const sy=p&&paketVar?(i<bos?(p.tekIslem?'Tek işlem':(p.kullanilan+planli+1+i)+'. seans'):'<span class="etiket e-borc">ücretli</span>'):'';
+          return `<div class="satir"><span>${i+1}. ${guzelTarih(tt)} · ${s}</span><b>${sy}${cc?` <span class="etiket e-uyari">Dolu: ${k(M(cc.mid).ad)}</span>`:''}</b></div>`}).join('')}</div>
+          ${p&&paketVar&&n>bos?`<p class="ipucu">Hizmette ${bos} seans boş; fazla ${n-bos} randevu ücretli sayılır.</p>`:''}`;
+      }
+      document.getElementById('tekrarListe').innerHTML=html;
+    }
   };
   document.getElementById('fHiz').onchange=()=>{
     const y=deger('fHiz')==='__yeni';document.getElementById('yeniHiz').style.display=y?'block':'none';
@@ -1509,6 +1528,7 @@ function randevuFormu(rid,tarih,mid,saat,hid){
     kontrol()};
   document.getElementById('fMus').onchange=()=>{kontrol();if(deger('fMus')==='__yeni')document.getElementById('fYAd').focus()};
   ['fTar','fSaat','fSure'].forEach(i=>document.getElementById(i).addEventListener('input',kontrol));
+  ['fAdet','fAralik'].forEach(i=>{const e=document.getElementById(i);if(e)e.addEventListener('change',kontrol)});
   if(!rid&&r.hid)document.getElementById('fHiz').onchange();else kontrol();
 }
 function randevuKaydet(rid){
@@ -1522,8 +1542,13 @@ function randevuKaydet(rid){
   if(hid==='__yeni'){const ad=deger('fYHAd'),var_=V.hizmetler.find(h=>h.ad.toLocaleLowerCase('tr')===ad.toLocaleLowerCase('tr'));if(var_)hid=var_.id;else{hid=yeniId();const u=deger('fUcr');V.hizmetler.push({id:hid,ad,fiyat:paketli||u===''?'':Math.max(0,Number(u)||0)})}}
   const veri={mid,hid,tarih:deger('fTar'),saat:deger('fSaat'),sure:Math.max(5,Number(deger('fSure')||H(hid).sure||30)),ucret:paketli?0:Number(deger('fUcr')||0),kapora:Number(deger('fKap')||0),not:deger('fNot'),paketli};
   veri.kaporaTarihi=veri.kapora?((rid&&R(rid).kaporaTarihi)||BUGUN):null;
-  if(rid)Object.assign(R(rid),veri);else V.randevular.push({id:yeniId(),durum:'bekliyor',odendi:false,...veri});
-  kaydet();kapat();if(ekran==='takvim')seciliGun=veri.tarih;ciz();bildir(rid?'Randevu güncellendi':'Randevu eklendi');
+  const adet=rid?1:Math.min(12,Math.max(1,Number(deger('fAdet')||1))),aralik=Number(deger('fAralik')||7),bos=Number(document.getElementById('fMus').dataset.bos||0);
+  if(rid)Object.assign(R(rid),veri);
+  else for(let i=0;i<adet;i++){
+    const pk=paketli&&(adet===1||i<bos),fiyat=paketli?(H(hid).fiyat||0):Number(deger('fUcr')||0);
+    V.randevular.push({id:yeniId(),durum:'bekliyor',odendi:false,...veri,tarih:gunEkle(veri.tarih,i*aralik),paketli:pk,ucret:pk?0:fiyat,kapora:i?0:veri.kapora,kaporaTarihi:i?null:veri.kaporaTarihi});
+  }
+  kaydet();kapat();if(ekran==='takvim')seciliGun=veri.tarih;ciz();bildir(rid?'Randevu güncellendi':adet>1?adet+' randevu eklendi':'Randevu eklendi');
 }
 function randevuDetay(rid){
   const r=R(rid),m=M(r.mid),h=H(r.hid),b=borc(r);
@@ -1607,9 +1632,12 @@ function musteriKarti(mid){
       <div class="satir"><span>Doğum günü</span><b>${m.dogum?kisaTarih(m.dogum):'—'}</b></div>
       <div class="satir"><span>Adres</span><b>${m.adres?`<a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(m.adres)}">${k(m.adres)}</a>`:'—'}</b></div>
       <div class="satir"><span>${k(S.ek)}</span><b>${k(m.ek)||'—'}</b></div>
-      <div class="satir"><span>Toplam harcama</span><b>${tl(harcama)}</b></div>
+      <div class="satir"><span>Toplam alınan</span><b style="color:var(--yesil)">${tl(tahsilatOlaylari().filter(x=>x.mid===mid).reduce((s,x)=>s+x.tutar,0))}</b></div>
+      ${b?`<div class="satir"><span>Kalan borç</span><b style="color:var(--sari)">${tl(b)}</b></div>`:''}
       ${m.not?`<div class="satir"><span>Not</span><b>${k(m.not)}</b></div>`:''}
     </div>
+    ${(()=>{const th=tahsilatOlaylari().filter(x=>x.mid===mid);return `<div class="bolum">Alınan tahsilatlar<span style="font-weight:600;color:var(--yesil);text-transform:none;letter-spacing:0">${th.length?tl(th.reduce((s,x)=>s+x.tutar,0)):''}</span></div>
+    ${th.length?`<div class="kutu">${th.map(x=>`<div class="satir" style="align-items:flex-start"><span style="white-space:nowrap">${x.tarih?kisaTarih(x.tarih):'—'}</span><b style="text-align:right">${x.seans!=null?`<span class="etiket e-paket" style="margin-right:6px">${x.seans?x.seans+'. seansta':'Seans öncesi'}</span>`:''}${k(x.hizmet?x.not+' · '+x.hizmet:x.aciklama)} · <span style="color:var(--yesil)">${tl(x.tutar)}</span></b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz tahsilat yok.</div>'}`})()}
     <div class="bolum">Hatırlatıcılar<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="gorevFormu(null,'${m.id}')">${I('arti')}Ekle</button></div>
     ${gorevler.length?`<div class="kutu">${gorevler.map(gorevSatir).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Açık hatırlatıcı yok.</div>'}
     <div class="bolum">Aldığı hizmetler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="paketFormu('${m.id}')">${I('arti')}Seans ekle</button></div>
@@ -1626,8 +1654,6 @@ function musteriKarti(mid){
       </div></div>`}).join(''):'<div class="kutu bos" style="padding:16px">Henüz hizmet eklenmedi.</div>'}
     <div class="bolum">Tek seferlik işlemler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="satisFormu(null,'${m.id}')">${I('arti')}Ekle</button></div>
     ${satislar.length?`<div class="kutu">${satislar.map(x=>`<div class="satir" style="cursor:pointer" onclick="satisFormu('${x.id}')"><span>${kisaTarih(x.tarih)}</span><b>${k(x.aciklama)} · ${tl(x.tutar)}${x.odendi?'':` <span class="etiket e-borc">Ödenmedi</span>`}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Tek seferlik işlem yok.</div>'}
-    ${(()=>{const th=tahsilatOlaylari().filter(x=>x.mid===mid);return `<div class="bolum">Alınan tahsilatlar<span style="font-weight:600;color:var(--yesil);text-transform:none;letter-spacing:0">${th.length?tl(th.reduce((s,x)=>s+x.tutar,0)):''}</span></div>
-    ${th.length?`<div class="kutu">${th.map(x=>`<div class="satir" style="align-items:flex-start"><span style="white-space:nowrap">${x.tarih?kisaTarih(x.tarih):'—'}</span><b style="text-align:right">${x.seans!=null?`<span class="etiket e-paket" style="margin-right:6px">${x.seans?x.seans+'. seansta':'Seans öncesi'}</span>`:''}${k(x.hizmet?x.not+' · '+x.hizmet:x.aciklama)} · <span style="color:var(--yesil)">${tl(x.tutar)}</span></b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz tahsilat yok.</div>'}`})()}
     <div class="bolum">Randevu geçmişi</div>
     ${gecmis.length?`<div class="kutu">${gecmis.map(r=>`<div class="satir" style="cursor:pointer" onclick="randevuDetay('${r.id}')"><span>${kisaTarih(r.tarih)}, ${r.saat}</span><b>${k(H(r.hid).ad)} <span class="etiket e-${r.durum}" style="margin-left:6px">${DURUM[r.durum]}</span>${borc(r)?` <span class="etiket e-borc">${tl(borc(r))}</span>`:''}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz randevu yok.</div>'}
     <button class="btn btn-ikincil btn-tam" style="margin-top:14px" onclick="islemGecmisi('${m.id}')">${I('saat')}Bu müşterinin işlem geçmişi</button>`);
