@@ -75,6 +75,10 @@ main{max-width:1200px;margin:0 auto;padding:24px 28px 60px}
 .giris form{width:100%;max-width:380px;padding:32px 26px}
 .giris h1{font-size:21px;margin-top:16px}.giris p{color:var(--soluk);font-size:13.5px;margin-top:4px}
 .gizli{display:none!important}
+.goz-kap{position:relative;display:block}
+.goz-kap input{padding-right:48px}
+.goz{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:40px;height:38px;display:grid;place-items:center;color:#a1a1aa;border-radius:8px;background:none;border:0;cursor:pointer}
+.goz:hover{color:#1a1a1e}
 @media(max-width:800px){
   header{padding:0 16px}main{padding:16px 14px 50px}
   .ozet{grid-template-columns:1fr 1fr;gap:10px}
@@ -277,6 +281,20 @@ async function uyeCikar(ep,id){
   if(error)return hata(HATA(error.message));
   await yukle();firmaDetay(id);
 }
+/* ---------- şifre göster/gizle (göz simgesi) — sonradan açılan pencerelerdeki şifre kutularına da eklenir ---------- */
+const GOZ_AC='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const GOZ_KAPA='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.9 8.4 2 12 2 12s3.5 7 10 7a9.6 9.6 0 0 0 5.4-1.6"/></svg>';
+function gozEkle(){
+  document.querySelectorAll('input[type=password]:not([data-goz])').forEach(i=>{
+    i.dataset.goz='1';
+    const s=document.createElement('span');s.className='goz-kap';i.parentNode.insertBefore(s,i);s.appendChild(i);
+    const b=document.createElement('button');b.type='button';b.className='goz';b.tabIndex=-1;b.setAttribute('aria-label','Şifreyi göster');b.innerHTML=GOZ_AC;
+    b.addEventListener('mousedown',e=>e.preventDefault());
+    b.onclick=()=>{const gizli=i.type==='password';i.type=gizli?'text':'password';b.innerHTML=gizli?GOZ_KAPA:GOZ_AC;b.setAttribute('aria-label',gizli?'Şifreyi gizle':'Şifreyi göster')};
+    s.appendChild(b);
+  });
+}
+new MutationObserver(gozEkle).observe(document.body,{childList:true,subtree:true});gozEkle();
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 basla();
 </script>
