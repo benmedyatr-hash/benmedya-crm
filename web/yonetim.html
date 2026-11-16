@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>CRM Yönetim</title>
+<link rel="icon" href="ikon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="ayar.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f6f7;--kart:#fff;--yazi:#1a1a1e;--soluk:#6e6e78;--cok-soluk:#a1a1aa;--cizgi:#e9e9ec;--ana:#19171c;--vurgu:#9b3d63;--vurgu-acik:#f7edf1;
+  --yesil:#1f7a4d;--yesil-acik:#e7f4ed;--kirmizi:#b9382f;--kirmizi-acik:#fbeceb;--sari:#8a6100;--sari-acik:#fdf4dc}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--yazi);font-family:Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font:inherit;font-size:16px;width:100%;height:44px;padding:0 12px;border:1px solid var(--cizgi);border-radius:10px;background:#fff;color:var(--yazi);outline:none}
+@media(min-width:801px){input,select,textarea{font-size:14px;height:42px}}
+textarea{height:auto;min-height:70px;padding:10px 12px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--vurgu);box-shadow:0 0 0 3px var(--vurgu-acik)}
+label{display:block;font-size:12px;font-weight:600;color:var(--soluk);margin:14px 0 6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:40px;padding:0 16px;border-radius:10px;font-weight:600;font-size:13.5px;white-space:nowrap}
+.btn-ana{background:var(--ana);color:#fff}.btn-ana:hover{background:#000}
+.btn-ikincil{background:#fff;border:1px solid var(--cizgi)}.btn-ikincil:hover{background:#fafafb}
+.btn-sil{background:var(--kirmizi-acik);color:var(--kirmizi)}
+.btn-yesil{background:var(--yesil-acik);color:var(--yesil)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn-tam{width:100%}.btn-buyuk{height:48px;font-size:15px}
+.kucuk{height:32px;padding:0 10px;font-size:12.5px}
+
+header{height:68px;background:var(--kart);border-bottom:1px solid var(--cizgi);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:5}
+.marka{display:flex;align-items:center;gap:12px}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--ana);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+.marka b{display:block;font-size:15px}.marka small{font-size:11px;color:var(--soluk);letter-spacing:.18em;font-weight:700}
+main{max-width:1200px;margin:0 auto;padding:24px 28px 60px}
+.ozet{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kart{background:var(--kart);border:1px solid var(--cizgi);border-radius:14px;box-shadow:0 1px 6px rgba(20,20,30,.04)}
+.ozet .kart{padding:16px 18px;height:96px;display:flex;flex-direction:column;justify-content:space-between}
+.ozet span{font-size:12.5px;color:var(--soluk);font-weight:500}.ozet b{font-size:26px;letter-spacing:-.02em}
+.ust{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 18px;height:60px;border-bottom:1px solid var(--cizgi)}
+.ust h2{font-size:15px}
+.ara{max-width:280px}
+.bas,.satir{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.6fr) 110px 120px 110px 90px;gap:14px;align-items:center;padding:0 18px}
+.bas{height:40px;font-size:11.5px;font-weight:600;color:var(--cok-soluk);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--cizgi);background:#fcfcfd}
+.satir{min-height:68px;border-bottom:1px solid var(--cizgi);cursor:pointer}
+.satir:hover{background:#fafafb}.satir:last-child{border-bottom:0}
+.ad{font-weight:600}.alt{font-size:12.5px;color:var(--soluk);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.etk{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.e-aktif{background:var(--yesil-acik);color:var(--yesil)}.e-dur{background:var(--kirmizi-acik);color:var(--kirmizi)}.e-yakin{background:var(--sari-acik);color:var(--sari)}.e-gri{background:#f1f1f3;color:var(--soluk)}
+.bos{text-align:center;color:var(--cok-soluk);padding:40px 10px}
+.perde{position:fixed;inset:0;background:rgba(20,16,22,.45);display:none;z-index:30;align-items:center;justify-content:center;padding:20px}
+.perde.acik{display:flex}
+.pencere{background:var(--kart);width:100%;max-width:520px;max-height:90vh;overflow:auto;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.pencere-ust{display:flex;justify-content:space-between;align-items:center;padding:0 22px;height:60px;border-bottom:1px solid var(--cizgi);position:sticky;top:0;background:#fff}
+.pencere-ust h3{font-size:16px}.pencere-ic{padding:4px 22px 24px}
+.kapat{width:36px;height:36px;border-radius:9px;font-size:22px;color:var(--soluk)}
+.iki{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.uyari{background:var(--kirmizi-acik);color:var(--kirmizi);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:12px;font-weight:500}
+.bilgi{background:var(--yesil-acik);color:var(--yesil);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:12px;font-weight:500;line-height:1.6}
+.kimlik{background:#f6f6f7;border:1px dashed #d6d6db;border-radius:12px;padding:14px;font-family:Consolas,monospace;font-size:13.5px;line-height:1.8;margin-top:12px;white-space:pre-wrap;word-break:break-all}
+.hizli{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.bolum{font-size:11.5px;font-weight:600;color:var(--cok-soluk);text-transform:uppercase;letter-spacing:.06em;margin:22px 0 8px}
+.kul{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--cizgi)}
+.kul:last-child{border-bottom:0}
+.giris{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.giris form{width:100%;max-width:380px;padding:32px 26px}
+.giris h1{font-size:21px;margin-top:16px}.giris p{color:var(--soluk);font-size:13.5px;margin-top:4px}
+.gizli{display:none!important}
+@media(max-width:800px){
+  header{padding:0 16px}main{padding:16px 14px 50px}
+  .ozet{grid-template-columns:1fr 1fr;gap:10px}
+  .bas{display:none}
+  .satir{grid-template-columns:minmax(0,1fr) auto;padding:12px 14px}
+  .satir .gizle{display:none}
+  .ara{max-width:none}
+  .ust{height:auto;padding:12px 14px;flex-wrap:wrap}
+  .perde{align-items:flex-end;padding:0}.pencere{border-radius:18px 18px 0 0;max-height:92vh}
+}
+</style>
+</head>
+<body>
+<div class="giris" id="girisEkran">
+  <form class="kart" onsubmit="giris(event)">
+    <div class="logo" style="width:48px;height:48px">CRM</div>
+    <h1>Yönetim paneli</h1><p>Yalnız yönetici hesabıyla girilir.</p>
+    <label>E-posta</label><input id="ge" type="email" autocomplete="username" required>
+    <label>Şifre</label><input id="gs" type="password" autocomplete="current-password" required>
+    <div id="gm"></div>
+    <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" id="gb">Giriş yap</button>
+  </form>
+</div>
+
+<div id="panel" class="gizli">
+  <header>
+    <div class="marka"><div class="logo">CRM</div><div><b>Yönetim paneli</b><small>FİRMALAR</small></div></div>
+    <div style="display:flex;gap:8px"><button class="btn btn-ana" onclick="yeniFirma()">+ Yeni firma</button><button class="btn btn-ikincil" onclick="cikis()">Çıkış</button></div>
+  </header>
+  <main>
+    <div class="ozet">
+      <div class="kart"><span>Toplam firma</span><b id="oT">–</b></div>
+      <div class="kart"><span>Aktif</span><b id="oA">–</b></div>
+      <div class="kart"><span>7 gün içinde bitecek</span><b id="oY">–</b></div>
+      <div class="kart"><span>Durdurulmuş / süresi bitmiş</span><b id="oD">–</b></div>
+    </div>
+    <div class="kart">
+      <div class="ust"><h2>Firmalar</h2><input class="ara" placeholder="Firma ya da e-posta ara" oninput="ARA=this.value;listeCiz()"></div>
+      <div class="bas"><div>Firma</div><div>Kullanıcı</div><div>Durum</div><div>Bitiş</div><div>Son giriş</div><div>Kayıt</div></div>
+      <div id="liste"><div class="bos">Yükleniyor…</div></div>
+    </div>
+  </main>
+</div>
+<div class="perde" id="perde" onclick="if(event.target===this)kapat()"><div class="pencere" id="pencere"></div></div>
+
+<script>
+const ADRES=(window.CRM_AYAR&&CRM_AYAR.adres)||location.origin+location.pathname.replace(/yonetim\.html$/,'');
+const sb=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:true,storageKey:'crm-yonetim'}});
+// Yeni kullanıcı açarken yöneticinin oturumu bozulmasın diye ayrı, hafızasız bağlantı
+const sbKayit=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'crm-kayit-gecici'}});
+const SEKTOR={genel:'Genel / Diğer',guzellik:'Güzellik & Bakım',saglik:'Sağlık & Klinik',oto:'Oto Servis & Bakım',teknik:'Teknik Servis & Usta',egitim:'Eğitim & Kurs',danismanlik:'Danışmanlık & Ofis'};
+const RENK=['Bordo','Lacivert','Yeşil','Mor','Turuncu','Antrasit'];
+let FIRMALAR=[],ARA='';
+const k=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=i=>document.getElementById(i);
+const bugun=()=>new Date().toISOString().slice(0,10);
+function tarihEkle(ay){const d=new Date();d.setMonth(d.getMonth()+ay);return d.toISOString().slice(0,10)}
+function trTarih(s){if(!s)return '—';const d=new Date(s.length===10?s+'T12:00':s);return d.toLocaleDateString('tr-TR',{day:'numeric',month:'short',year:'numeric'})}
+function gunFark(s){return Math.round((new Date(s+'T12:00')-new Date(bugun()+'T12:00'))/864e5)}
+function sifreUret(){const h='abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';const a=new Uint32Array(10);crypto.getRandomValues(a);return Array.from(a,x=>h[x%h.length]).join('')}
+const HATA=m=>/Invalid login/i.test(m)?'E-posta ya da şifre hatalı.':/already registered|already been registered/i.test(m)?'Bu e-posta zaten kayıtlı.':/Password should be/i.test(m)?'Şifre en az 6 karakter olmalı.':/rate limit/i.test(m)?'Çok fazla deneme, birkaç dakika bekleyin.':/Yetki yok/i.test(m)?'Bu hesabın yönetici yetkisi yok.':m;
+
+async function giris(e){
+  e.preventDefault();$('gb').disabled=true;$('gm').innerHTML='';
+  const{error}=await sb.auth.signInWithPassword({email:$('ge').value.trim(),password:$('gs').value});
+  $('gb').disabled=false;
+  if(error){$('gm').innerHTML=`<div class="uyari">${k(HATA(error.message))}</div>`;return}
+  basla();
+}
+async function cikis(){await sb.auth.signOut();location.reload()}
+async function basla(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session)return;
+  const{data:y}=await sb.from('yoneticiler').select('user_id').eq('user_id',session.user.id).maybeSingle();
+  if(!y){$('gm').innerHTML='<div class="uyari">Bu hesabın yönetici yetkisi yok.</div>';await sb.auth.signOut();return}
+  $('girisEkran').classList.add('gizli');$('panel').classList.remove('gizli');
+  yukle();
+}
+async function yukle(){
+  const{data,error}=await sb.rpc('yonetici_liste');
+  if(error){$('liste').innerHTML=`<div class="bos">${k(HATA(error.message))}</div>`;return}
+  FIRMALAR=data||[];
+  const b=bugun();
+  const kapali=f=>f.durum!=='aktif'||(f.bitis&&f.bitis<b);
+  $('oT').textContent=FIRMALAR.length;
+  $('oA').textContent=FIRMALAR.filter(f=>!kapali(f)).length;
+  $('oY').textContent=FIRMALAR.filter(f=>!kapali(f)&&f.bitis&&gunFark(f.bitis)<=7).length;
+  $('oD').textContent=FIRMALAR.filter(kapali).length;
+  listeCiz();
+}
+function durumEtk(f){
+  if(f.durum!=='aktif')return '<span class="etk e-dur">Durduruldu</span>';
+  if(f.bitis&&f.bitis<bugun())return '<span class="etk e-dur">Süresi bitti</span>';
+  if(f.bitis&&gunFark(f.bitis)<=7)return `<span class="etk e-yakin">${gunFark(f.bitis)} gün kaldı</span>`;
+  return '<span class="etk e-aktif">Aktif</span>';
+}
+function listeCiz(){
+  const q=ARA.trim().toLocaleLowerCase('tr');
+  const l=FIRMALAR.filter(f=>!q||f.ad.toLocaleLowerCase('tr').includes(q)||String(f.kullanicilar||'').toLowerCase().includes(q));
+  $('liste').innerHTML=l.map(f=>`<div class="satir" onclick="firmaDetay('${f.id}')">
+    <div><div class="ad">${k(f.ad)}</div><div class="alt">${k(SEKTOR[f.sektor]||'Genel')}${f.notlar?' · '+k(f.notlar):''}</div></div>
+    <div class="alt gizle">${k(f.kullanicilar)||'<span style="color:var(--kirmizi)">Kullanıcı yok</span>'}</div>
+    <div>${durumEtk(f)}</div>
+    <div class="alt gizle">${f.bitis?trTarih(f.bitis):'Süresiz'}</div>
+    <div class="alt gizle">${f.son_giris?trTarih(f.son_giris):'Hiç girmedi'}</div>
+    <div class="alt gizle">${f.musteri} müş. · ${f.randevu} rnd.</div>
+  </div>`).join('')||`<div class="bos">${FIRMALAR.length?'Sonuç yok.':'Henüz firma yok. Sağ üstten "+ Yeni firma" ile açın.'}</div>`;
+}
+
+function ac(b,ic){$('pencere').innerHTML=`<div class="pencere-ust"><h3>${b}</h3><button class="kapat" onclick="kapat()">×</button></div><div class="pencere-ic" id="pIc">${ic}</div>`;$('perde').classList.add('acik')}
+function kapat(){$('perde').classList.remove('acik')}
+function hata(m){let e=$('fh');if(!e){e=document.createElement('div');e.id='fh';e.className='uyari';$('pIc').appendChild(e)}e.textContent=m;e.scrollIntoView({block:'nearest',behavior:'smooth'})}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')kapat()});
+
+function bitisAlani(deger){
+  return `<label>Abonelik bitişi</label><input type="date" id="fB" value="${deger||''}">
+    <div class="hizli">${[['+1 ay',1],['+3 ay',3],['+6 ay',6],['+1 yıl',12]].map(x=>`<button type="button" class="btn btn-ikincil kucuk" onclick="$('fB').value=bitisUzat(${x[1]})">${x[0]}</button>`).join('')}<button type="button" class="btn btn-ikincil kucuk" onclick="$('fB').value=''">Süresiz</button></div>`;
+}
+function bitisUzat(ay){const m=$('fB').value;const d=new Date(((m&&m>bugun())?m:bugun())+'T12:00');d.setMonth(d.getMonth()+ay);return d.toISOString().slice(0,10)}
+
+function yeniFirma(){
+  ac('Yeni firma',`
+    <label>Firma adı *</label><input id="fA" autocomplete="off">
+    <div class="iki"><div><label>Sektör</label><select id="fS">${Object.entries(SEKTOR).map(([a,b])=>`<option value="${a}">${b}</option>`).join('')}</select></div>
+    <div><label>Renk</label><select id="fR">${RENK.map((r,i)=>`<option value="${i}">${r}</option>`).join('')}</select></div></div>
+    ${bitisAlani(tarihEkle(1))}
+    <label>Not (yalnız siz görürsünüz)</label><input id="fN" placeholder="Örn. aylık 500 ₺, Mersin" autocomplete="off">
+    <div class="bolum">Firmanın giriş bilgisi</div>
+    <label>E-posta *</label><input id="fE" type="email" autocomplete="off" placeholder="firmanın e-postası">
+    <label>Şifre *</label><div style="display:flex;gap:6px"><input id="fP" value="${sifreUret()}" autocomplete="off"><button type="button" class="btn btn-ikincil" onclick="$('fP').value=sifreUret()">Yeni</button></div>
+    <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:20px" id="fK" onclick="firmaAc()">Firmayı aç</button>`);
+  setTimeout(()=>$('fA').focus(),50);
+}
+async function kullaniciOlustur(eposta,sifre){
+  const{data,error}=await sbKayit.auth.signUp({email:eposta,password:sifre});
+  if(error&&!/already/i.test(error.message))throw new Error(HATA(error.message));
+  if(!error&&data.user&&!data.session)throw new Error('Kullanıcı oluştu ama e-posta onayı bekliyor. Supabase > Authentication > Sign In / Providers > "Confirm email" kapatılmalı.');
+  await sbKayit.auth.signOut().catch(()=>{});
+  return !error; // false = zaten vardı
+}
+async function firmaAc(){
+  const ad=$('fA').value.trim(),ep=$('fE').value.trim().toLowerCase(),pw=$('fP').value;
+  if(!ad)return hata('Firma adı yazın.');
+  if(!/^\S+@\S+\.\S+$/.test(ep))return hata('Geçerli bir e-posta yazın.');
+  if(pw.length<8)return hata('Şifre en az 8 karakter olsun.');
+  $('fK').disabled=true;$('fK').textContent='Açılıyor…';
+  try{
+    const{data:fid,error:e1}=await sb.rpc('yonetici_firma_ac',{p_ad:ad,p_sektor:$('fS').value,p_renk:+$('fR').value,p_bitis:$('fB').value||null,p_notlar:$('fN').value.trim()||null});
+    if(e1)throw new Error(HATA(e1.message));
+    const yeni=await kullaniciOlustur(ep,pw);
+    const{error:e3}=await sb.rpc('yonetici_uye_bagla',{p_eposta:ep,p_firma:fid});
+    if(e3)throw new Error(HATA(e3.message));
+    await yukle();
+    kimlikGoster(ad,ep,yeni?pw:null);
+  }catch(e){hata(e.message);$('fK').disabled=false;$('fK').textContent='Firmayı aç'}
+}
+function kimlikGoster(ad,ep,pw){
+  const metin=`${ad} - CRM giriş bilgileri\n\nAdres: ${ADRES}\nE-posta: ${ep}\nŞifre: ${pw||'(mevcut şifreniz)'}\n\nİlk girişten sonra Ayarlar > Şifre değiştir'den şifrenizi değiştirebilirsiniz. Telefonda tarayıcı menüsünden "Ana ekrana ekle" ile uygulama gibi kullanabilirsiniz.`;
+  ac('Firma açıldı',`<div class="bilgi">${k(ad)} hazır.${pw?'':' Bu e-posta zaten kayıtlıydı; mevcut şifresiyle girer.'}</div>
+    <div class="kimlik" id="km">${k(metin)}</div>
+    <div class="iki" style="margin-top:12px"><button class="btn btn-ana" onclick="navigator.clipboard.writeText($('km').textContent).then(()=>{this.textContent='Kopyalandı ✓'})">Kopyala</button><button class="btn btn-ikincil" onclick="kapat()">Kapat</button></div>`);
+}
+
+function firmaDetay(id){
+  const f=FIRMALAR.find(x=>x.id===id);
+  const kul=(f.kullanicilar||'').split(', ').filter(Boolean);
+  ac(k(f.ad),`
+    <label>Firma adı</label><input id="fA" value="${k(f.ad)}">
+    <label>Durum</label><select id="fD"><option value="aktif" ${f.durum==='aktif'?'selected':''}>Aktif</option><option value="durduruldu" ${f.durum!=='aktif'?'selected':''}>Durduruldu (giriş yapamaz)</option></select>
+    ${bitisAlani(f.bitis)}
+    <label>Not</label><input id="fN" value="${k(f.notlar)}">
+    <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" id="fK" onclick="firmaKaydet('${id}')">Kaydet</button>
+    <div class="bolum">Kullanıcılar (${kul.length})</div>
+    <div>${kul.map(e=>`<div class="kul"><span>${k(e)}</span><button class="btn btn-sil kucuk" onclick="if(this.dataset.o){uyeCikar('${k(e)}','${id}')}else{this.dataset.o=1;this.textContent='Emin misiniz?'}">Çıkar</button></div>`).join('')||'<p class="alt">Kullanıcı yok.</p>'}</div>
+    <div class="bolum">Kullanıcı ekle (çalışan / ikinci cihaz hesabı)</div>
+    <div class="iki"><div><label>E-posta</label><input id="fE" type="email" autocomplete="off"></div><div><label>Şifre</label><input id="fP" value="${sifreUret()}" autocomplete="off"></div></div>
+    <button class="btn btn-ikincil btn-tam" style="margin-top:12px" onclick="uyeEkle('${id}')">+ Kullanıcı ekle</button>
+    <p class="alt" style="margin-top:16px;white-space:normal">Açılış: ${trTarih(f.olusturma)} · Son işlem: ${f.son_islem?trTarih(f.son_islem):'—'} · ${f.musteri} müşteri, ${f.randevu} randevu</p>`);
+}
+async function firmaKaydet(id){
+  const ad=$('fA').value.trim();if(!ad)return hata('Firma adı boş olamaz.');
+  $('fK').disabled=true;
+  const{error}=await sb.rpc('yonetici_firma_guncelle',{p_id:id,p_ad:ad,p_durum:$('fD').value,p_bitis:$('fB').value||null,p_notlar:$('fN').value.trim()||null});
+  if(error){$('fK').disabled=false;return hata(HATA(error.message))}
+  await yukle();kapat();
+}
+async function uyeEkle(id){
+  const ep=$('fE').value.trim().toLowerCase(),pw=$('fP').value,f=FIRMALAR.find(x=>x.id===id);
+  if(!/^\S+@\S+\.\S+$/.test(ep))return hata('Geçerli bir e-posta yazın.');
+  if(pw.length<8)return hata('Şifre en az 8 karakter olsun.');
+  try{
+    const yeni=await kullaniciOlustur(ep,pw);
+    const{error}=await sb.rpc('yonetici_uye_bagla',{p_eposta:ep,p_firma:id});
+    if(error)throw new Error(HATA(error.message));
+    await yukle();kimlikGoster(f.ad,ep,yeni?pw:null);
+  }catch(e){hata(e.message)}
+}
+async function uyeCikar(ep,id){
+  const{error}=await sb.rpc('yonetici_uye_cikar',{p_eposta:ep});
+  if(error)return hata(HATA(error.message));
+  await yukle();firmaDetay(id);
+}
+basla();
+</script>
+</body>
+</html>
