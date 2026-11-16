@@ -248,7 +248,10 @@ main{padding:26px 32px 60px;max-width:1200px}
 .kutu{border:1px solid var(--cizgi);border-radius:12px;padding:2px 14px}
 .paket{border:1px solid var(--cizgi);border-radius:12px;padding:14px;margin-bottom:8px}
 .hsec{border:1px solid var(--cizgi);border-radius:12px;overflow:hidden;margin-top:6px}
-.hsec-para{grid-column:1/-1;display:none;grid-template-columns:1fr 1fr;gap:8px;align-items:end;padding-top:2px}
+.hsec-para{grid-column:1/-1;display:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:end;padding-top:2px}
+.hsec-al{grid-column:auto!important;height:36px;margin:0!important;white-space:nowrap;padding:0 4px}
+.hsec-satir+.hsec-satir{border-top:2px solid color-mix(in srgb,var(--ana) 22%,var(--cizgi))}
+.hsec-satir:nth-child(even):not(.secili){background:color-mix(in srgb,var(--ana-acik) 45%,transparent)}
 .hsec-satir.secili .hsec-para{display:grid}
 .hsec-para label{margin:0 0 4px;font-size:11px}
 .hsec-tik{grid-column:1/-1;display:flex!important;align-items:center;gap:8px;margin:2px 0 0!important;font-size:12.5px!important;font-weight:500!important;color:var(--yazi)!important;cursor:pointer}
@@ -883,7 +886,7 @@ function hizmetSecici(){
         <label class="hsec-tik"><input type="checkbox" class="hsec-tek" onchange="const st=this.closest('.hsec-satir').querySelector('.hsec-seans');st.disabled=this.checked;if(this.checked)st.value='1'"> Tek işlem (seans takibi yok)</label>
         <div><label>Hizmet bedeli ₺</label><input class="hsec-bedel" type="number" min="0" inputmode="numeric" placeholder="${h.fiyat?h.fiyat:'Toplam tutar'}"></div>
         <div><label>Peşinat ₺</label><input class="hsec-pes" type="number" min="0" inputmode="numeric" placeholder="0"></div>
-        <label class="hsec-tik"><input type="checkbox" class="hsec-alindi" checked> Peşinat tahsil edildi</label>
+        <label class="hsec-tik hsec-al"><input type="checkbox" class="hsec-alindi" checked> Tahsil edildi</label>
       </div>
     </div>`).join('')}</div>
     <p class="ipucu">Birden fazla hizmet seçebilirsiniz; her hizmete en fazla ${SEANS_MAX} seans ya da "Tek işlem". Peşinat "tahsil edildi" işaretliyse bugünkü tahsilata yazılır; kalan tutar bekleyen ödemelere eklenir. Bedel boş bırakılabilir.</p>`;
