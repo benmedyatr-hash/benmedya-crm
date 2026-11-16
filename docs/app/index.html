@@ -236,6 +236,8 @@ main{padding:26px 32px 60px;max-width:1200px}
 .kucuk-sayi{width:32px;height:32px;padding:0}
 
 .mobil-nav{display:none}
+.yan-perde{display:none}
+.yan nav button.cikis-btn{color:#e08a83}.yan nav button.cikis-btn:hover{background:#2a1f1f;color:#f3a29b}
 .hafta,.zaman{touch-action:pan-y}
 .kaydir-ipucu{display:none}
 
@@ -266,7 +268,11 @@ main{padding:26px 32px 60px;max-width:1200px}
 .goz:hover{color:#1a1a1e}
 /* ---------- telefon ---------- */
 @media(max-width:900px){
-  .yan{display:none}
+  .yan{display:flex;position:fixed;left:0;top:0;bottom:0;height:100%;width:min(84vw,300px);z-index:40;transform:translateX(-105%);transition:transform .25s ease;padding-top:calc(22px + env(safe-area-inset-top));padding-bottom:calc(16px + env(safe-area-inset-bottom));overflow-y:auto}
+  .yan.acik{transform:none;box-shadow:8px 0 30px rgba(0,0,0,.28)}
+  .yan nav button.aktif::before{left:-14px}
+  .yan-perde{display:block;position:fixed;inset:0;background:rgba(20,16,22,.45);z-index:39;opacity:0;pointer-events:none;transition:opacity .25s}
+  .yan-perde.acik{opacity:1;pointer-events:auto}
   .ust{height:64px;padding:env(safe-area-inset-top) 16px 0;box-sizing:content-box}
   .ust .masaustu-baslik,.ust .yeni-btn{display:none}
   .ust .marka{display:flex;padding:0;gap:11px}
@@ -342,12 +348,13 @@ main{padding:26px 32px 60px;max-width:1200px}
       <div class="marka"><div class="logo firmaHarf"></div><div class="marka-yazi"><b class="firmaAd"></b><small>CRM</small></div></div>
       <div class="masaustu-baslik"><h1 id="baslik"></h1><div class="tarih" id="ustTarih"></div></div>
       <button class="btn btn-ana yeni-btn" onclick="yeniSecim()"><svg class="i"><use href="#i-arti"/></svg>Yeni kayıt</button>
-      <button class="ayar-btn" id="ayarBtn" onclick="git('ayarlar')" aria-label="Ayarlar"><svg class="i"><use href="#i-ayar"/></svg></button>
+      <button class="ayar-btn" id="ayarBtn" onclick="menuAc()" aria-label="Menü"><svg class="i"><use href="#i-ayar"/></svg></button>
     </header>
     <main><div class="sayfa-baslik"><h1 id="mBaslik"></h1><span id="mTarih"></span></div><div id="icerik"></div></main>
   </div>
 </div>
 <nav class="mobil-nav" id="mobilNav"></nav>
+<div class="yan-perde" id="yanPerde" onclick="menuKapat()"></div>
 <div class="perde" id="perde" onclick="if(event.target===this)kapat()"><div class="pencere" id="pencere"></div></div>
 
 <div class="yukleniyor" id="yukleniyor"><div><div class="donen"></div>Yükleniyor…</div></div>
@@ -370,6 +377,7 @@ main{padding:26px 32px 60px;max-width:1200px}
   <symbol id="i-kisiler" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20.5c.9-3.8 3.9-6 7.5-6s6.6 2.2 7.5 6"/></symbol>
   <symbol id="i-gorev" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="m8 9 1.6 1.6L12.5 7.7M8 15.5l1.6 1.6 2.9-2.9M15 9.5h1.5M15 16h1.5"/></symbol>
   <symbol id="i-hizmet" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3.5 13.5V3.5h10l7.1 7.1a2 2 0 0 1 0 2.8z"/><circle cx="8.5" cy="8.5" r="1.6"/></symbol>
+  <symbol id="i-cikis" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></symbol>
   <symbol id="i-ayar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
   <symbol id="i-arti" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-tamam" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
@@ -607,12 +615,19 @@ function navCiz(){
   const n=acikGorevler().length;
   const y=s=>`<button class="${s===ekran?'aktif':''}" onclick="git('${s}')">${I(EKRANLAR[s][1])}${EKRANLAR[s][0]}${s==='gorevler'&&n?`<span class="rozet">${n}</span>`:''}</button>`;
   document.getElementById('yanNav').innerHTML=['bugun','takvim','musteriler','gorevler','hizmetler'].map(y).join('');
-  document.getElementById('yanAlt').innerHTML=y('ayarlar');
+  document.getElementById('yanAlt').innerHTML=y('ayarlar')+`<button class="cikis-btn" onclick="menuKapat();cikis()">${I('cikis')}Çıkış yap</button>`;
   const m=(s,ad)=>`<button class="sekme ${s===ekran||(s==='bugun'&&false)?'aktif':''}" onclick="git('${s}')"><span class="kap">${I(EKRANLAR[s][1])}</span>${ad}${s==='gorevler'&&n?`<span class="nokta">${n}</span>`:''}</button>`;
   document.getElementById('mobilNav').innerHTML=m('bugun','Özet')+m('takvim','Takvim')+`<button class="orta-arti" onclick="yeniSecim()" aria-label="Yeni kayıt">${I('arti')}</button>`+m('musteriler','Müşteriler')+m('gorevler','Hatırlatıcı');
   document.getElementById('ayarBtn').classList.toggle('aktif',ekran==='ayarlar'||ekran==='hizmetler');
 }
-function git(s){ekran=s;if(s!=='musteriler')aramaMetni='';ciz();window.scrollTo(0,0)}
+function menuAc(){document.querySelector('.yan').classList.add('acik');document.getElementById('yanPerde').classList.add('acik');document.body.classList.add('kilit')}
+function menuKapat(){const y=document.querySelector('.yan');if(!y.classList.contains('acik'))return;y.classList.remove('acik');y.style.transform='';document.getElementById('yanPerde').classList.remove('acik');if(!document.getElementById('perde').classList.contains('acik'))document.body.classList.remove('kilit')}
+(function(){const y=document.querySelector('.yan');let x0=null,dx=0;
+  y.addEventListener('touchstart',e=>{if(!y.classList.contains('acik'))return;x0=e.touches[0].clientX;dx=0;y.style.transition='none'},{passive:true});
+  y.addEventListener('touchmove',e=>{if(x0===null)return;dx=Math.min(0,e.touches[0].clientX-x0);y.style.transform=`translateX(${dx}px)`},{passive:true});
+  y.addEventListener('touchend',()=>{if(x0===null)return;x0=null;y.style.transition='';if(dx<-60)menuKapat();else y.style.transform=''});
+})();
+function git(s){menuKapat();ekran=s;if(s!=='musteriler')aramaMetni='';ciz();window.scrollTo(0,0)}
 
 /* ---------- WhatsApp ---------- */
 function waLink(tel,mesaj){
@@ -1146,7 +1161,7 @@ function bildirimKontrol(){
   V.gorevler.filter(g=>!g.bitti&&g.tarih===bg&&g.saat).forEach(g=>{const f=dakika(g.saat)-dk;if(f<=0&&f>-5&&!gonderilen.has(g.id)){gonderilen.add(g.id);try{new Notification('Hatırlatıcı · '+AYAR.firma,{body:g.baslik})}catch(e){}}});
 }
 setInterval(()=>{if(!HAZIR)return;bildirimKontrol();if(tarihStr(new Date())!==BUGUN&&!document.getElementById('perde').classList.contains('acik'))ciz()},60000);
-document.addEventListener('keydown',e=>{if(e.key==='Escape')kapat()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){kapat();menuKapat()}});
 
 /* ---------- şifre göster/gizle (göz simgesi) — sonradan açılan pencerelerdeki şifre kutularına da eklenir ---------- */
 const GOZ_AC='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';

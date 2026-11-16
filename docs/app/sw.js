@@ -1,5 +1,5 @@
 // Firma uygulamasını "uygulama olarak kur" için. Veri önbelleğe alınmaz; önce ağ, olmazsa önbellek.
-const SURUM = 'crm-app-v3';
+const SURUM = 'crm-app-v4';
 const ISKELET = ['./', 'index.html', '../ayar.js', '../sektorler.js', 'manifest.webmanifest', 'ikon-192.png'];
 
 self.addEventListener('install', e => {
