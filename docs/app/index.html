@@ -760,10 +760,13 @@ const MDIL=m=>m&&m.dil==='ar'?'ar':'tr';
 // hizmetin Arapça adı: firmanın yazdığı > hazır sözlük > (yoksa) Türkçe ad
 const hizmetAr=h=>(h&&(h.adAr||(window.HIZMET_AR||{})[String(h.ad||'').trim().toLocaleLowerCase('tr')]))||'';
 const hizmetAdiDil=(hid,dil)=>{const h=H(hid);return dil==='ar'&&hizmetAr(h)||h.ad};
-const arTarih=t=>new Date(t+'T12:00').toLocaleDateString('ar',{day:'numeric',month:'long'});
+// Arapça mesajlarda rakamlar Arapça (٠١٢٣٤٥٦٧٨٩)
+const arRakam=x=>String(x??'').replace(/[0-9]/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+const arTutar=n=>arRakam(Number(n||0).toLocaleString('tr-TR'))+' ₺';
+const arTarih=t=>arRakam(new Date(t+'T12:00').toLocaleDateString('ar',{day:'numeric',month:'long'}));
 function gunMetin(t,dil){if(dil==='ar')return t===BUGUN?'اليوم':t===gunEkle(BUGUN,1)?'غدًا':arTarih(t);return t===BUGUN?'bugün':t===gunEkle(BUGUN,1)?'yarın':gunAy(t)}
-function odemeMesaji(m,konu,tutar,trMetin){return MDIL(m)==='ar'?sablon(AR.odeme,{ad:ilkAd(m.ad),tutar:tl(tutar),hizmet:konu,firma:AYAR.firma}):trMetin}
-const randevuAlanlari=(r,dil)=>{const m=M(r.mid);dil=dil||MDIL(m);const sb=seansBilgi(r);return{ad:ilkAd(m.ad),adsoyad:m.ad,gun:gunMetin(r.tarih,dil),saat:r.saat,hizmet:hizmetAdiDil(r.hid,dil)+(sb&&!sb.tek?(dil==='ar'?' '+AR.seans.replace('{n}',sb.no):' ('+sb.no+'. seans)'):''),seans:sb?sb.no+'/'+sb.toplam:'',firma:AYAR.firma,not:r.not||'',adres:m.adres||'',ucret:r.paketli?'':tl(r.ucret),kalan:tl(borc(r))}};
+function odemeMesaji(m,konu,tutar,trMetin){return MDIL(m)==='ar'?sablon(AR.odeme,{ad:ilkAd(m.ad),tutar:arTutar(tutar),hizmet:konu,firma:AYAR.firma}):trMetin}
+const randevuAlanlari=(r,dil)=>{const m=M(r.mid);dil=dil||MDIL(m);const sb=seansBilgi(r);return{ad:ilkAd(m.ad),adsoyad:m.ad,gun:gunMetin(r.tarih,dil),saat:dil==='ar'?arRakam(r.saat):r.saat,hizmet:hizmetAdiDil(r.hid,dil)+(sb&&!sb.tek?(dil==='ar'?' '+AR.seans.replace('{n}',arRakam(sb.no)):' ('+sb.no+'. seans)'):''),seans:sb?sb.no+'/'+sb.toplam:'',firma:AYAR.firma,not:r.not||'',adres:m.adres||'',ucret:r.paketli?'':tl(r.ucret),kalan:dil==='ar'?arTutar(borc(r)):tl(borc(r))}};
 // randevu notu → düzgün cümle (baş harf büyük, sonda nokta)
 const notCumle=t=>{t=String(t||'').replace(/\s+/g,' ').trim();if(!t)return '';t=t[0].toLocaleUpperCase('tr')+t.slice(1);return /[.!?…]$/.test(t)?t:t+'.'};
 // hatırlatma = şablon + randevu notu (şablonda {not} yoksa not ilk cümleden sonra eklenir)
@@ -838,7 +841,7 @@ function waDogum(mid){dogumFormu(mid)}
 const dogumIndirimi=m=>m&&m.dogumKampanya&&m.dogumKampanya.oran>0&&m.dogumKampanya.sonTarih>=BUGUN?m.dogumKampanya:null;
 function dogumMetni(mid,oran,gun){
   const m=M(mid),son=gunEkle(BUGUN,Math.max(0,gun));
-  if(MDIL(m)==='ar'){const g=gun<=0?AR.gecBugun:AR.gecTarih.replace('{tarih}',arTarih(son));return oran>0?sablon(AR.dogumIndirim,{ad:ilkAd(m.ad),firma:AYAR.firma,indirim:oran,gecerlilik:g}):sablon(AR.dogum,{ad:ilkAd(m.ad),firma:AYAR.firma})}
+  if(MDIL(m)==='ar'){const g=gun<=0?AR.gecBugun:AR.gecTarih.replace('{tarih}',arTarih(son));return oran>0?sablon(AR.dogumIndirim,{ad:ilkAd(m.ad),firma:AYAR.firma,indirim:arRakam(oran),gecerlilik:g}):sablon(AR.dogum,{ad:ilkAd(m.ad),firma:AYAR.firma})}
   const gec=gun<=0?'Yalnız bugün':gunAy(son)+' tarihine kadar';
   return oran>0?sablon(AYAR.sablonDogumIndirim||VARSAYILAN_AYAR.sablonDogumIndirim,{ad:ilkAd(m.ad),firma:AYAR.firma,indirim:oran,gecerlilik:gec})
                :sablon(AYAR.sablonDogum,{ad:ilkAd(m.ad),firma:AYAR.firma});
@@ -1117,7 +1120,7 @@ function randevusuzSatir(o){
 }
 function randevuDavet(mid){
   const m=M(mid),p=V.paketler.find(x=>x.mid===mid&&x.kullanilan<x.toplam);
-  if(MDIL(m)==='ar')return window.open(waLink(m.tel,p?sablon(AR.davetSeans,{ad:ilkAd(m.ad),kalan:p.toplam-p.kullanilan,hizmet:hizmetAdiDil(p.hid,'ar'),firma:AYAR.firma}):sablon(AR.davet,{ad:ilkAd(m.ad),firma:AYAR.firma})),'_blank');
+  if(MDIL(m)==='ar')return window.open(waLink(m.tel,p?sablon(AR.davetSeans,{ad:ilkAd(m.ad),kalan:arRakam(p.toplam-p.kullanilan),hizmet:hizmetAdiDil(p.hid,'ar'),firma:AYAR.firma}):sablon(AR.davet,{ad:ilkAd(m.ad),firma:AYAR.firma})),'_blank');
   const metin=p?`Merhaba ${ilkAd(m.ad)}, ${H(p.hid).ad} için ${p.toplam-p.kullanilan} seansınız bulunmaktadır. Size uygun gün ve saati yazarsanız bir sonraki randevunuzu oluşturalım. ${AYAR.firma}`
     :`Merhaba ${ilkAd(m.ad)}, sizi yeniden aramızda görmek isteriz. Size uygun gün ve saati yazarsanız randevunuzu oluşturalım. ${AYAR.firma}`;
   window.open(waLink(m.tel,metin),'_blank');
