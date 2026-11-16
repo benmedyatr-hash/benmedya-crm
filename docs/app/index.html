@@ -244,6 +244,9 @@ main{padding:26px 32px 60px;max-width:1200px}
 .kucuk-sayi{width:32px;height:32px;padding:0}
 
 .mobil-nav{display:none}
+.kpi .panel.secili{border-color:var(--ana);box-shadow:0 0 0 2px var(--ana-acik)}
+.panel.vurgu{animation:vurgu 1.4s ease}
+@keyframes vurgu{0%,40%{box-shadow:0 0 0 3px var(--ana)}100%{box-shadow:var(--golge)}}
 .yan-perde{display:none}
 .yan nav button.cikis-btn{color:#e08a83}.yan nav button.cikis-btn:hover{background:#2a1f1f;color:#f3a29b}
 .hafta,.zaman{touch-action:pan-y}
@@ -671,7 +674,7 @@ function menuKapat(){const y=document.querySelector('.yan');if(!y.classList.cont
   y.addEventListener('touchmove',e=>{if(x0===null)return;dx=Math.min(0,e.touches[0].clientX-x0);y.style.transform=`translateX(${dx}px)`},{passive:true});
   y.addEventListener('touchend',()=>{if(x0===null)return;x0=null;y.style.transition='';if(dx<-60)menuKapat();else y.style.transform=''});
 })();
-function git(s){menuKapat();ekran=s;if(s!=='musteriler')aramaMetni='';ciz();window.scrollTo(0,0)}
+function git(s){menuKapat();if(s==='tahsilat'&&ekran!=='tahsilat')tahsilatDonem=null;ekran=s;if(s!=='musteriler')aramaMetni='';ciz();window.scrollTo(0,0)}
 
 /* ---------- WhatsApp ---------- */
 function waLink(tel,mesaj){
@@ -740,7 +743,7 @@ function ekranBugun(){
   <div class="kpi">
     <div class="panel" onclick="git('takvim')"><div class="etk">Bugünkü randevu<span>${I('takvim')}</span></div><b>${bugun.length}</b></div>
     <div class="panel" onclick="git('tahsilat')"><div class="etk">Bugün beklenen tahsilat<span>${I('para')}</span></div><b>${tl(beklenen)}</b></div>
-    <div class="panel" onclick="git('tahsilat')"><div class="etk">Bekleyen ödemeler<span>${I('uyari')}</span></div><b>${tl(toplamBorc)}</b></div>
+    <div class="panel" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),80)"><div class="etk">Bekleyen ödemeler<span>${I('uyari')}</span></div><b>${tl(toplamBorc)}</b></div>
     <div class="panel" onclick="git('gorevler')"><div class="etk">Açık hatırlatıcı<span>${I('gorev')}</span></div><b>${acikGorevler().length}</b></div>
   </div>
   <div class="izgara">
@@ -859,20 +862,26 @@ function odemeHatirlat(rid){
   window.open(waLink(m.tel,'Merhaba '+ilkAd(m.ad)+', '+gunAy(r.tarih)+' tarihli '+H(r.hid).ad+' işleminizden kalan '+tl(borc(r))+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma),'_blank');
 }
 function odemeAl(rid){const r=R(rid);r.odendi=true;r.odemeTarihi=BUGUN;kaydet();ciz();bildir(tl(Number(r.ucret||0)-Number(r.kapora||0))+' tahsilat kaydedildi')}
+let tahsilatDonem=null;
+function tahsilatSec(d){tahsilatDonem=tahsilatDonem===d?null:d;ciz();setTimeout(()=>tahsilatGit('sonTahsilat'),30)}
+function tahsilatGit(id){const el=document.getElementById(id);if(!el)return;const ust=document.querySelector('.ust').offsetHeight+8;window.scrollTo({top:el.getBoundingClientRect().top+scrollY-ust,behavior:'smooth'});el.classList.remove('vurgu');void el.offsetWidth;el.classList.add('vurgu')}
 function ekranTahsilat(){
   const olay=tahsilatOlaylari(),d=new Date(BUGUN+'T12:00'),pzt=gunEkle(BUGUN,-((d.getDay()+6)%7)),ay=BUGUN.slice(0,7);
   const top=f=>olay.filter(f).reduce((s,x)=>s+x.tutar,0);
   const bekleyen=V.randevular.filter(r=>borc(r)>0).sort((a,b)=>(a.tarih+a.saat).localeCompare(b.tarih+b.saat));
   const toplamBorc=bekleyen.reduce((s,r)=>s+borc(r),0);
+  const DON={bugun:['Bugün',x=>x.tarih===BUGUN],hafta:['Bu hafta',x=>x.tarih>=pzt&&x.tarih<=BUGUN],ay:['Bu ay',x=>(x.tarih||'').startsWith(ay)]};
+  const liste=tahsilatDonem?olay.filter(DON[tahsilatDonem][1]):olay;
+  const sec=d=>tahsilatDonem===d?' secili':'';
   return `
   <div class="kpi">
-    <div class="panel"><div class="etk">Bugün tahsil edilen<span>${I('tahsilat')}</span></div><b>${tl(top(x=>x.tarih===BUGUN))}</b></div>
-    <div class="panel"><div class="etk">Bu hafta<span>${I('takvim')}</span></div><b>${tl(top(x=>x.tarih>=pzt&&x.tarih<=BUGUN))}</b></div>
-    <div class="panel"><div class="etk">Bu ay<span>${I('para')}</span></div><b>${tl(top(x=>(x.tarih||'').startsWith(ay)))}</b></div>
-    <div class="panel"><div class="etk">Bekleyen ödemeler<span>${I('uyari')}</span></div><b style="color:${toplamBorc?'var(--sari)':'inherit'}">${tl(toplamBorc)}</b></div>
+    <div class="panel${sec('bugun')}" onclick="tahsilatSec('bugun')"><div class="etk">Bugün tahsil edilen<span>${I('tahsilat')}</span></div><b>${tl(top(x=>x.tarih===BUGUN))}</b></div>
+    <div class="panel${sec('hafta')}" onclick="tahsilatSec('hafta')"><div class="etk">Bu hafta<span>${I('takvim')}</span></div><b>${tl(top(x=>x.tarih>=pzt&&x.tarih<=BUGUN))}</b></div>
+    <div class="panel${sec('ay')}" onclick="tahsilatSec('ay')"><div class="etk">Bu ay<span>${I('para')}</span></div><b>${tl(top(x=>(x.tarih||'').startsWith(ay)))}</b></div>
+    <div class="panel" onclick="tahsilatGit('bekleyenOdeme')"><div class="etk">Bekleyen ödemeler<span>${I('uyari')}</span></div><b style="color:${toplamBorc?'var(--sari)':'inherit'}">${tl(toplamBorc)}</b></div>
   </div>
   <div class="izgara">
-    <div class="panel">
+    <div class="panel" id="bekleyenOdeme">
       <div class="panel-ust"><h2>${I('uyari')}Bekleyen ödemeler</h2><span class="sayi">${bekleyen.length} işlem</span></div>
       <div class="panel-ic">${bekleyen.length?bekleyen.map(r=>{const m=M(r.mid);return `<div class="kisa">
         <div class="avatar">${basHarf(m.ad)}</div>
@@ -881,13 +890,13 @@ function ekranTahsilat(){
         <button class="btn btn-geldi" onclick="odemeAl('${r.id}')">${I('tamam')}Alındı</button>
       </div>`}).join(''):'<div class="bos">Bekleyen ödeme yok.</div>'}</div>
     </div>
-    <div class="panel">
-      <div class="panel-ust"><h2>${I('tahsilat')}Son tahsilatlar</h2><span class="sayi">${olay.length} kayıt</span></div>
-      <div class="panel-ic">${olay.length?olay.slice(0,30).map(x=>`<div class="kisa">
+    <div class="panel" id="sonTahsilat">
+      <div class="panel-ust"><h2>${I('tahsilat')}${tahsilatDonem?DON[tahsilatDonem][0]+' tahsilatlar':'Son tahsilatlar'}</h2>${tahsilatDonem?`<button class="btn btn-ikincil" style="height:32px;padding:0 12px;font-size:12.5px" onclick="tahsilatSec(null)">Tümü</button>`:`<span class="sayi">${olay.length} kayıt</span>`}</div>
+      <div class="panel-ic">${liste.length?liste.slice(0,tahsilatDonem?200:30).map(x=>`<div class="kisa">
         <div class="avatar">${basHarf(x.ad)}</div>
         <div class="orta" onclick="musteriKarti('${x.mid}')"><div class="ad">${k(x.ad)}</div><div class="alt-yazi">${k(x.aciklama)}${x.tarih?' · '+goreceli(x.tarih):''}</div></div>
         <b style="color:var(--yesil);white-space:nowrap;flex:none">${tl(x.tutar)}</b>
-      </div>`).join(''):'<div class="bos">Henüz tahsilat yok.</div>'}</div>
+      </div>`).join(''):`<div class="bos">${tahsilatDonem?'Bu dönemde tahsilat yok.':'Henüz tahsilat yok.'}</div>`}${tahsilatDonem&&liste.length?`<div class="kisa" style="justify-content:space-between;font-weight:700"><span>Toplam</span><span style="color:var(--yesil)">${tl(liste.reduce((s,x)=>s+x.tutar,0))}</span></div>`:''}</div>
     </div>
   </div>
   <p class="not" style="margin:12px 4px">Tahsilatlar randevudaki ödeme, kapora ve paket satışlarından otomatik hesaplanır. Bir randevuyu "Geldi" yapıp ödemesi alınmadıysa burada bekleyen olarak görünür.</p>`;
