@@ -679,7 +679,7 @@ const H=i=>V.hizmetler.find(x=>x.id===i)||{ad:'(silinmiş hizmet)',sure:0,fiyat:
 const R=i=>V.randevular.find(x=>x.id===i);
 const gununRandevulari=t=>V.randevular.filter(r=>r.tarih===t).sort((a,b)=>a.saat.localeCompare(b.saat));
 const acikPaket=(mid,hid)=>V.paketler.find(p=>p.mid===mid&&p.hid===hid&&p.kullanilan<p.toplam);
-const borc=r=>r.durum==='geldi'&&!r.odendi&&!r.paketli&&Number(r.ucret)-Number(r.kapora||0)>0?Number(r.ucret)-Number(r.kapora||0):0;
+const borc=r=>{if(r.durum!=='geldi'||r.odendi||r.paketli)return 0;const k=Number(r.ucret||0)-Number(r.kapora||0)-Number(r.alinan||0);return k>0?k:0};
 const satisBorc=x=>x.odendi?0:Number(x.tutar||0);
 const S_=i=>V.satislar.find(x=>x.id===i);
 const satisAd=x=>x.mid?M(x.mid).ad:'Kayıtsız müşteri';
@@ -814,7 +814,7 @@ function randevuSatir(r){
     </div>
     <div class="islem">
       <button class="btn btn-wa" title="WhatsApp'tan hatırlat" ${bitti||!m.tel?'disabled':''} onclick="waRandevu('${r.id}')">${I('mesaj')}</button>
-      <button class="btn btn-geldi" ${bitti?'disabled':''} onclick="durum('${r.id}','geldi')">${I('tamam')}Geldi</button>
+      <button class="btn btn-geldi" ${bitti?'disabled':''} onclick="geldiFormu('${r.id}')">${I('tamam')}Geldi</button>
       <button class="btn btn-gelmedi" ${bitti?'disabled':''} onclick="durum('${r.id}','gelmedi')">${I('carpi')}Gelmedi</button>
     </div>
   </div>`;
@@ -876,12 +876,13 @@ function paketOdemeFormu(pid){
     ${p.pesinatBekleyen?`<div class="uyari" style="background:var(--sari-acik);color:var(--sari)">${I('para')}<span>Peşinat ${tl(p.pesinatBekleyen)} henüz tahsil edilmedi.</span></div>`:''}
     <label>Alınan tutar (₺)</label><input type="number" min="1" id="poTut" value="${p.pesinatBekleyen||kalan||''}" inputmode="numeric">
     <p class="ipucu">Bugünkü tahsilata yazılır.</p>
-    <button class="btn btn-geldi btn-tam btn-buyuk" style="margin-top:18px" onclick="paketOdemeKaydet('${pid}')">${I('tamam')}Tahsil edildi</button>
+    <button class="btn btn-geldi btn-tam btn-buyuk" style="margin-top:18px" onclick="paketOdemeKaydet('${pid}',this)">${I('tamam')}Tahsil edildi</button>
     <button class="btn btn-ikincil btn-tam" style="margin-top:8px" onclick="musteriKarti('${p.mid}')">Müşteri kartı</button>`);
 }
-function paketOdemeKaydet(pid){
+function paketOdemeKaydet(pid,b){
   const p=V.paketler.find(x=>x.id===pid),t=Math.max(0,Number(deger('poTut')||0));
   if(!t)return hata('Tutar girin.');
+  if(!tahsilOnay(b,p.mid))return;
   const pes=p.pesinatBekleyen&&t>=p.pesinatBekleyen;paketOdemeEkle(p,t,pes?'Peşinat':'Ödeme');if(pes)delete p.pesinatBekleyen;
   kaydet();ciz();musteriKarti(p.mid);bildir(tl(t)+' tahsilat kaydedildi'+(paketBorc(p)?' · kalan '+tl(paketBorc(p)):''));
 }
@@ -1080,7 +1081,8 @@ function tahsilatOlaylari(){
   V.randevular.forEach(r=>{
     const ad=M(r.mid).ad,h=H(r.hid).ad;
     if(Number(r.kapora)>0)o.push({tarih:r.kaporaTarihi||r.tarih,tutar:Number(r.kapora),ad,mid:r.mid,aciklama:'Kapora · '+h});
-    if(r.durum==='geldi'&&r.odendi&&!r.paketli){const t=Number(r.ucret||0)-Number(r.kapora||0);if(t>0)o.push({tarih:r.odemeTarihi||r.tarih,tutar:t,ad,mid:r.mid,aciklama:h})}
+    if(Number(r.alinan)>0)o.push({tarih:r.alinanTarihi||r.tarih,tutar:Number(r.alinan),ad,mid:r.mid,aciklama:'Randevuda alınan · '+h});
+    if(r.durum==='geldi'&&r.odendi&&!r.paketli){const t=Number(r.ucret||0)-Number(r.kapora||0)-Number(r.alinan||0);if(t>0)o.push({tarih:r.odemeTarihi||r.tarih,tutar:t,ad,mid:r.mid,aciklama:h})}
   });
   V.paketler.forEach(p=>paketOdemeleri(p).forEach(x=>{if(Number(x.tutar)>0)o.push({tarih:x.tarih||p.tarih||'',tutar:Number(x.tutar),ad:M(p.mid).ad,mid:p.mid,aciklama:(x.not||'Ödeme')+' · '+H(p.hid).ad+(p.tekIslem?'':' ('+p.toplam+' seans)')})}));
   V.satislar.forEach(x=>{if(x.odendi&&Number(x.tutar)>0)o.push({tarih:x.odemeTarihi||x.tarih,tutar:Number(x.tutar),ad:satisAd(x),mid:x.mid,sid:x.id,aciklama:'Tek seferlik · '+x.aciklama})});
@@ -1090,7 +1092,40 @@ function odemeHatirlat(rid){
   const r=R(rid),m=M(r.mid);
   window.open(waLink(m.tel,'Merhaba '+ilkAd(m.ad)+', '+gunAy(r.tarih)+' tarihli '+H(r.hid).ad+' işleminizden kalan '+tl(borc(r))+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma),'_blank');
 }
-function odemeAl(rid){const r=R(rid);r.odendi=true;r.odemeTarihi=BUGUN;kaydet();ciz();bildir(tl(Number(r.ucret||0)-Number(r.kapora||0))+' tahsilat kaydedildi')}
+function odemeAl(rid,b){const r=R(rid),t=borc(r);if(!tahsilOnay(b,r.mid))return;r.odendi=true;r.odemeTarihi=BUGUN;kaydet();ciz();bildir(tl(t)+' tahsilat kaydedildi')}
+// aynı gün aynı müşteriden ikinci tahsilat: düğmeye ikinci kez basınca kaydedilir
+const bugunAlinan=mid=>mid?tahsilatOlaylari().filter(x=>x.mid===mid&&x.tarih===BUGUN).reduce((s,x)=>s+x.tutar,0):0;
+function tahsilOnay(b,mid){const t=bugunAlinan(mid);if(!t||!b)return true;return ikiKez(b,'Bugün bu müşteriden '+tl(t)+' alındı. Yine de eklemek için tekrar basın')}
+// "Geldi": randevuyu kapat + isteğe bağlı tahsilat
+function geldiFormu(rid){
+  const r=R(rid),m=M(r.mid),sb=seansBilgi(r),p=r.paketli?(acikPaket(r.mid,r.hid)||V.paketler.find(x=>x.mid===r.mid&&x.hid===r.hid)):null;
+  const kalan=r.paketli?(p?paketBorc(p):0):Math.max(0,Number(r.ucret||0)-Number(r.kapora||0)-Number(r.alinan||0));
+  const bugun=bugunAlinan(r.mid);
+  ac('Randevuyu kapat',`
+    <div class="profil"><div class="avatar buyuk">${basHarf(m.ad)}</div><div><b>${k(m.ad)}</b><small>${r.saat} · ${k(H(r.hid).ad)}${sb?' · '+(sb.tek?'Tek işlem':sb.no+'. seans / '+sb.toplam):''}</small></div></div>
+    <div class="kutu" style="margin-top:12px">
+      ${r.paketli?`<div class="satir"><span>Ücret</span><b>Hizmetten (seanslı)</b></div>${p&&Number(p.tutar)>0?`<div class="satir"><span>Hizmet kalan borcu</span><b>${tl(kalan)}</b></div>`:''}`
+        :`<div class="satir"><span>Ücret</span><b>${tl(r.ucret)}</b></div>${r.kapora?`<div class="satir"><span>Kapora</span><b>− ${tl(r.kapora)}</b></div>`:''}<div class="satir"><span>Ödenecek</span><b>${tl(kalan)}</b></div>`}
+    </div>
+    ${bugun?`<div class="uyari" style="background:var(--sari-acik);color:var(--sari)">${I('uyari')}<span>Bu müşteriden bugün ${tl(bugun)} tahsilat zaten alındı.</span></div>`:''}
+    <label style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--yazi);margin-top:16px;cursor:pointer"><input type="checkbox" id="gkAl" ${kalan>0&&!r.paketli?'checked':''} onchange="document.getElementById('gkTutKap').style.display=this.checked?'':'none'"> Tahsilat alındı</label>
+    <div id="gkTutKap" style="${kalan>0&&!r.paketli?'':'display:none'}"><label>Alınan tutar (₺)</label><input type="number" min="1" id="gkTut" value="${kalan||''}" inputmode="numeric"><p class="ipucu">${r.paketli?'Hizmetin kalan borcundan düşülür.':'Ödenecekten az girilirse kalanı bekleyen ödemelerde görünür.'} Bugünkü tahsilata yazılır.</p></div>
+    <button class="btn btn-geldi btn-tam btn-buyuk" style="margin-top:18px" onclick="geldiKaydet('${rid}',this)">${I('tamam')}Geldi olarak kapat</button>
+    <button class="btn btn-ikincil btn-tam" style="margin-top:8px" onclick="kapat()">Vazgeç</button>`);
+}
+function geldiKaydet(rid,b){
+  const r=R(rid),al=document.getElementById('gkAl').checked,t=Math.max(0,Number(deger('gkTut')||0));
+  if(al&&!t)return hata('Alınan tutarı girin.');
+  if(al&&!tahsilOnay(b,r.mid))return;
+  const p=r.paketli?(acikPaket(r.mid,r.hid)||V.paketler.find(x=>x.mid===r.mid&&x.hid===r.hid)):null;
+  durum(rid,'geldi');
+  if(al){
+    if(r.paketli&&p)paketOdemeEkle(p,t,'Randevuda alınan');
+    else if(!r.paketli){const k=Number(r.ucret||0)-Number(r.kapora||0)-Number(r.alinan||0);if(t>=k){r.odendi=true;r.odemeTarihi=BUGUN;if(t>k){r.alinan=Number(r.alinan||0)+(t-k);r.alinanTarihi=BUGUN}}else{r.alinan=Number(r.alinan||0)+t;r.alinanTarihi=BUGUN}}
+    kaydet();ciz();
+  }
+  kapat();bildir('Randevu kapatıldı'+(al?' · '+tl(t)+' tahsilat':''));
+}
 let tahsilatDonem=null;
 function tahsilatSec(d){tahsilatDonem=tahsilatDonem===d?null:d;ciz();setTimeout(()=>tahsilatGit('sonTahsilat'),30)}
 function tahsilatGit(id){const el=document.getElementById(id);if(!el)return;const ust=document.querySelector('.ust').offsetHeight+8;window.scrollTo({top:el.getBoundingClientRect().top+scrollY-ust,behavior:'smooth'});el.classList.remove('vurgu');void el.offsetWidth;el.classList.add('vurgu')}
@@ -1098,9 +1133,9 @@ function ekranTahsilat(){
   const olay=tahsilatOlaylari(),d=new Date(BUGUN+'T12:00'),pzt=gunEkle(BUGUN,-((d.getDay()+6)%7)),ay=BUGUN.slice(0,7);
   const top=f=>olay.filter(f).reduce((s,x)=>s+x.tutar,0);
   // bekleyen ödemeler: ödenmemiş randevular + "sonra ödenecek" tek seferlik işlemler
-  const bekleyen=V.randevular.filter(r=>borc(r)>0).map(r=>{const m=M(r.mid);return{m,tarih:r.tarih+r.saat,tutar:borc(r),yazi:H(r.hid).ad+' · '+goreceli(r.tarih),ac:`randevuDetay('${r.id}')`,wa:`odemeHatirlat('${r.id}')`,al:`odemeAl('${r.id}')`}})
+  const bekleyen=V.randevular.filter(r=>borc(r)>0).map(r=>{const m=M(r.mid);return{m,tarih:r.tarih+r.saat,tutar:borc(r),yazi:H(r.hid).ad+' · '+goreceli(r.tarih),ac:`randevuDetay('${r.id}')`,wa:`odemeHatirlat('${r.id}')`,al:`odemeAl('${r.id}',this)`}})
     .concat(V.paketler.filter(p=>paketBorc(p)>0).map(p=>({m:M(p.mid),tarih:p.tarih||'',tutar:paketBorc(p),yazi:H(p.hid).ad+' · bedel '+tl(p.tutar)+', ödenen '+tl(paketOdenen(p)),ac:`musteriKarti('${p.mid}')`,wa:`paketOdemeHatirlat('${p.id}')`,al:`paketOdemeFormu('${p.id}')`})))
-    .concat(V.satislar.filter(x=>satisBorc(x)>0).map(x=>({m:x.mid?M(x.mid):{ad:satisAd(x),tel:''},tarih:x.tarih,tutar:satisBorc(x),yazi:'Tek seferlik · '+x.aciklama+' · '+goreceli(x.tarih),ac:`satisFormu('${x.id}')`,wa:`satisHatirlat('${x.id}')`,al:`satisOdemeAl('${x.id}')`})))
+    .concat(V.satislar.filter(x=>satisBorc(x)>0).map(x=>({m:x.mid?M(x.mid):{ad:satisAd(x),tel:''},tarih:x.tarih,tutar:satisBorc(x),yazi:'Tek seferlik · '+x.aciklama+' · '+goreceli(x.tarih),ac:`satisFormu('${x.id}')`,wa:`satisHatirlat('${x.id}')`,al:`satisOdemeAl('${x.id}',this)`})))
     .sort((a,b)=>a.tarih.localeCompare(b.tarih));
   const toplamBorc=bekleyen.reduce((s,x)=>s+x.tutar,0);
   const DON={bugun:['Bugün',x=>x.tarih===BUGUN],hafta:['Bu hafta',x=>x.tarih>=pzt&&x.tarih<=BUGUN],ay:['Bu ay',x=>(x.tarih||'').startsWith(ay)]};
@@ -1291,7 +1326,7 @@ function satisKaydet(sid){
   if(sid)Object.assign(onceki,v);else V.satislar.push({id:yeniId(),...v});
   kaydet();kapat();ciz();bildir(sid?'İşlem güncellendi':'Tek seferlik işlem kaydedildi');
 }
-function satisOdemeAl(sid){const x=S_(sid);x.odendi=true;x.odemeTarihi=BUGUN;kaydet();ciz();bildir(tl(x.tutar)+' tahsilat kaydedildi')}
+function satisOdemeAl(sid,b){const x=S_(sid);if(!tahsilOnay(b,x.mid))return;x.odendi=true;x.odemeTarihi=BUGUN;kaydet();ciz();bildir(tl(x.tutar)+' tahsilat kaydedildi')}
 function satisSil(sid){V.satislar=V.satislar.filter(x=>x.id!==sid);kaydet();kapat();ciz();bildir('İşlem silindi')}
 function satisHatirlat(sid){const x=S_(sid),m=M(x.mid);window.open(waLink(m.tel,'Merhaba '+ilkAd(m.ad)+', '+gunAy(x.tarih)+' tarihli '+x.aciklama+' işleminizden kalan '+tl(x.tutar)+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma),'_blank')}
 
@@ -1372,8 +1407,8 @@ function randevuDetay(rid){
       ${r.not?`<div class="satir"><span>Not</span><b>${k(r.not)}</b></div>`:''}
     </div>
     <div class="alt-dugmeler">
-      ${r.durum==='bekliyor'?`<button class="btn btn-geldi" onclick="durum('${r.id}','geldi');randevuDetay('${r.id}')">${I('tamam')}Geldi</button><button class="btn btn-gelmedi" onclick="durum('${r.id}','gelmedi');randevuDetay('${r.id}')">${I('carpi')}Gelmedi</button>`
-      :r.durum==='geldi'&&!r.paketli?`<button class="btn ${r.odendi?'btn-ikincil':'btn-geldi'}" onclick="odemeDegis('${r.id}')">${r.odendi?'Ödemeyi geri al':I('para')+'Ödeme alındı'}</button><button class="btn btn-ikincil" onclick="durumGeriAl('${r.id}')">Durumu geri al</button>`
+      ${r.durum==='bekliyor'?`<button class="btn btn-geldi" onclick="geldiFormu('${r.id}')">${I('tamam')}Geldi</button><button class="btn btn-gelmedi" onclick="durum('${r.id}','gelmedi');randevuDetay('${r.id}')">${I('carpi')}Gelmedi</button>`
+      :r.durum==='geldi'&&!r.paketli?`<button class="btn ${r.odendi?'btn-ikincil':'btn-geldi'}" onclick="odemeDegis('${r.id}',this)">${r.odendi?'Ödemeyi geri al':I('para')+'Ödeme alındı'}</button><button class="btn btn-ikincil" onclick="durumGeriAl('${r.id}')">Durumu geri al</button>`
       :`<button class="btn btn-ikincil" onclick="durumGeriAl('${r.id}')">Durumu geri al</button><button class="btn btn-ikincil" onclick="randevuFormu(null,null,'${m.id}')">${I('arti')}Yeni randevu</button>`}
       <button class="btn btn-ikincil" onclick="randevuFormu('${r.id}')">${I('kalem')}Düzenle</button>
     </div>
@@ -1390,7 +1425,7 @@ function musteriGecmisOzet(mid,haricRid){
   return `<div class="bolum">Daha önce aldığı hizmetler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="musteriKarti('${mid}')">Kartı aç</button></div>
     <div class="kutu">${p.join('')}${g.join('')}${s.join('')}</div>`;
 }
-function odemeDegis(rid){const r=R(rid);r.odendi=!r.odendi;if(r.odendi)r.odemeTarihi=BUGUN;else delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
+function odemeDegis(rid,b){const r=R(rid);if(!r.odendi&&!tahsilOnay(b,r.mid))return;r.odendi=!r.odendi;if(r.odendi)r.odemeTarihi=BUGUN;else delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
 function durumGeriAl(rid){const r=R(rid);if(r.paketId){const p=V.paketler.find(x=>x.id===r.paketId);if(p&&p.kullanilan>0)p.kullanilan--;delete r.paketId;delete r.seansNo}r.durum='bekliyor';r.odendi=false;delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
 function randevuSil(rid){const r=R(rid);if(r.paketId&&r.durum==='geldi'){const p=V.paketler.find(x=>x.id===r.paketId);if(p&&p.kullanilan>0)p.kullanilan--}V.randevular=V.randevular.filter(x=>x.id!==rid);kaydet();kapat();ciz();bildir('Randevu silindi')}
 
@@ -1444,12 +1479,12 @@ function musteriKarti(mid){
 }
 /* ---------- işlem geçmişi (log) — veritabanı tutar, değiştirilemez / silinemez ---------- */
 const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',satis:'Tek seferlik işlem',firma:'Firma'};
-const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',odemeler:'ödemeler',pesinatBekleyen:'bekleyen peşinat',tekIslem:'tek işlem',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
+const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',alinan:'randevuda alınan',alinanTarihi:'alınma tarihi',odemeler:'ödemeler',pesinatBekleyen:'bekleyen peşinat',tekIslem:'tek işlem',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
 function logDeger(a,v){
   if(v===undefined||v===null||v==='')return '—';
   if(a==='durum')return DURUM[v]||v;
   if(['odendi','bitti','hatirlatildi','paketli'].includes(a))return v?'evet':'hayır';
-  if(['ucret','kapora','fiyat','odenen','tutar'].includes(a))return tl(v);
+  if(['ucret','kapora','fiyat','odenen','tutar','alinan'].includes(a))return tl(v);
   if(a==='sabahOzet')return v?'açık':'kapalı'; if(a==='odemeler')return Array.isArray(v)?v.length+' ödeme ('+tl(v.reduce((s,x)=>s+Number(x.tutar||0),0))+')':'—'; if(a==='bildirimDk')return Number(v)?v+' dk önce':'kapalı';
   if(a==='mid')return M(v).ad; if(a==='hid')return H(v).ad;
   if(a==='sektor')return (SEKTORLER[v]||{}).ad||v;
