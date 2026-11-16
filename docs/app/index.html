@@ -247,17 +247,18 @@ main{padding:26px 32px 60px;max-width:1200px}
 .bolum{font-size:11.5px;font-weight:600;color:var(--cok-soluk);text-transform:uppercase;letter-spacing:.06em;margin:22px 0 8px;display:flex;justify-content:space-between;align-items:center;min-height:30px}
 .kutu{border:1px solid var(--cizgi);border-radius:12px;padding:2px 14px}
 .paket{border:1px solid var(--cizgi);border-radius:12px;padding:14px;margin-bottom:8px}
-.hsec{border:1px solid var(--cizgi);border-radius:12px;overflow:hidden;margin-top:6px}
-.hsec-para{grid-column:1/-1;display:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:end;padding-top:2px}
+.hsec{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.hsec-para{grid-column:1/-1;display:none;grid-template-columns:minmax(0,1fr) auto;grid-template-columns:subgrid;gap:6px 8px;align-items:end;padding-top:2px}
+.hsec-sag{grid-column:auto!important;height:36px;margin:0!important;white-space:nowrap}
 .hsec-al{grid-column:auto!important;height:36px;margin:0!important;white-space:nowrap;padding:0 4px}
-.hsec-satir+.hsec-satir{border-top:2px solid color-mix(in srgb,var(--ana) 22%,var(--cizgi))}
-.hsec-satir:nth-child(even):not(.secili){background:color-mix(in srgb,var(--ana-acik) 45%,transparent)}
+.hsec .hsec-satir{border:1px solid var(--cizgi);border-radius:12px}
+.hsec .hsec-satir.secili{border-color:color-mix(in srgb,var(--ana) 35%,var(--cizgi))}
 .hsec-satir.secili .hsec-para{display:grid}
 .hsec-para label{margin:0 0 4px;font-size:11px}
 .hsec-tik{grid-column:1/-1;display:flex!important;align-items:center;gap:8px;margin:2px 0 0!important;font-size:12.5px!important;font-weight:500!important;color:var(--yazi)!important;cursor:pointer}
 .paket-para{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:12.5px;color:var(--soluk);margin:8px 0 6px}
 .paket-para b{color:var(--yazi)}
-.hsec-satir{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid var(--cizgi)}
+.hsec-satir{display:grid;grid-template-columns:minmax(0,1fr) minmax(92px,auto);gap:8px;align-items:center;padding:8px 10px;border-top:1px solid var(--cizgi)}
 .hsec-satir:first-child{border-top:0}
 .hsec-satir.secili{background:var(--ana-acik)}
 .hsec-ad{display:flex;align-items:center;gap:10px;margin:0;font-size:13.5px;font-weight:500;color:var(--yazi);cursor:pointer;min-width:0}
@@ -883,10 +884,10 @@ function hizmetSecici(){
       <label class="hsec-ad"><input type="checkbox" onchange="this.closest('.hsec-satir').classList.toggle('secili',this.checked)"><span>${k(h.ad)}</span></label>
       <select class="hsec-seans" onchange="${isaretle}">${Array.from({length:SEANS_MAX},(_,i)=>`<option value="${i+1}">${i+1} seans</option>`).join('')}</select>
       <div class="hsec-para">
-        <label class="hsec-tik"><input type="checkbox" class="hsec-tek" onchange="const st=this.closest('.hsec-satir').querySelector('.hsec-seans');st.disabled=this.checked;if(this.checked)st.value='1'"> Tek işlem (seans takibi yok)</label>
         <div><label>Hizmet bedeli ₺</label><input class="hsec-bedel" type="number" min="0" inputmode="numeric" placeholder="${h.fiyat?h.fiyat:'Toplam tutar'}"></div>
+        <label class="hsec-tik hsec-sag"><input type="checkbox" class="hsec-tek" onchange="const st=this.closest('.hsec-satir').querySelector('.hsec-seans');st.disabled=this.checked;if(this.checked)st.value='1'"> Tek işlem</label>
         <div><label>Peşinat ₺</label><input class="hsec-pes" type="number" min="0" inputmode="numeric" placeholder="0"></div>
-        <label class="hsec-tik hsec-al"><input type="checkbox" class="hsec-alindi" checked> Tahsil edildi</label>
+        <label class="hsec-tik hsec-sag"><input type="checkbox" class="hsec-alindi" checked> Peşinat Tahsil Edildi</label>
       </div>
     </div>`).join('')}</div>
     <p class="ipucu">Birden fazla hizmet seçebilirsiniz; her hizmete en fazla ${SEANS_MAX} seans ya da "Tek işlem". Peşinat "tahsil edildi" işaretliyse bugünkü tahsilata yazılır; kalan tutar bekleyen ödemelere eklenir. Bedel boş bırakılabilir.</p>`;
