@@ -1,6 +1,6 @@
 // Yönetim panelini "uygulama olarak kur" için. Veri önbelleğe alınmaz; önce ağ, olmazsa önbellek.
-const SURUM = 'crm-yonetim-v3';
-const ISKELET = ['./', 'index.html', '../ayar.js', '../sektorler.js', 'manifest.webmanifest', 'ikon-192.png'];
+const SURUM = 'crm-yonetim-v4';
+const ISKELET = ['./', 'index.html', '../ayar.js', '../sektorler.js?v=2', 'manifest.webmanifest', 'ikon-192.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(SURUM).then(c => c.addAll(ISKELET)).then(() => self.skipWaiting()));
