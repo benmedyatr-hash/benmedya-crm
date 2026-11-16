@@ -3,7 +3,7 @@
 Çok firmalı CRM: tek sistem, her firma yalnız kendi verisini görür (Supabase RLS).
 
 - `docs/index.html` — firmaların kullandığı uygulama (crm.benmedya.com)
-- `docs/yonetim.html` — yönetim paneli (firma açma / durdurma / bitiş tarihi / kullanıcı ekleme)
+- `docs/yonetim/` — yönetim paneli (ayrı kurulabilir uygulama; eski yonetim.html buraya yönlendirir) (firma açma / durdurma / bitiş tarihi / kullanıcı ekleme)
 - `docs/ayar.js` — Supabase adresi + anon anahtar (herkese açık olabilir; service_role ASLA)
 - `supabase/kurulum.sql` — veritabanı kurulumu (SQL Editor'de bir kez)
 

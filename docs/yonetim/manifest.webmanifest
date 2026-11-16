@@ -1,0 +1,16 @@
+{
+  "id": "/yonetim/",
+  "name": "CRM Yönetim",
+  "short_name": "CRM Yönetim",
+  "lang": "tr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f6f7",
+  "theme_color": "#19171c",
+  "icons": [
+    { "src": "ikon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "ikon-512-maske.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
