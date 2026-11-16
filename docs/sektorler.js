@@ -66,3 +66,52 @@ window.sektorSecenekleri = function (secili) {
     return `<optgroup label="${e(g)}">` + l.map(([k, s]) => `<option value="${k}" ${k === secili ? 'selected' : ''}>${e(s.ad)}</option>`).join('') + '</optgroup>';
   }).join('');
 };
+
+// Hazır hizmetlerin Arapça adları (Arapça WhatsApp mesajlarında kullanılır). Anahtar: Türkçe ad, küçük harf.
+// Firma, hizmet düzenleme penceresindeki "Arapça adı" alanıyla bunu değiştirebilir.
+window.HIZMET_AR = {
+  'lazer epilasyon': 'إزالة الشعر بالليزر',
+  'cilt bakımı': 'العناية بالبشرة',
+  'kaş laminasyon': 'لامينيشن الحواجب',
+  'ipek kirpik': 'رموش الحرير',
+  'manikür': 'مانيكير',
+  'pedikür': 'باديكير',
+  'bölgesel incelme': 'التنحيف الموضعي',
+  'saç kesimi': 'قص الشعر',
+  'fön': 'تسريح الشعر بالسشوار',
+  'boya': 'صبغ الشعر',
+  'saç boyama': 'صبغ الشعر',
+  'röfle / balyaj': 'هايلايت / بالياج',
+  'keratin bakım': 'علاج الكيراتين',
+  'gelin saçı': 'تسريحة العروس',
+  'sakal tıraşı': 'حلاقة اللحية',
+  'saç + sakal': 'قص الشعر واللحية',
+  'damat tıraşı': 'حلاقة العريس',
+  'kalıcı oje': 'طلاء أظافر دائم',
+  'protez tırnak': 'أظافر اصطناعية',
+  'kirpik lifting': 'رفع الرموش',
+  'klasik masaj': 'مساج كلاسيكي',
+  'aromaterapi masajı': 'مساج بالزيوت العطرية',
+  'sıcak taş masajı': 'مساج بالأحجار الساخنة',
+  'hamam + kese': 'حمام تركي مع التقشير',
+  'çift masajı': 'مساج للأزواج',
+  'ön görüşme': 'استشارة أولية',
+  'küçük dövme': 'وشم صغير',
+  'orta dövme': 'وشم متوسط',
+  'büyük dövme (seans)': 'وشم كبير (جلسة)',
+  'piercing': 'ثقب (بيرسينغ)',
+  'kaş alımı': 'تشذيب الحواجب',
+  'kaş tasarımı': 'تصميم الحواجب',
+  'ağda': 'إزالة الشعر بالشمع',
+  'makyaj': 'مكياج',
+  'gelin makyajı': 'مكياج العروس',
+  'kalıcı makyaj': 'مكياج دائم',
+  'microblading': 'مايكروبليدنغ',
+  'hydrafacial': 'هيدرافيشل',
+  'dermapen': 'ديرمابن',
+  'leke tedavisi': 'علاج التصبغات',
+  'akne tedavisi': 'علاج حب الشباب',
+  'selülit tedavisi': 'علاج السيلوليت',
+  'saç bakımı': 'العناية بالشعر',
+  'kirpik perması': 'تمويج الرموش'
+};

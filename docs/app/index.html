@@ -751,10 +751,13 @@ const AR={
 };
 const DIL_AD={tr:'Türkçe',ar:'العربية'};
 const MDIL=m=>m&&m.dil==='ar'?'ar':'tr';
+// hizmetin Arapça adı: firmanın yazdığı > hazır sözlük > (yoksa) Türkçe ad
+const hizmetAr=h=>(h&&(h.adAr||(window.HIZMET_AR||{})[String(h.ad||'').trim().toLocaleLowerCase('tr')]))||'';
+const hizmetAdiDil=(hid,dil)=>{const h=H(hid);return dil==='ar'&&hizmetAr(h)||h.ad};
 const arTarih=t=>new Date(t+'T12:00').toLocaleDateString('ar',{day:'numeric',month:'long'});
 function gunMetin(t,dil){if(dil==='ar')return t===BUGUN?'اليوم':t===gunEkle(BUGUN,1)?'غدًا':arTarih(t);return t===BUGUN?'bugün':t===gunEkle(BUGUN,1)?'yarın':gunAy(t)}
 function odemeMesaji(m,konu,tutar,trMetin){return MDIL(m)==='ar'?sablon(AR.odeme,{ad:ilkAd(m.ad),tutar:tl(tutar),hizmet:konu,firma:AYAR.firma}):trMetin}
-const randevuAlanlari=(r,dil)=>{const m=M(r.mid);dil=dil||MDIL(m);const sb=seansBilgi(r);return{ad:ilkAd(m.ad),adsoyad:m.ad,gun:gunMetin(r.tarih,dil),saat:r.saat,hizmet:H(r.hid).ad+(sb&&!sb.tek?(dil==='ar'?' '+AR.seans.replace('{n}',sb.no):' ('+sb.no+'. seans)'):''),seans:sb?sb.no+'/'+sb.toplam:'',firma:AYAR.firma,not:r.not||'',adres:m.adres||'',ucret:r.paketli?'':tl(r.ucret),kalan:tl(borc(r))}};
+const randevuAlanlari=(r,dil)=>{const m=M(r.mid);dil=dil||MDIL(m);const sb=seansBilgi(r);return{ad:ilkAd(m.ad),adsoyad:m.ad,gun:gunMetin(r.tarih,dil),saat:r.saat,hizmet:hizmetAdiDil(r.hid,dil)+(sb&&!sb.tek?(dil==='ar'?' '+AR.seans.replace('{n}',sb.no):' ('+sb.no+'. seans)'):''),seans:sb?sb.no+'/'+sb.toplam:'',firma:AYAR.firma,not:r.not||'',adres:m.adres||'',ucret:r.paketli?'':tl(r.ucret),kalan:tl(borc(r))}};
 // randevu notu → düzgün cümle (baş harf büyük, sonda nokta)
 const notCumle=t=>{t=String(t||'').replace(/\s+/g,' ').trim();if(!t)return '';t=t[0].toLocaleUpperCase('tr')+t.slice(1);return /[.!?…]$/.test(t)?t:t+'.'};
 // hatırlatma = şablon + randevu notu (şablonda {not} yoksa not ilk cümleden sonra eklenir)
@@ -770,7 +773,7 @@ function hatirlatMesaji(r,dil){
 function waMesajlari(r,dil){
   dil=dil||MDIL(M(r.mid));
   if(dil==='ar'){const v=randevuAlanlari(r,'ar'),n=notCumle(v.not),o=[['Randevu hatırlatma',hatirlatMesaji(r,'ar')],['Randevu onayı',sablon(AR.onay,{...v,not:n})]];
-    if(borc(r))o.push(['Ödeme',sablon(AR.odeme,{ad:v.ad,tutar:v.kalan,hizmet:H(r.hid).ad,firma:v.firma})]);o.push(['Boş',sablon(AR.merhaba,v)+' ']);return o}
+    if(borc(r))o.push(['Ödeme',sablon(AR.odeme,{ad:v.ad,tutar:v.kalan,hizmet:hizmetAdiDil(r.hid,'ar'),firma:v.firma})]);o.push(['Boş',sablon(AR.merhaba,v)+' ']);return o}
   const v=randevuAlanlari(r,'tr'),n=notCumle(v.not),o=[['Randevu hatırlatma',hatirlatMesaji(r,'tr')]];
   o.push(['Randevu onayı',`Merhaba ${v.ad}, ${v.gun} saat ${v.saat} için ${v.hizmet} randevunuz oluşturulmuştur.${n?' '+n:''} Görüşmek üzere. ${v.firma}`]);
   if(borc(r))o.push(['Ödeme',`Merhaba ${v.ad}, ${gunAy(r.tarih)} tarihli ${v.hizmet} işleminizden kalan ${v.kalan} ödemeniz bulunmaktadır. İyi günler dileriz. ${v.firma}`]);
@@ -952,7 +955,7 @@ function paketOdemeKaydet(pid,b){
   const pes=p.pesinatBekleyen&&t>=p.pesinatBekleyen;paketOdemeEkle(p,t,pes?'Peşinat':'Ödeme');if(pes)delete p.pesinatBekleyen;
   kaydet();ciz();musteriKarti(p.mid);bildir(tl(t)+' tahsilat kaydedildi'+(paketBorc(p)?' · kalan '+tl(paketBorc(p)):''));
 }
-function paketOdemeHatirlat(pid){const p=V.paketler.find(x=>x.id===pid),m=M(p.mid);window.open(waLink(m.tel,odemeMesaji(m,H(p.hid).ad,paketBorc(p),'Merhaba '+ilkAd(m.ad)+', '+H(p.hid).ad+' hizmetinizden kalan '+tl(paketBorc(p))+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma)),'_blank')}
+function paketOdemeHatirlat(pid){const p=V.paketler.find(x=>x.id===pid),m=M(p.mid);window.open(waLink(m.tel,odemeMesaji(m,hizmetAdiDil(p.hid,'ar'),paketBorc(p),'Merhaba '+ilkAd(m.ad)+', '+H(p.hid).ad+' hizmetinizden kalan '+tl(paketBorc(p))+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma)),'_blank')}
 const siradakiHizmet=mid=>{const p=V.paketler.find(x=>x.mid===mid&&x.kullanilan+planliSeanslar(mid,x.hid).length<x.toplam);return p?p.hid:''};
 
 /* ---------- ekran: genel bakış ---------- */
@@ -1106,7 +1109,7 @@ function randevusuzSatir(o){
 }
 function randevuDavet(mid){
   const m=M(mid),p=V.paketler.find(x=>x.mid===mid&&x.kullanilan<x.toplam);
-  if(MDIL(m)==='ar')return window.open(waLink(m.tel,p?sablon(AR.davetSeans,{ad:ilkAd(m.ad),kalan:p.toplam-p.kullanilan,hizmet:H(p.hid).ad,firma:AYAR.firma}):sablon(AR.davet,{ad:ilkAd(m.ad),firma:AYAR.firma})),'_blank');
+  if(MDIL(m)==='ar')return window.open(waLink(m.tel,p?sablon(AR.davetSeans,{ad:ilkAd(m.ad),kalan:p.toplam-p.kullanilan,hizmet:hizmetAdiDil(p.hid,'ar'),firma:AYAR.firma}):sablon(AR.davet,{ad:ilkAd(m.ad),firma:AYAR.firma})),'_blank');
   const metin=p?`Merhaba ${ilkAd(m.ad)}, ${H(p.hid).ad} için ${p.toplam-p.kullanilan} seansınız bulunmaktadır. Size uygun gün ve saati yazarsanız bir sonraki randevunuzu oluşturalım. ${AYAR.firma}`
     :`Merhaba ${ilkAd(m.ad)}, sizi yeniden aramızda görmek isteriz. Size uygun gün ve saati yazarsanız randevunuzu oluşturalım. ${AYAR.firma}`;
   window.open(waLink(m.tel,metin),'_blank');
@@ -1158,7 +1161,7 @@ function tahsilatOlaylari(){
 }
 function odemeHatirlat(rid){
   const r=R(rid),m=M(r.mid);
-  window.open(waLink(m.tel,odemeMesaji(m,H(r.hid).ad,borc(r),'Merhaba '+ilkAd(m.ad)+', '+gunAy(r.tarih)+' tarihli '+H(r.hid).ad+' işleminizden kalan '+tl(borc(r))+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma)),'_blank');
+  window.open(waLink(m.tel,odemeMesaji(m,hizmetAdiDil(r.hid,'ar'),borc(r),'Merhaba '+ilkAd(m.ad)+', '+gunAy(r.tarih)+' tarihli '+H(r.hid).ad+' işleminizden kalan '+tl(borc(r))+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma)),'_blank');
 }
 function odemeAl(rid,b){const r=R(rid),t=borc(r);if(!tahsilOnay(b,r.mid))return;r.odendi=true;r.odemeTarihi=BUGUN;kaydet();ciz();bildir(tl(t)+' tahsilat kaydedildi')}
 // aynı gün aynı müşteriden ikinci tahsilat: düğmeye ikinci kez basınca kaydedilir
@@ -1260,7 +1263,7 @@ function ekranHizmetler(){
   return `<div class="panel">
     <div class="panel-ust"><h2>${I('hizmet')}Hizmetler &amp; Fiyatlar</h2><span style="display:flex;gap:6px"><button class="btn btn-ikincil" style="height:36px" ${V.hizmetler.length>1?'':'disabled'} onclick="hizmetAZ(this)">A→Z</button><button class="btn btn-ana" style="height:36px" onclick="hizmetFormu()">${I('arti')}Yeni hizmet</button></span></div>
     <div class="tablo-bas hiz-bas"><div>Hizmet</div><div>Fiyat</div><div>Sıra</div><div></div></div>
-    ${V.hizmetler.map((h,i,a)=>`<div class="hiz-satir" onclick="hizmetFormu('${h.id}')"><div class="ad" style="font-size:14px">${k(h.ad)}</div><div class="soluk">${h.fiyat?tl(h.fiyat):'—'}</div><div class="sira-btn" onclick="event.stopPropagation()"><button aria-label="Yukarı taşı" ${i?'':'disabled'} onclick="hizmetTasi('${h.id}',-1)">↑</button><button aria-label="Aşağı taşı" ${i<a.length-1?'':'disabled'} onclick="hizmetTasi('${h.id}',1)">↓</button></div><div class="soluk ikon">${I('kalem')}</div></div>`).join('')||'<div class="bos">Hizmet yok.</div>'}
+    ${V.hizmetler.map((h,i,a)=>`<div class="hiz-satir" onclick="hizmetFormu('${h.id}')"><div class="ad" style="font-size:14px">${k(h.ad)}${hizmetAr(h)?`<div class="alt-yazi" dir="rtl" style="text-align:left">${k(hizmetAr(h))}</div>`:''}</div><div class="soluk">${h.fiyat?tl(h.fiyat):'—'}</div><div class="sira-btn" onclick="event.stopPropagation()"><button aria-label="Yukarı taşı" ${i?'':'disabled'} onclick="hizmetTasi('${h.id}',-1)">↑</button><button aria-label="Aşağı taşı" ${i<a.length-1?'':'disabled'} onclick="hizmetTasi('${h.id}',1)">↓</button></div><div class="soluk ikon">${I('kalem')}</div></div>`).join('')||'<div class="bos">Hizmet yok.</div>'}
   </div>
   <div class="panel" style="margin-top:14px"><button class="liste-btn" onclick="sektorHizmetEkle(this)">${I('yenile')}${k(SK().ad)} sektörünün hazır hizmetlerini ekle<span class="sag">${I('sag')}</span></button></div>
   <p class="not" style="margin:12px 4px">Oklarla sırayı değiştirin; randevu formunda ve müşteri kartında hizmetler bu sırayla listelenir. Düzenlemek ya da silmek için hizmete dokunun. Fiyatlar yalnız size görünür.</p>`;
@@ -1615,7 +1618,7 @@ function musteriKarti(mid){
 }
 /* ---------- işlem geçmişi (log) — veritabanı tutar, değiştirilemez / silinemez ---------- */
 const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',satis:'Tek seferlik işlem',firma:'Firma'};
-const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',dil:'mesaj dili',dogumKampanya:'doğum günü indirimi',sablonDogumIndirim:'indirimli doğum günü mesajı',dogumIndirim:'doğum günü indirimi',dogumGecerlilik:'indirim geçerliliği',alinan:'randevuda alınan',alinanTarihi:'alınma tarihi',odemeler:'ödemeler',pesinatBekleyen:'bekleyen peşinat',tekIslem:'tek işlem',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
+const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',adAr:'Arapça adı',dil:'mesaj dili',dogumKampanya:'doğum günü indirimi',sablonDogumIndirim:'indirimli doğum günü mesajı',dogumIndirim:'doğum günü indirimi',dogumGecerlilik:'indirim geçerliliği',alinan:'randevuda alınan',alinanTarihi:'alınma tarihi',odemeler:'ödemeler',pesinatBekleyen:'bekleyen peşinat',tekIslem:'tek işlem',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
 function logDeger(a,v){
   if(v===undefined||v===null||v==='')return '—';
   if(a==='durum')return DURUM[v]||v;
@@ -1755,12 +1758,14 @@ function hizmetFormu(hid){
   const h=hid?V.hizmetler.find(x=>x.id===hid):{ad:'',fiyat:''};
   ac(hid?'Hizmeti düzenle':'Yeni hizmet',`
     <label>Hizmet adı *</label><input id="hAd" value="${k(h.ad)}" autocomplete="off">
+    <label>Arapça adı <span style="font-weight:400">· isteğe bağlı</span></label><input id="hAdAr" dir="rtl" value="${k(h.adAr||'')}" placeholder="${k((window.HIZMET_AR||{})[String(h.ad||'').trim().toLocaleLowerCase('tr')]||'Arapça mesajlarda kullanılır')}" autocomplete="off">
+    <p class="ipucu">Arapça mesaj giden müşterilere hizmet bu adla yazılır. Boş bırakılırsa hazır listede varsa o (soluk yazılı olan), yoksa Türkçe ad kullanılır.</p>
     <label>Fiyat (₺) <span style="font-weight:400">· isteğe bağlı</span></label><input type="number" min="0" id="hFiy" value="${h.fiyat||''}" inputmode="numeric" placeholder="Boş bırakabilirsiniz">
     <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="hizmetKaydet('${hid||''}')">Kaydet</button>
     ${hid?`<button class="btn btn-sil btn-tam" style="margin-top:8px" onclick="if(ikiKez(this,'Eski randevular etkilenmez. Tekrar basın'))hizmetSil('${hid}')">Hizmeti sil</button>`:''}`);
 }
 function hizmetKaydet(hid){
-  const f=deger('hFiy'),v={ad:deger('hAd'),fiyat:f===''?'':Math.max(0,Number(f)||0)};
+  const f=deger('hFiy'),v={ad:deger('hAd'),adAr:deger('hAdAr'),fiyat:f===''?'':Math.max(0,Number(f)||0)};
   if(!v.ad)return hata('Hizmet adı yazın.');
   if(hid)Object.assign(V.hizmetler.find(x=>x.id===hid),v);else V.hizmetler.push({id:yeniId(),...v});
   kaydet();kapat();ciz();bildir('Hizmet kaydedildi');
