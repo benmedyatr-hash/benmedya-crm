@@ -970,13 +970,14 @@ function ekranBugun(){
   const bugun=gununRandevulari(BUGUN),yarin=gununRandevulari(gunEkle(BUGUN,1));
   const beklenen=bugun.filter(r=>r.durum!=='gelmedi'&&!r.paketli&&!r.odendi).reduce((s,r)=>s+Number(r.ucret||0)-Number(r.kapora||0),0);
   const toplamBorc=toplamBorcHesap();
+  const bugunTahsil=tahsilatOlaylari().filter(x=>x.tarih===BUGUN).reduce((s,x)=>s+x.tutar,0);
   const gorevler=V.gorevler.filter(g=>!g.bitti&&g.tarih<=gunEkle(BUGUN,1)).sort((a,b)=>(a.tarih+(a.saat||'99')).localeCompare(b.tarih+(b.saat||'99')));
   const dg=yaklasanDogumGunleri();
   const izinli=PUSH_DURUM==='acik';
   return `
   <div class="kpi">
     <div class="panel" onclick="git('takvim')"><div class="etk">Bugünkü randevu<span>${I('takvim')}</span></div><b>${bugun.length}</b></div>
-    <div class="panel" onclick="git('tahsilat')"><div class="etk">Bugün beklenen tahsilat<span>${I('para')}</span></div><b>${tl(beklenen)}</b></div>
+    <div class="panel" onclick="git('tahsilat');tahsilatSec('bugun')"><div class="etk">Bugün tahsil edilen<span>${I('para')}</span></div><b style="color:${bugunTahsil?'var(--yesil)':'inherit'}">${tl(bugunTahsil)}</b></div>
     <div class="panel" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),80)"><div class="etk">Bekleyen ödemeler<span>${I('uyari')}</span></div><b>${tl(toplamBorc)}</b></div>
     <div class="panel" onclick="git('gorevler')"><div class="etk">Açık hatırlatıcı<span>${I('gorev')}</span></div><b>${acikGorevler().length}</b></div>
   </div>
