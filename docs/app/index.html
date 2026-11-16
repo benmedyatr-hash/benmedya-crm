@@ -514,6 +514,8 @@ function kisaTarih(s){const d=new Date(s+'T12:00');return d.getDate()+' '+AYLAR[
 function gunAy(s){const d=new Date(s+'T12:00');return d.getDate()+' '+AYLAR[d.getMonth()]}
 function goreceli(s){if(s===BUGUN)return 'Bugün';if(s===gunEkle(BUGUN,1))return 'Yarın';if(s===gunEkle(BUGUN,-1))return 'Dün';return gunAy(s)}
 function yeniId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+// telefon: 0542 504 2256 (başta 0 yoksa eklenir; +90 → 0; yurt dışı numaralar olduğu gibi)
+function telBicim(v){v=String(v||'').trim();if(!v)return '';if(/^(\+|00)/.test(v)&&!/^(\+|00)\s*90/.test(v))return v;let d=v.replace(/\D/g,'');if(d.startsWith('00'))d=d.slice(2);if(d.startsWith('90')&&d.length>10)d=d.slice(2);if(d&&d[0]!=='0')d='0'+d;d=d.slice(0,11);return [d.slice(0,4),d.slice(4,7),d.slice(7,11)].filter(Boolean).join(' ')}
 function k(t){return String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function tl(n){return Number(n||0).toLocaleString('tr-TR')+' ₺'}
 const dakika=s=>String(s||'0:0').split(':').reduce((a,b)=>a*60+ +b,0);
@@ -879,7 +881,7 @@ function waBos(mid){const m=M(mid);window.open(waLink(m.tel,MDIL(m)==='ar'?sablo
 function etiketler(r){
   const m=M(r.mid);let e='';
   if(r.durum!=='bekliyor')e+=`<span class="etiket e-${r.durum}">${DURUM[r.durum]}</span>`;
-  if(r.paketli){const sb=seansBilgi(r);e+=`<span class="etiket e-paket">${sb?(sb.tek?'Tek işlem':sb.no+'. seans / '+sb.toplam):'Paket'}</span>`}
+  if(r.paketli){const sb=seansBilgi(r);e+=`<span class="etiket e-paket">${sb?(sb.tek?'Tek işlem':sb.no+'. seans / '+sb.toplam):r.gelmediSeans?r.gelmediSeans+'. seans · gelmedi':'Paket'}</span>`}
   if(r.kapora&&r.durum==='bekliyor')e+=`<span class="etiket e-kapora">Kapora ${tl(r.kapora)}</span>`;
   if(borc(r))e+=`<span class="etiket e-borc">Ödenmedi ${tl(borc(r))}</span>`;
   if(r.hatirlatildi&&r.durum==='bekliyor')e+=`<span class="etiket e-bekliyor">${I('tamam').replace('class="i"','class="i" style="width:12px;height:12px"')}Hatırlatıldı</span>`;
@@ -903,9 +905,11 @@ function randevuSatir(r){
   </div>`;
 }
 function durum(rid,d){
-  const r=R(rid);r.durum=d;
+  const r=R(rid),onceki=r.durum==='bekliyor'&&r.paketli?seansBilgi(r):null,sonraki=d==='gelmedi'&&onceki?planliSeanslar(r.mid,r.hid,r.id).length:0;r.durum=d;
+  if(d==='gelmedi'&&onceki&&!onceki.tek)r.gelmediSeans=onceki.no;
   if(d==='geldi'&&r.paketli){const p=acikPaket(r.mid,r.hid);if(p){p.kullanilan++;r.paketId=p.id;r.seansNo=p.kullanilan}}
   kaydet();ciz();
+  if(d==='gelmedi'&&onceki&&!onceki.tek&&sonraki){bildir(M(r.mid).ad+': '+onceki.no+'. seansa gelmedi · sonraki '+sonraki+' randevu bir seans öne alındı');return}
   if(randevusuzlar().seansli.some(o=>o.m.id===r.mid))bildir(M(r.mid).ad+': seansı devam ediyor, ileri randevusu yok → Randevusuz listesinde');
 }
 /* ---------- seanslar: müşterinin aldığı hizmet (paket) + randevuların seans sırası ---------- */
@@ -1439,7 +1443,7 @@ function satisFormu(sid,mid){
   ac(sid?'Tek seferlik işlem':'Yeni tek seferlik işlem',`
     <label>Müşteri</label>
     <select id="sMus"><option value="">Kayıtsız müşteri</option>${V.musteriler.slice().sort((a,b)=>a.ad.localeCompare(b.ad,'tr')).map(m=>`<option value="${m.id}" ${m.id===x.mid?'selected':''}>${k(m.ad)}</option>`).join('')}<option value="__yeni">+ Yeni müşteri ekle</option></select>
-    <div id="sYeniMus" style="display:none" class="iki"><div><label>Ad Soyad</label><input id="sYAd" autocomplete="off"></div><div><label>Telefon</label><input id="sYTel" inputmode="tel" autocomplete="off"></div></div>
+    <div id="sYeniMus" style="display:none" class="iki"><div><label>Ad Soyad</label><input id="sYAd" autocomplete="off"></div><div><label>Telefon</label><input id="sYTel" inputmode="tel" oninput="this.value=telBicim(this.value)" placeholder="05xx xxx xxxx" autocomplete="off"></div></div>
     <label>Ne satıldı / yapıldı? *</label>
     <input id="sAc" list="sHizListe" value="${k(x.aciklama)}" placeholder="Hizmet seçin ya da yazın (örn. ürün adı)" autocomplete="off">
     <datalist id="sHizListe">${V.hizmetler.map(h=>`<option value="${k(h.ad)}">`).join('')}</datalist>
@@ -1474,7 +1478,7 @@ function randevuFormu(rid,tarih,mid,saat,hid){
   ac(rid?'Randevuyu düzenle':'Yeni randevu',`
     <label>Müşteri</label>
     <select id="fMus"><option value="">Seçin</option>${V.musteriler.slice().sort((a,b)=>a.ad.localeCompare(b.ad,'tr')).map(m=>`<option value="${m.id}" ${m.id===r.mid?'selected':''}>${k(m.ad)}</option>`).join('')}<option value="__yeni">+ Yeni müşteri ekle</option></select>
-    <div id="yeniMus" style="display:none" class="iki"><div><label>Ad Soyad</label><input id="fYAd" autocomplete="off"></div><div><label>Telefon</label><input id="fYTel" inputmode="tel" autocomplete="off"></div></div>
+    <div id="yeniMus" style="display:none" class="iki"><div><label>Ad Soyad</label><input id="fYAd" autocomplete="off"></div><div><label>Telefon</label><input id="fYTel" inputmode="tel" oninput="this.value=telBicim(this.value)" placeholder="05xx xxx xxxx" autocomplete="off"></div></div>
     <label>Hizmet</label>
     <select id="fHiz"><option value="">Seçin</option>${V.hizmetler.map(h=>`<option value="${h.id}" ${h.id===r.hid?'selected':''}>${k(h.ad)}</option>`).join('')}<option value="__yeni">+ Yeni hizmet ekle</option></select>
     <div id="yeniHiz" style="display:none"><label>Yeni hizmetin adı</label><input id="fYHAd" autocomplete="off" placeholder="Örn. Lazer epilasyon (tüm bacak)"><p class="ipucu">Hizmetler listenize de eklenir. Ücret isteğe bağlı.</p></div>
@@ -1602,7 +1606,7 @@ function musteriGecmisOzet(mid,haricRid){
     <div class="kutu">${p.join('')}${g.join('')}${s.join('')}</div>`;
 }
 function odemeDegis(rid,b){const r=R(rid);if(!r.odendi&&!tahsilOnay(b,r.mid))return;r.odendi=!r.odendi;if(r.odendi)r.odemeTarihi=BUGUN;else delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
-function durumGeriAl(rid){const r=R(rid);if(r.paketId){const p=V.paketler.find(x=>x.id===r.paketId);if(p&&p.kullanilan>0)p.kullanilan--;delete r.paketId;delete r.seansNo}r.durum='bekliyor';r.odendi=false;delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
+function durumGeriAl(rid){const r=R(rid);if(r.paketId){const p=V.paketler.find(x=>x.id===r.paketId);if(p&&p.kullanilan>0)p.kullanilan--;delete r.paketId;delete r.seansNo}delete r.gelmediSeans;r.durum='bekliyor';r.odendi=false;delete r.odemeTarihi;kaydet();ciz();randevuDetay(rid)}
 function randevuSil(rid){const r=R(rid);if(r.paketId&&r.durum==='geldi'){const p=V.paketler.find(x=>x.id===r.paketId);if(p&&p.kullanilan>0)p.kullanilan--}V.randevular=V.randevular.filter(x=>x.id!==rid);kaydet();kapat();ciz();bildir('Randevu silindi')}
 
 /* ---------- müşteri ---------- */
@@ -1649,7 +1653,7 @@ function musteriKarti(mid){
       <div class="paket-para">${Number(p.tutar)>0?`<span>Bedel <b>${tl(p.tutar)}</b></span>`:''}<span>Ödenen <b>${tl(paketOdenen(p))}</b></span>${Number(p.tutar)>0?(paketBorc(p)?`<span class="etiket e-borc">Kalan ${tl(paketBorc(p))}</span>`:'<span class="etiket e-odendi">Ödeme tamam</span>'):''}${p.pesinatBekleyen?`<span class="etiket e-uyari">Peşinat ${tl(p.pesinatBekleyen)} alınmadı</span>`:''}
         <button class="btn btn-geldi" style="height:30px;padding:0 10px;font-size:12px;margin-left:auto;${paketBorc(p)||p.pesinatBekleyen?'':'visibility:hidden'}" onclick="paketOdemeFormu('${p.id}')">${I('para')}Ödeme al</button></div>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <span class="not">${p.tekIslem?(bitti?'İşlem yapıldı':'Tek işlem'):bitti?'Tüm seanslar yapıldı':kalan+' seans kaldı'}${planli?' · '+planli+' randevu planlı':''}${p.tarih?' · '+kisaTarih(p.tarih):''}</span>
+        <span class="not">${p.tekIslem?(bitti?'İşlem yapıldı':'Tek işlem'):bitti?'Tüm seanslar yapıldı':kalan+' seans kaldı'}${planli?' · '+planli+' randevu planlı':''}${p.tarih?' · '+kisaTarih(p.tarih):''}${(()=>{const g=V.randevular.filter(x=>x.mid===p.mid&&x.hid===p.hid&&x.paketli&&x.durum==='gelmedi').sort((a,b)=>a.tarih.localeCompare(b.tarih));return g.length?`<br><span style="color:var(--kirmizi)">Gelmedi: ${g.map(x=>gunAy(x.tarih)+(x.gelmediSeans?' ('+x.gelmediSeans+'. seans)':'')).join(', ')}</span>`:''})()}</span>
         <span style="display:flex;gap:6px;flex:none"><button class="btn btn-ince" style="height:32px;padding:0 10px;font-size:12px;${verilebilir?'':'visibility:hidden'}" onclick="randevuFormu(null,null,'${p.mid}',null,'${p.hid}')">${I('takvim')}Randevu</button><button class="btn btn-ince" style="height:32px;padding:0 10px;font-size:12px" ${p.toplam>=SEANS_MAX?'disabled title="En fazla '+SEANS_MAX+' seans"':''} onclick="seansEkle('${p.id}')">${I('arti')}Seans ekle</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Düzenle" onclick="paketDuzenle('${p.id}')">${I('kalem')}</button></span>
       </div></div>`}).join(''):'<div class="kutu bos" style="padding:16px">Henüz hizmet eklenmedi.</div>'}
     <div class="bolum">Tek seferlik işlemler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="satisFormu(null,'${m.id}')">${I('arti')}Ekle</button></div>
@@ -1660,7 +1664,7 @@ function musteriKarti(mid){
 }
 /* ---------- işlem geçmişi (log) — veritabanı tutar, değiştirilemez / silinemez ---------- */
 const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',satis:'Tek seferlik işlem',firma:'Firma'};
-const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',adAr:'Arapça adı',dil:'mesaj dili',dogumKampanya:'doğum günü indirimi',sablonDogumIndirim:'indirimli doğum günü mesajı',dogumIndirim:'doğum günü indirimi',dogumGecerlilik:'indirim geçerliliği',alinan:'randevuda alınan',alinanTarihi:'alınma tarihi',odemeler:'ödemeler',pesinatBekleyen:'bekleyen peşinat',tekIslem:'tek işlem',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
+const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',seansNo:'seans no',gelmediSeans:'gelmediği seans',adAr:'Arapça adı',dil:'mesaj dili',dogumKampanya:'doğum günü indirimi',sablonDogumIndirim:'indirimli doğum günü mesajı',dogumIndirim:'doğum günü indirimi',dogumGecerlilik:'indirim geçerliliği',alinan:'randevuda alınan',alinanTarihi:'alınma tarihi',odemeler:'ödemeler',pesinatBekleyen:'bekleyen peşinat',tekIslem:'tek işlem',sira:'sıra',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
 function logDeger(a,v){
   if(v===undefined||v===null||v==='')return '—';
   if(a==='durum')return DURUM[v]||v;
@@ -1733,7 +1737,7 @@ function musteriFormu(mid){
   const S=SK(),m=mid?V.musteriler.find(x=>x.id===mid):{ad:'',tel:'',eposta:'',dogum:'',adres:'',ek:'',uyari:'',kaynak:'',not:''};
   ac(mid?'Müşteriyi düzenle':'Yeni müşteri',`
     <label>Ad Soyad *</label><input id="mAd" value="${k(m.ad)}" autocomplete="off">
-    <div class="iki"><div><label>Telefon</label><input id="mTel" inputmode="tel" value="${k(m.tel)}" placeholder="05xx xxx xx xx" autocomplete="off"></div><div><label>Doğum günü</label><input type="date" id="mDog" value="${m.dogum||''}"></div></div>
+    <div class="iki"><div><label>Telefon</label><input id="mTel" inputmode="tel" value="${k(m.tel)}" placeholder="05xx xxx xxxx" oninput="this.value=telBicim(this.value)" autocomplete="off"></div><div><label>Doğum günü</label><input type="date" id="mDog" value="${m.dogum||''}"></div></div>
     <label>E-posta</label><input id="mEp" type="email" inputmode="email" value="${k(m.eposta)}" autocomplete="off">
     <label>Adres</label><input id="mAdr" value="${k(m.adres)}" autocomplete="off">
     <div class="iki"><div><label>${k(S.ek)}</label><input id="mEk" value="${k(m.ek)}"></div><div><label>Nereden geldi</label><select id="mKay">${KAYNAKLAR.map(c=>`<option ${c===m.kaynak?'selected':''} value="${c}">${c||'Seçin'}</option>`).join('')}</select></div></div>
