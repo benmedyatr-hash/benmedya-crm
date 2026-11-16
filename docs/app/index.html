@@ -898,11 +898,11 @@ const hizmetSecimiOku=()=>[...document.querySelectorAll('.hsec-satir')].filter(s
 function paketleriEkle(mid,l){l.forEach(x=>{
   const p={id:yeniId(),mid,hid:x.hid,toplam:x.toplam,kullanilan:0,tutar:x.tutar||'',odemeler:[],tarih:BUGUN};
   if(x.tek)p.tekIslem=true;
-  if(x.pesinat>0){if(x.alindi)p.odemeler.push({id:yeniId(),tutar:x.pesinat,tarih:BUGUN,not:'Peşinat'});else p.pesinatBekleyen=x.pesinat}
+  if(x.pesinat>0){if(x.alindi)p.odemeler.push({id:yeniId(),tutar:x.pesinat,tarih:BUGUN,not:'Peşinat',seans:0});else p.pesinatBekleyen=x.pesinat}
   p.odenen=paketOdenen(p);V.paketler.push(p);
 })}
 // ödeme ekle / al / hatırlat (paket)
-function paketOdemeEkle(p,tutar,not){p.odemeler=paketOdemeleri(p).slice();p.odemeler.push({id:yeniId(),tutar,tarih:BUGUN,not:not||'Ödeme'});p.odenen=paketOdenen(p)}
+function paketOdemeEkle(p,tutar,not,seans){p.odemeler=paketOdemeleri(p).slice();p.odemeler.push({id:yeniId(),tutar,tarih:BUGUN,not:not||'Ödeme',seans:seans??Number(p.kullanilan||0)});p.odenen=paketOdenen(p)}
 function paketOdemeFormu(pid){
   const p=V.paketler.find(x=>x.id===pid),kalan=paketBorc(p);
   ac('Ödeme al',`
@@ -1123,7 +1123,7 @@ function tahsilatOlaylari(){
     if(Number(r.alinan)>0)o.push({tarih:r.alinanTarihi||r.tarih,tutar:Number(r.alinan),ad,mid:r.mid,aciklama:'Randevuda alınan · '+h});
     if(r.durum==='geldi'&&r.odendi&&!r.paketli){const t=Number(r.ucret||0)-Number(r.kapora||0)-Number(r.alinan||0);if(t>0)o.push({tarih:r.odemeTarihi||r.tarih,tutar:t,ad,mid:r.mid,aciklama:h})}
   });
-  V.paketler.forEach(p=>paketOdemeleri(p).forEach(x=>{if(Number(x.tutar)>0)o.push({tarih:x.tarih||p.tarih||'',tutar:Number(x.tutar),ad:M(p.mid).ad,mid:p.mid,aciklama:(x.not||'Ödeme')+' · '+H(p.hid).ad+(p.tekIslem?'':' ('+p.toplam+' seans)')})}));
+  V.paketler.forEach(p=>paketOdemeleri(p).forEach(x=>{if(Number(x.tutar)>0)o.push({tarih:x.tarih||p.tarih||'',tutar:Number(x.tutar),ad:M(p.mid).ad,mid:p.mid,aciklama:(x.not||'Ödeme')+' · '+H(p.hid).ad+(p.tekIslem?'':' ('+p.toplam+' seans)'),seans:p.tekIslem?null:(x.seans??null),hizmet:H(p.hid).ad,not:x.not||'Ödeme'})}));
   V.satislar.forEach(x=>{if(x.odendi&&Number(x.tutar)>0)o.push({tarih:x.odemeTarihi||x.tarih,tutar:Number(x.tutar),ad:satisAd(x),mid:x.mid,sid:x.id,aciklama:'Tek seferlik · '+x.aciklama})});
   return o.sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
 }
@@ -1160,7 +1160,7 @@ function geldiKaydet(rid,b){
   const p=r.paketli?(acikPaket(r.mid,r.hid)||V.paketler.find(x=>x.mid===r.mid&&x.hid===r.hid)):null;
   durum(rid,'geldi');
   if(al){
-    if(r.paketli&&p)paketOdemeEkle(p,t,'Randevuda alınan');
+    if(r.paketli&&p)paketOdemeEkle(p,t,'Randevuda alınan',r.seansNo);
     else if(!r.paketli){const k=Number(r.ucret||0)-Number(r.kapora||0)-Number(r.alinan||0);if(t>=k){r.odendi=true;r.odemeTarihi=BUGUN;if(t>k){r.alinan=Number(r.alinan||0)+(t-k);r.alinanTarihi=BUGUN}}else{r.alinan=Number(r.alinan||0)+t;r.alinanTarihi=BUGUN}}
     kaydet();ciz();
   }
@@ -1565,7 +1565,7 @@ function musteriKarti(mid){
     <div class="bolum">Tek seferlik işlemler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="satisFormu(null,'${m.id}')">${I('arti')}Ekle</button></div>
     ${satislar.length?`<div class="kutu">${satislar.map(x=>`<div class="satir" style="cursor:pointer" onclick="satisFormu('${x.id}')"><span>${kisaTarih(x.tarih)}</span><b>${k(x.aciklama)} · ${tl(x.tutar)}${x.odendi?'':` <span class="etiket e-borc">Ödenmedi</span>`}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Tek seferlik işlem yok.</div>'}
     ${(()=>{const th=tahsilatOlaylari().filter(x=>x.mid===mid);return `<div class="bolum">Alınan tahsilatlar<span style="font-weight:600;color:var(--yesil);text-transform:none;letter-spacing:0">${th.length?tl(th.reduce((s,x)=>s+x.tutar,0)):''}</span></div>
-    ${th.length?`<div class="kutu">${th.map(x=>`<div class="satir"><span>${x.tarih?kisaTarih(x.tarih):'—'}</span><b>${k(x.aciklama)} · <span style="color:var(--yesil)">${tl(x.tutar)}</span></b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz tahsilat yok.</div>'}`})()}
+    ${th.length?`<div class="kutu">${th.map(x=>`<div class="satir" style="align-items:flex-start"><span style="white-space:nowrap">${x.tarih?kisaTarih(x.tarih):'—'}</span><b style="text-align:right">${x.seans!=null?`<span class="etiket e-paket" style="margin-right:6px">${x.seans?x.seans+'. seansta':'Seans öncesi'}</span>`:''}${k(x.hizmet?x.not+' · '+x.hizmet:x.aciklama)} · <span style="color:var(--yesil)">${tl(x.tutar)}</span></b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz tahsilat yok.</div>'}`})()}
     <div class="bolum">Randevu geçmişi</div>
     ${gecmis.length?`<div class="kutu">${gecmis.map(r=>`<div class="satir" style="cursor:pointer" onclick="randevuDetay('${r.id}')"><span>${kisaTarih(r.tarih)}, ${r.saat}</span><b>${k(H(r.hid).ad)} <span class="etiket e-${r.durum}" style="margin-left:6px">${DURUM[r.durum]}</span>${borc(r)?` <span class="etiket e-borc">${tl(borc(r))}</span>`:''}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz randevu yok.</div>'}
     <button class="btn btn-ikincil btn-tam" style="margin-top:14px" onclick="islemGecmisi('${m.id}')">${I('saat')}Bu müşterinin işlem geçmişi</button>`);
