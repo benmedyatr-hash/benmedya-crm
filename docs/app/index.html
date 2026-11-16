@@ -692,7 +692,7 @@ function temaUygula(){
 }
 
 /* ---------- gezinme ---------- */
-const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler ve Fiyatlar','hizmet'],ayarlar:['Ayarlar','ayar']};
+const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Tahsilat','tahsilat'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler & Fiyatlar','hizmet'],ayarlar:['Ayarlar','ayar']};
 let ekran='bugun',seciliGun=BUGUN,aramaMetni='';
 function navCiz(){
   const n=acikGorevler().length,rs=randevusuzlar().seansli.length;
@@ -1107,7 +1107,7 @@ function gorevBitir(gid,b){const g=V.gorevler.find(x=>x.id===gid);g.bitti=b;kayd
 /* ---------- ekran: hizmetler ---------- */
 function ekranHizmetler(){
   return `<div class="panel">
-    <div class="panel-ust"><h2>${I('hizmet')}Hizmetler ve Fiyatlar</h2><span style="display:flex;gap:6px"><button class="btn btn-ikincil" style="height:36px" ${V.hizmetler.length>1?'':'disabled'} onclick="hizmetAZ(this)">A→Z</button><button class="btn btn-ana" style="height:36px" onclick="hizmetFormu()">${I('arti')}Yeni hizmet</button></span></div>
+    <div class="panel-ust"><h2>${I('hizmet')}Hizmetler &amp; Fiyatlar</h2><span style="display:flex;gap:6px"><button class="btn btn-ikincil" style="height:36px" ${V.hizmetler.length>1?'':'disabled'} onclick="hizmetAZ(this)">A→Z</button><button class="btn btn-ana" style="height:36px" onclick="hizmetFormu()">${I('arti')}Yeni hizmet</button></span></div>
     <div class="tablo-bas hiz-bas"><div>Hizmet</div><div>Fiyat</div><div>Sıra</div><div></div></div>
     ${V.hizmetler.map((h,i,a)=>`<div class="hiz-satir" onclick="hizmetFormu('${h.id}')"><div class="ad" style="font-size:14px">${k(h.ad)}</div><div class="soluk">${h.fiyat?tl(h.fiyat):'—'}</div><div class="sira-btn" onclick="event.stopPropagation()"><button aria-label="Yukarı taşı" ${i?'':'disabled'} onclick="hizmetTasi('${h.id}',-1)">↑</button><button aria-label="Aşağı taşı" ${i<a.length-1?'':'disabled'} onclick="hizmetTasi('${h.id}',1)">↓</button></div><div class="soluk ikon">${I('kalem')}</div></div>`).join('')||'<div class="bos">Hizmet yok.</div>'}
   </div>
