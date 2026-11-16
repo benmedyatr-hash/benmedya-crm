@@ -728,7 +728,10 @@ function menuKapat(){const y=document.querySelector('.yan');if(!y.classList.cont
   y.addEventListener('touchmove',e=>{if(x0===null)return;dx=Math.min(0,e.touches[0].clientX-x0);y.style.transform=`translateX(${dx}px)`},{passive:true});
   y.addEventListener('touchend',()=>{if(x0===null)return;x0=null;y.style.transition='';if(dx<-60)menuKapat();else y.style.transform=''});
 })();
-function git(s){menuKapat();if(s==='tahsilat'&&ekran!=='tahsilat')tahsilatDonem=null;ekran=s;if(s!=='musteriler')aramaMetni='';ciz();window.scrollTo(0,0)}
+// sayfa / müşteri kartı açılışı işlem geçmişine yazılır (aynı şey kısa sürede tekrar yazılmaz)
+const gorulen=new Map();
+function gorKaydet(tur,ozet,kayit){if(!HAZIR)return;const a=tur+'|'+(kayit||ozet),z=Date.now();if(gorulen.get(a)>z-60000)return;gorulen.set(a,z);sb.rpc('sayfa_kaydet',{p_tur:tur,p_ozet:ozet,p_kayit:kayit||null}).then(()=>{},()=>{})}
+function git(s){menuKapat();if(s==='tahsilat'&&ekran!=='tahsilat')tahsilatDonem=null;if(s!==ekran)gorKaydet('sayfa',EKRANLAR[s][0]);ekran=s;if(s!=='musteriler')aramaMetni='';ciz();window.scrollTo(0,0)}
 
 /* ---------- WhatsApp ---------- */
 function waLink(tel,mesaj){
@@ -1568,6 +1571,7 @@ function randevuSil(rid){const r=R(rid);if(r.paketId&&r.durum==='geldi'){const p
 /* ---------- müşteri ---------- */
 function musteriKarti(mid){
   const m=V.musteriler.find(x=>x.id===mid);if(!m)return;
+  gorKaydet('musteri',m.ad,mid);
   const S=SK(),gecmis=V.randevular.filter(r=>r.mid===mid).sort((a,b)=>(b.tarih+b.saat).localeCompare(a.tarih+a.saat));
   const paketler=V.paketler.filter(p=>p.mid===mid),gelmedi=gecmis.filter(r=>r.durum==='gelmedi').length,b=musteriBorc(mid);
   const satislar=V.satislar.filter(x=>x.mid===mid).sort((a,b)=>b.tarih.localeCompare(a.tarih));
@@ -1634,6 +1638,7 @@ function logDeger(a,v){
 }
 function logCumle(l){
   if(l.islem==='giris')return 'Uygulamayı açtı';
+  if(l.islem==='goruntuledi')return l.tur==='musteri'?'Müşteri kartını açtı: '+(l.ozet||''):'Sayfayı açtı: '+(l.ozet||'');
   if(l.islem==='yonetim')return 'Yönetim: '+(l.ozet||'');
   if(l.islem==='ayar')return 'Ayarları değiştirdi'+(l.degisen?' ('+l.degisen.split(',').map(a=>ALAN_AD[a]||a).join(', ')+')':'');
   let s=(TUR_AD[l.tur]||l.tur)+' '+({ekledi:'eklendi',guncelledi:'güncellendi',sildi:'silindi'}[l.islem]||l.islem)+(l.ozet?': '+l.ozet:'');
