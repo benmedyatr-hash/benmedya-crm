@@ -739,7 +739,7 @@ function ekranBugun(){
   return `
   <div class="kpi">
     <div class="panel" onclick="git('takvim')"><div class="etk">Bugünkü randevu<span>${I('takvim')}</span></div><b>${bugun.length}</b></div>
-    <div class="panel" onclick="git('takvim')"><div class="etk">Bugün beklenen tahsilat<span>${I('para')}</span></div><b>${tl(beklenen)}</b></div>
+    <div class="panel" onclick="git('tahsilat')"><div class="etk">Bugün beklenen tahsilat<span>${I('para')}</span></div><b>${tl(beklenen)}</b></div>
     <div class="panel" onclick="git('tahsilat')"><div class="etk">Bekleyen ödemeler<span>${I('uyari')}</span></div><b>${tl(toplamBorc)}</b></div>
     <div class="panel" onclick="git('gorevler')"><div class="etk">Açık hatırlatıcı<span>${I('gorev')}</span></div><b>${acikGorevler().length}</b></div>
   </div>
