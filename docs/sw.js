@@ -1,6 +1,6 @@
 // Telefona "uygulama olarak kur" için gereken küçük çalışan.
 // Veri ÖNBELLEĞE ALINMAZ (her zaman canlı veritabanından gelir); yalnız sayfa iskeleti.
-const SURUM = 'crm-v1';
+const SURUM = 'crm-v2';
 const ISKELET = ['./', 'index.html', 'ayar.js', 'manifest.webmanifest', 'ikon-192.png'];
 
 self.addEventListener('install', e => {

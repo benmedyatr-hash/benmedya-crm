@@ -116,9 +116,9 @@ main{max-width:1200px;margin:0 auto;padding:24px 28px 60px}
 
 <script>
 const ADRES=(window.CRM_AYAR&&CRM_AYAR.adres)||location.origin+location.pathname.replace(/yonetim\.html$/,'');
-const sb=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:true,storageKey:'crm-yonetim'}});
+const sb=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:true,storageKey:'crm-yonetim',lock:(ad,sure,fn)=>fn()}});
 // Yeni kullanıcı açarken yöneticinin oturumu bozulmasın diye ayrı, hafızasız bağlantı
-const sbKayit=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'crm-kayit-gecici'}});
+const sbKayit=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'crm-kayit-gecici',lock:(ad,sure,fn)=>fn()}});
 const SEKTOR={genel:'Genel / Diğer',guzellik:'Güzellik & Bakım',saglik:'Sağlık & Klinik',oto:'Oto Servis & Bakım',teknik:'Teknik Servis & Usta',egitim:'Eğitim & Kurs',danismanlik:'Danışmanlık & Ofis'};
 const RENK=['Bordo','Lacivert','Yeşil','Mor','Turuncu','Antrasit'];
 let FIRMALAR=[],ARA='';

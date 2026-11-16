@@ -437,7 +437,8 @@ const ilkAd=ad=>String(ad||'').trim().split(/\s+/)[0]||'';
 let BUGUN=tarihStr(new Date());
 
 /* ---------- veri: Supabase (her firma yalnız kendi kaydını görür) ---------- */
-const sb=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+// lock: sekmeler arası kilit kapalı — uygulama penceresi + açık sekme birlikteyken açılışta takılmayı önler
+const sb=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,lock:(ad,sure,fn)=>fn()}});
 const TURLER={musteri:'musteriler',hizmet:'hizmetler',randevu:'randevular',paket:'paketler',gorev:'gorevler'};
 let V={hizmetler:[],musteriler:[],paketler:[],randevular:[],gorevler:[]}, AYAR={...VARSAYILAN_AYAR};
 let FIRMA=null, KULLANICI=null, SNAP=new Map(), AYAR_SNAP='', HAZIR=false, kanal=null;
@@ -519,9 +520,12 @@ async function sifreKaydet(){
 sb.auth.onAuthStateChange(ev=>{if(ev==='PASSWORD_RECOVERY'){document.getElementById('giris').classList.add('gizli');document.getElementById('yukleniyor').classList.add('gizli');sifreDegistir()}});
 
 /* ---------- açılış: firmayı ve kayıtları yükle ---------- */
+let baslaSayac=null;
 async function basla(){
   document.getElementById('giris').classList.add('gizli');
   document.getElementById('yukleniyor').classList.remove('gizli');
+  clearTimeout(baslaSayac);
+  baslaSayac=setTimeout(()=>{if(!HAZIR&&!document.getElementById('yukleniyor').classList.contains('gizli'))girisGoster('Bağlantı çok yavaş ya da kesildi. İnternetinizi kontrol edip tekrar giriş yapın.')},15000);
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(!session)return girisGoster();
@@ -549,8 +553,8 @@ async function basla(){
     document.getElementById('hesapEposta').textContent=KULLANICI.email;
     temaUygula();ciz();
     document.getElementById('yukleniyor').classList.add('gizli');
-    canliBaglan();bildirimKontrol();
-  }catch(e){console.error(e);girisGoster('Bağlantı kurulamadı: '+HATA_TR(e.message||String(e)))}
+    canliBaglan();bildirimKontrol();clearTimeout(baslaSayac);
+  }catch(e){console.error(e);clearTimeout(baslaSayac);girisGoster('Bağlantı kurulamadı: '+HATA_TR(e.message||String(e)))}
 }
 
 /* ---------- canlı: başka cihazdaki değişiklik anında gelir ---------- */
