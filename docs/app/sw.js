@@ -1,5 +1,6 @@
 // Firma uygulamasını "uygulama olarak kur" için. Veri önbelleğe alınmaz; önce ağ, olmazsa önbellek.
-const SURUM = 'crm-app-v12';
+// Ayrıca telefon bildirimlerini (Web Push) gösterir — uygulama kapalı / telefon kilitliyken de.
+const SURUM = 'crm-app-v13';
 const ISKELET = ['./', 'index.html', '../ayar.js', '../sektorler.js', 'manifest.webmanifest', 'ikon-192.png'];
 
 self.addEventListener('install', e => {
@@ -15,4 +16,24 @@ self.addEventListener('fetch', e => {
     fetch(e.request).then(r => { const k = r.clone(); caches.open(SURUM).then(c => c.put(e.request, k)); return r; })
       .catch(() => caches.match(e.request).then(r => r || caches.match('index.html')))
   );
+});
+
+self.addEventListener('push', e => {
+  let v = {};
+  try { v = e.data ? e.data.json() : {}; } catch (_) { v = { govde: e.data && e.data.text() }; }
+  e.waitUntil(self.registration.showNotification(v.baslik || 'CRM', {
+    body: v.govde || '',
+    tag: v.etiket || undefined,
+    icon: 'ikon-192.png',
+    badge: 'ikon-192.png',
+    data: { url: v.url || './' }
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const hedef = new URL((e.notification.data && e.notification.data.url) || './', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(ws => {
+    for (const w of ws) if (w.url.startsWith(self.registration.scope) && 'focus' in w) return w.focus();
+    return self.clients.openWindow(hedef);
+  }));
 });

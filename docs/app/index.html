@@ -21,7 +21,7 @@
 <style>
 :root{
   --bg:#f6f6f7; --kart:#ffffff; --yazi:#1a1a1e; --soluk:#6e6e78; --cok-soluk:#a1a1aa; --cizgi:#e9e9ec; --hover:#fafafb;
-  --ana:#9b3d63; --ana-koyu:#7f2f50; --ana-acik:#f7edf1;
+  --ana:#9b3d63; --ana-koyu:#7f2f50; --ana-acik:#f7edf1; --ana-yazi:#fff; --vurgu:#9b3d63;
   --yan:#19171c; --yan-yazi:#b9b5bd; --yan-aktif:#2a262e;
   --yesil:#1f7a4d; --yesil-acik:#e7f4ed; --kirmizi:#b9382f; --kirmizi-acik:#fbeceb;
   --mavi:#3f5585; --mavi-acik:#edf0f7; --sari:#8a6100; --sari-acik:#fdf4dc; --wa:#1a8f4e;
@@ -38,13 +38,13 @@ input:focus,select:focus,textarea:focus{border-color:var(--ana);box-shadow:0 0 0
 input[type=checkbox]{width:20px;height:20px;accent-color:var(--ana);cursor:pointer;flex:none}
 label{display:block;font-size:12px;font-weight:600;color:var(--soluk);margin:14px 0 6px;letter-spacing:.01em}
 svg.i{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-a{color:var(--ana);text-decoration:none}
+a{color:var(--vurgu);text-decoration:none}
 
 /* ---------- yerleşim ---------- */
 .uyg{display:flex;min-height:100vh}
 .yan{width:252px;flex:none;background:var(--yan);color:var(--yan-yazi);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:22px 14px}
 .marka{display:flex;align-items:center;gap:12px;padding:0 8px 26px;min-width:0}
-.logo{width:40px;height:40px;border-radius:11px;background:var(--ana);color:#fff;display:grid;place-items:center;font-weight:700;font-size:17px;flex:none}
+.logo{width:40px;height:40px;border-radius:11px;background:var(--ana);color:var(--ana-yazi);display:grid;place-items:center;font-weight:700;font-size:17px;flex:none}
 .marka-yazi{min-width:0}
 .marka-yazi b{display:block;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .marka-yazi small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.22em;margin-top:3px}
@@ -54,7 +54,7 @@ a{color:var(--ana);text-decoration:none}
 .yan nav button:hover{background:#221f26;color:#fff}
 .yan nav button.aktif{background:var(--yan-aktif);color:#fff}
 .yan nav button.aktif::before{content:"";position:absolute;left:-14px;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0;background:var(--ana)}
-.yan nav .rozet{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--ana);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.yan nav .rozet{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--ana);color:var(--ana-yazi);font-size:11px;font-weight:700;display:grid;place-items:center}
 .yan .yan-alt{margin-top:auto}
 .yan .surum{font-size:11.5px;color:#7a7580;padding:12px;border:1px solid #2c2830;border-radius:10px;line-height:1.5;margin-top:10px}
 .yan .surum b{color:#d8d3db;display:block;margin-bottom:2px}
@@ -79,9 +79,9 @@ main{padding:26px 32px 60px;max-width:1200px}
 /* ---------- düğmeler ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:40px;padding:0 16px;border-radius:10px;font-weight:600;font-size:13.5px;white-space:nowrap;transition:background .15s,opacity .15s}
 .btn svg.i{width:17px;height:17px}
-.btn-ana{background:var(--ana);color:#fff}.btn-ana:hover{background:var(--ana-koyu)}
+.btn-ana{background:var(--ana);color:var(--ana-yazi)}.btn-ana:hover{background:var(--ana-koyu)}
 .btn-ikincil{background:var(--kart);border:1px solid var(--cizgi);color:var(--yazi)}.btn-ikincil:hover{background:var(--hover)}
-.btn-ince{background:var(--ana-acik);color:var(--ana)}
+.btn-ince{background:var(--ana-acik);color:var(--vurgu)}
 .btn-wa{background:var(--wa);color:#fff}
 .btn-geldi{background:var(--yesil-acik);color:var(--yesil)}
 .btn-gelmedi,.btn-sil{background:var(--kirmizi-acik);color:var(--kirmizi)}
@@ -93,7 +93,7 @@ main{padding:26px 32px 60px;max-width:1200px}
 .panel{background:var(--kart);border:1px solid var(--cizgi);border-radius:14px;box-shadow:var(--golge);overflow:hidden}
 .panel-ust{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--cizgi);height:58px}
 .panel-ust h2{font-size:15px;font-weight:600;display:flex;align-items:center;gap:9px;white-space:nowrap}
-.panel-ust h2 svg{color:var(--ana)}
+.panel-ust h2 svg{color:var(--vurgu)}
 .panel-ust .sayi{font-size:12.5px;color:var(--soluk);white-space:nowrap}
 .panel-ic{padding:4px 18px}
 .bos{text-align:center;color:var(--cok-soluk);padding:34px 10px;font-size:13.5px}
@@ -103,14 +103,14 @@ main{padding:26px 32px 60px;max-width:1200px}
 .kpi .panel{padding:16px 18px;height:106px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer}
 .kpi .panel:hover{border-color:#dcdce0}
 .kpi .etk{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--soluk);font-weight:500}
-.kpi .etk span{width:32px;height:32px;border-radius:9px;background:var(--ana-acik);color:var(--ana);display:grid;place-items:center}
+.kpi .etk span{width:32px;height:32px;border-radius:9px;background:var(--ana-acik);color:var(--vurgu);display:grid;place-items:center}
 .kpi .etk span svg{width:16px;height:16px}
 .kpi b{font-size:26px;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
 
 .izgara{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:20px;align-items:start}
 .sutun{display:flex;flex-direction:column;gap:20px}
 
-.avatar{width:38px;height:38px;border-radius:50%;background:var(--ana-acik);color:var(--ana);display:grid;place-items:center;font-weight:600;font-size:13px;flex:none}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--ana-acik);color:var(--vurgu);display:grid;place-items:center;font-weight:600;font-size:13px;flex:none}
 .avatar.buyuk{width:56px;height:56px;font-size:19px}
 
 /* randevu satırı */
@@ -128,7 +128,7 @@ main{padding:26px 32px 60px;max-width:1200px}
 .rnd .islem{display:grid;grid-template-columns:40px 94px 94px;gap:6px}
 .rnd .islem .btn{height:36px;padding:0 10px;font-size:12.5px}
 .etiket{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-.e-paket{background:var(--ana-acik);color:var(--ana)}
+.e-paket{background:var(--ana-acik);color:var(--vurgu)}
 .e-geldi,.e-odendi{background:var(--yesil-acik);color:var(--yesil)}
 .e-gelmedi,.e-uyari{background:var(--kirmizi-acik);color:var(--kirmizi)}
 .e-bekliyor{background:#f1f1f3;color:var(--soluk)}
@@ -158,13 +158,19 @@ main{padding:26px 32px 60px;max-width:1200px}
 .gun b{font-size:18px;font-weight:700;margin-top:1px}
 .gun i{height:5px;width:5px;border-radius:50%;margin-top:4px;background:transparent}
 .gun.dolu i{background:var(--ana)}
-.gun.bugun b{color:var(--ana)}
+.gun.bugun b{color:var(--vurgu)}
 .gun.secili{background:var(--ana);border-color:var(--ana)}
-.gun.secili small,.gun.secili b{color:#fff}.gun.secili i{background:#fff}
+.gun.secili small,.gun.secili b{color:var(--ana-yazi)}.gun.secili i{background:var(--ana-yazi)}
 .ok{height:40px;width:40px;border-radius:9px;display:grid;place-items:center;color:var(--soluk)}
 .ok:hover{background:#f3f3f5}
 .gun-bilgi{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px 6px}
 .gun-bilgi b{font-size:14px}
+.toplu{border:1px solid var(--cizgi);border-radius:12px;padding:10px 12px;margin-top:10px;transition:box-shadow .2s,border-color .2s,opacity .2s}
+.toplu.sirada{border-color:var(--ana);box-shadow:0 0 0 2px var(--ana-acik)}
+.toplu.gitti{opacity:.6}
+.toplu-ust{display:flex;align-items:center;gap:10px}
+.toplu-ust .orta{flex:1;min-width:0}
+.toplu textarea{margin-top:8px;min-height:76px;font-size:13px}
 .zaman{position:relative;margin:10px 18px 18px 74px}
 .saatsatir{height:60px;border-top:1px solid var(--cizgi);position:relative;cursor:pointer}
 .saatsatir::after{content:"";position:absolute;left:0;right:0;top:30px;border-top:1px dashed #f1f1f3}
@@ -205,7 +211,7 @@ main{padding:26px 32px 60px;max-width:1200px}
 .liste-btn{display:flex;align-items:center;gap:12px;width:100%;height:54px;padding:0 18px;border-bottom:1px solid var(--cizgi);text-align:left;font-weight:500}
 .liste-btn:last-child{border-bottom:0}
 .liste-btn:hover{background:var(--hover)}
-.liste-btn svg:first-child{color:var(--ana)}
+.liste-btn svg:first-child{color:var(--vurgu)}
 .liste-btn .sag{margin-left:auto;color:var(--cok-soluk)}
 .ipucu{font-size:12px;color:var(--cok-soluk);margin-top:6px;line-height:1.5}
 .ipucu code{background:#f1f1f3;color:var(--yazi);padding:1px 5px;border-radius:5px;font-size:11.5px}
@@ -234,7 +240,7 @@ main{padding:26px 32px 60px;max-width:1200px}
 .ilerleme{height:7px;background:#efeff1;border-radius:7px;overflow:hidden;margin:10px 0 8px}
 .ilerleme div{height:100%;background:var(--ana);border-radius:7px}
 .uyari{display:flex;gap:8px;align-items:flex-start;background:var(--kirmizi-acik);color:var(--kirmizi);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:12px;font-weight:500}
-.bilgi{background:var(--ana-acik);color:var(--ana);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:10px;font-weight:500}
+.bilgi{background:var(--ana-acik);color:var(--vurgu);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:10px;font-weight:500}
 .alt-dugmeler{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
 .secim{display:flex;align-items:center;gap:14px;width:100%;padding:14px;border:1px solid var(--cizgi);border-radius:12px;margin-top:10px;text-align:left}
 .secim:hover{background:var(--hover);border-color:#dcdce0}
@@ -289,15 +295,15 @@ main{padding:26px 32px 60px;max-width:1200px}
   .ust .marka{display:flex;padding:0;gap:11px}
   .ust .logo{width:36px;height:36px;font-size:16px;border-radius:10px}
   .ust .marka-yazi b{max-width:58vw}
-  .ust .marka-yazi small{color:var(--ana)}
+  .ust .marka-yazi small{color:var(--vurgu)}
   .ust-sol{display:flex;align-items:center;gap:10px;min-width:0}
-  .menu-btn{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:var(--ana);color:#fff;flex:none;box-shadow:0 3px 10px color-mix(in srgb,var(--ana) 30%,transparent)}
+  .menu-btn{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:var(--ana);color:var(--ana-yazi);flex:none;box-shadow:0 3px 10px color-mix(in srgb,var(--ana) 30%,transparent)}
   .menu-btn svg.i{width:21px;height:21px;stroke-width:2.2}
   .menu-btn:active{transform:scale(.94);background:var(--ana-koyu)}
   .ust-sol{gap:11px}
   .ust .marka .logo{display:none}
   .ust .marka-yazi small{display:none}
-  .crm-etiket{display:block;font-size:16px;font-weight:700;letter-spacing:.03em;line-height:1;margin-right:-7px;color:var(--ana);pointer-events:none;user-select:none;-webkit-user-select:none}
+  .crm-etiket{display:block;font-size:16px;font-weight:700;letter-spacing:.03em;line-height:1;margin-right:-7px;color:var(--vurgu);pointer-events:none;user-select:none;-webkit-user-select:none}
   .dikey-cizgi{display:block;width:1px;height:24px;background:var(--cizgi);pointer-events:none}
   .ust-sag{gap:12px}
   body.crm-gizli .crm-etiket,body.crm-gizli .dikey-cizgi{display:none}
@@ -306,7 +312,7 @@ main{padding:26px 32px 60px;max-width:1200px}
   .cikis-ust{width:40px;padding:0;justify-content:center;border-radius:11px}.cikis-ust span{display:none}
   .cikis-ust.onay{width:auto;padding:0 12px}.cikis-ust.onay span{display:inline}
   .ust .ayar-btn{display:grid;place-items:center;width:40px;height:40px;border-radius:11px;color:var(--soluk);border:1px solid var(--cizgi);flex:none}
-  .ust .ayar-btn.aktif{color:var(--ana);border-color:var(--ana);background:var(--ana-acik)}
+  .ust .ayar-btn.aktif{color:var(--vurgu);border-color:var(--ana);background:var(--ana-acik)}
   main{padding:0 14px calc(100px + env(safe-area-inset-bottom))}
   .sayfa-baslik{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:16px 2px 12px}
   .sayfa-baslik h1{font-size:22px;font-weight:700;letter-spacing:-.02em}
@@ -350,10 +356,10 @@ main{padding:26px 32px 60px;max-width:1200px}
   .mobil-nav .sekme .kap{width:58px;height:32px;border-radius:16px;display:grid;place-items:center;transition:background .2s,color .2s}
   .mobil-nav .sekme svg.i{width:22px;height:22px;stroke-width:1.7}
   .mobil-nav .sekme.aktif{color:var(--yazi);font-weight:600}
-  .mobil-nav .sekme.aktif .kap{background:var(--ana-acik);color:var(--ana)}
+  .mobil-nav .sekme.aktif .kap{background:var(--ana-acik);color:var(--vurgu)}
   .mobil-nav .sekme.aktif svg.i{stroke-width:2}
   .mobil-nav .sekme .nokta{position:absolute;top:9px;left:calc(50% + 10px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--kirmizi);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;border:2px solid #fff;box-sizing:content-box}
-  .mobil-nav .orta-arti{justify-self:center;width:54px;height:54px;border-radius:17px;background:var(--ana);color:#fff;display:grid;place-items:center;box-shadow:0 6px 18px color-mix(in srgb,var(--ana) 40%,transparent);transform:translateY(-12px);transition:transform .15s}
+  .mobil-nav .orta-arti{justify-self:center;width:54px;height:54px;border-radius:17px;background:var(--ana);color:var(--ana-yazi);display:grid;place-items:center;box-shadow:0 6px 18px color-mix(in srgb,var(--ana) 40%,transparent);transform:translateY(-12px);transition:transform .15s}
   .mobil-nav .orta-arti svg.i{width:25px;height:25px;stroke-width:2.2}
   .mobil-nav .orta-arti:active{transform:translateY(-12px) scale(.94)}
 }
@@ -449,14 +455,23 @@ const RENKLER=[
   {ad:'Yeşil',ana:'#1f7a5a',koyu:'#175f46',acik:'#e8f4ef'},
   {ad:'Mor',ana:'#6a46a8',koyu:'#54378a',acik:'#f1edf8'},
   {ad:'Turuncu',ana:'#c25a1c',koyu:'#a24914',acik:'#fbefe7'},
-  {ad:'Antrasit',ana:'#33363d',koyu:'#22252b',acik:'#eeeff1'}
+  {ad:'Antrasit',ana:'#33363d',koyu:'#22252b',acik:'#eeeff1'},
+  {ad:'Pembe',ana:'#d6457f',koyu:'#b8366a',acik:'#fcebf2'},
+  // açık tonlar: düğme yazısı koyu (yazi), başlık/simge rengi daha koyu ton (vurgu)
+  {ad:'Açık pembe',ana:'#f5c3d6',koyu:'#eeacc5',acik:'#fdf1f6',yazi:'#5c1f37',vurgu:'#c2386f'},
+  {ad:'Pudra',ana:'#ecd2ca',koyu:'#e2beb3',acik:'#faf3f1',yazi:'#5a3a31',vurgu:'#9a5a4a'},
+  {ad:'Lila',ana:'#dccff2',koyu:'#cbb9eb',acik:'#f6f2fc',yazi:'#3d2a63',vurgu:'#7457ad'},
+  {ad:'Açık mavi',ana:'#c4ddf3',koyu:'#a9cbea',acik:'#f0f6fc',yazi:'#1d3d5c',vurgu:'#2f6aa3'},
+  {ad:'Mint',ana:'#c6e9d8',koyu:'#ade0c7',acik:'#eff9f4',yazi:'#1d4a36',vurgu:'#2a8061'},
+  {ad:'Şampanya',ana:'#efe0bf',koyu:'#e6d1a5',acik:'#fbf7ee',yazi:'#55431c',vurgu:'#9a7a2e'}
 ];
 
 const SEKTORLER=window.SEKTORLER; // ortak liste: ../sektorler.js
 
 const VARSAYILAN_AYAR={firma:'Firma Adı',sektor:'genel',renk:0,
   sablonHatirlat:'Merhaba {ad}, {gun} saat {saat} için {hizmet} randevunuzu hatırlatmak isteriz. İyi günler dileriz. {firma}',
-  sablonDogum:'İyi ki doğdunuz {ad}! {firma} olarak yeni yaşınızı kutlarız.'};
+  sablonDogum:'İyi ki doğdunuz {ad}! {firma} olarak yeni yaşınızı kutlarız.',
+  bildirimDk:30,sabahOzet:true,sabahSaat:'09:00'};
 
 const I=n=>`<svg class="i"><use href="#i-${n}"/></svg>`;
 function tarihStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -479,8 +494,8 @@ let BUGUN=tarihStr(new Date());
 /* ---------- veri: Supabase (her firma yalnız kendi kaydını görür) ---------- */
 // lock: sekmeler arası kilit kapalı — uygulama penceresi + açık sekme birlikteyken açılışta takılmayı önler
 const sb=supabase.createClient(CRM_AYAR.url,CRM_AYAR.anahtar,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,lock:(ad,sure,fn)=>fn()}});
-const TURLER={musteri:'musteriler',hizmet:'hizmetler',randevu:'randevular',paket:'paketler',gorev:'gorevler'};
-let V={hizmetler:[],musteriler:[],paketler:[],randevular:[],gorevler:[]}, AYAR={...VARSAYILAN_AYAR};
+const TURLER={musteri:'musteriler',hizmet:'hizmetler',randevu:'randevular',paket:'paketler',gorev:'gorevler',satis:'satislar'};
+let V={hizmetler:[],musteriler:[],paketler:[],randevular:[],gorevler:[],satislar:[]}, AYAR={...VARSAYILAN_AYAR};
 let FIRMA=null, KULLANICI=null, SNAP=new Map(), AYAR_SNAP='', HAZIR=false, kanal=null;
 let kayitZaman=null, kaydediliyor=false, tekrarKaydet=false, bekleyenCiz=false;
 
@@ -591,7 +606,7 @@ async function basla(){
     if(e2)throw e2;
     if(!f)return girisGoster('Firma hesabı şu an kullanıma kapalı. Lütfen hizmet aldığınız kişiyle görüşün.',true);
     FIRMA=f;
-    const yeni={hizmetler:[],musteriler:[],paketler:[],randevular:[],gorevler:[]};
+    const yeni={hizmetler:[],musteriler:[],paketler:[],randevular:[],gorevler:[],satislar:[]};
     for(let bas=0;;bas+=1000){
       const{data,error}=await sb.from('kayitlar').select('tur,veri').eq('firma_id',f.id).order('tur').order('id').range(bas,bas+999);
       if(error)throw error;
@@ -608,7 +623,7 @@ async function basla(){
     document.getElementById('hesapEposta').textContent=KULLANICI.email;
     temaUygula();ciz();
     document.getElementById('yukleniyor').classList.add('gizli');
-    canliBaglan();bildirimKontrol();clearTimeout(baslaSayac);
+    canliBaglan();pushBasla();clearTimeout(baslaSayac);
   }catch(e){console.error(e);clearTimeout(baslaSayac);girisGoster('Bağlantı kurulamadı: '+HATA_TR(e.message||String(e)))}
 }
 
@@ -628,7 +643,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 async function tazele(){
   // telefon uykudan dönünce kaçırılan değişiklikleri al
   try{
-    const yeni={hizmetler:[],musteriler:[],paketler:[],randevular:[],gorevler:[]};
+    const yeni={hizmetler:[],musteriler:[],paketler:[],randevular:[],gorevler:[],satislar:[]};
     for(let bas=0;;bas+=1000){const{data,error}=await sb.from('kayitlar').select('tur,veri').eq('firma_id',FIRMA.id).order('tur').order('id').range(bas,bas+999);if(error)return;data.forEach(r=>{const l=TURLER[r.tur];if(l)yeni[l].push(r.veri)});if(data.length<1000)break}
     if(kayitZaman||kaydediliyor)return;
     V=yeni;SNAP=anlik();yenidenCiz();
@@ -642,13 +657,17 @@ const R=i=>V.randevular.find(x=>x.id===i);
 const gununRandevulari=t=>V.randevular.filter(r=>r.tarih===t).sort((a,b)=>a.saat.localeCompare(b.saat));
 const acikPaket=(mid,hid)=>V.paketler.find(p=>p.mid===mid&&p.hid===hid&&p.kullanilan<p.toplam);
 const borc=r=>r.durum==='geldi'&&!r.odendi&&!r.paketli&&Number(r.ucret)-Number(r.kapora||0)>0?Number(r.ucret)-Number(r.kapora||0):0;
-const musteriBorc=mid=>V.randevular.filter(r=>r.mid===mid).reduce((s,r)=>s+borc(r),0);
+const satisBorc=x=>x.odendi?0:Number(x.tutar||0);
+const S_=i=>V.satislar.find(x=>x.id===i);
+const satisAd=x=>x.mid?M(x.mid).ad:'Kayıtsız müşteri';
+const musteriBorc=mid=>V.randevular.filter(r=>r.mid===mid).reduce((s,r)=>s+borc(r),0)+V.satislar.filter(x=>x.mid===mid).reduce((s,x)=>s+satisBorc(x),0);
+const toplamBorcHesap=()=>V.randevular.reduce((s,r)=>s+borc(r),0)+V.satislar.reduce((s,x)=>s+satisBorc(x),0);
 const acikGorevler=()=>V.gorevler.filter(g=>!g.bitti&&g.tarih<=BUGUN);
 
 /* ---------- tema ---------- */
 function temaUygula(){
   const c=RENKLER[AYAR.renk]||RENKLER[0],st=document.documentElement.style;
-  st.setProperty('--ana',c.ana);st.setProperty('--ana-koyu',c.koyu);st.setProperty('--ana-acik',c.acik);
+  st.setProperty('--ana',c.ana);st.setProperty('--ana-koyu',c.koyu);st.setProperty('--ana-acik',c.acik);st.setProperty('--ana-yazi',c.yazi||'#fff');st.setProperty('--vurgu',c.vurgu||c.ana);
   document.querySelectorAll('.firmaAd').forEach(e=>e.textContent=AYAR.firma||'Firma Adı');
   document.querySelectorAll('.firmaHarf').forEach(e=>e.textContent=(AYAR.firma||'F').trim()[0].toLocaleUpperCase('tr'));
   document.title=(AYAR.firma||'Firma Adı')+' · CRM';
@@ -683,7 +702,64 @@ function waLink(tel,mesaj){
   return 'https://wa.me/'+n+'?text='+encodeURIComponent(mesaj);
 }
 function sablon(t,v){return String(t||'').replace(/\{(\w+)\}/g,(_,x)=>v[x]??'').replace(/\s+/g,' ').trim()}
-function hatirlatMesaji(r){const m=M(r.mid);return sablon(AYAR.sablonHatirlat,{ad:ilkAd(m.ad),gun:r.tarih===BUGUN?'bugün':r.tarih===gunEkle(BUGUN,1)?'yarın':gunAy(r.tarih),saat:r.saat,hizmet:H(r.hid).ad,firma:AYAR.firma})}
+const randevuAlanlari=r=>{const m=M(r.mid);return{ad:ilkAd(m.ad),adsoyad:m.ad,gun:r.tarih===BUGUN?'bugün':r.tarih===gunEkle(BUGUN,1)?'yarın':gunAy(r.tarih),saat:r.saat,hizmet:H(r.hid).ad,firma:AYAR.firma,not:r.not||'',adres:m.adres||'',ucret:r.paketli?'':tl(r.ucret),kalan:tl(borc(r))}};
+// randevu notu → düzgün cümle (baş harf büyük, sonda nokta)
+const notCumle=t=>{t=String(t||'').replace(/\s+/g,' ').trim();if(!t)return '';t=t[0].toLocaleUpperCase('tr')+t.slice(1);return /[.!?…]$/.test(t)?t:t+'.'};
+// hatırlatma = şablon + randevu notu (şablonda {not} yoksa not ilk cümleden sonra eklenir)
+function hatirlatMesaji(r){
+  const v=randevuAlanlari(r),n=notCumle(v.not);
+  if(/\{not\}/.test(AYAR.sablonHatirlat))return sablon(AYAR.sablonHatirlat,{...v,not:n});
+  const m=sablon(AYAR.sablonHatirlat,v);if(!n)return m;
+  const i=m.search(/[.!?]\s/);return i<0?m+' '+n:m.slice(0,i+1)+' '+n+m.slice(i+1);
+}
+// randevudan WhatsApp: müşteri kartı + randevu notundan hazır mesaj, göndermeden önce düzenlenebilir
+function waMesajlari(r){
+  const v=randevuAlanlari(r),n=notCumle(v.not),o=[['Randevu hatırlatma',hatirlatMesaji(r)]];
+  o.push(['Randevu onayı',`Merhaba ${v.ad}, ${v.gun} saat ${v.saat} için ${v.hizmet} randevunuz oluşturulmuştur.${n?' '+n:''} Görüşmek üzere. ${v.firma}`]);
+  if(borc(r))o.push(['Ödeme',`Merhaba ${v.ad}, ${gunAy(r.tarih)} tarihli ${v.hizmet} işleminizden kalan ${v.kalan} ödemeniz bulunmaktadır. İyi günler dileriz. ${v.firma}`]);
+  o.push(['Boş',`Merhaba ${v.ad}, `]);
+  return o;
+}
+function waMesajFormu(rid){
+  const r=R(rid),m=M(r.mid),o=waMesajlari(r),ilk=0;
+  ac('WhatsApp mesajı',`
+    <p class="not" style="margin-top:14px">${k(m.ad)} · ${k(m.tel)||'telefon yok'}</p>
+    <label>Hazır mesaj</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${o.map((x,i)=>`<button class="btn ${i===ilk?'btn-ince':'btn-ikincil'} wa-sec" style="height:32px;font-size:12.5px;padding:0 12px" onclick="waSec(this,${i},'${rid}')">${x[0]}</button>`).join('')}</div>
+    <label>Mesaj (değiştirebilirsiniz)</label><textarea id="waMetin" style="min-height:130px">${k(o[ilk][1])}</textarea>
+    <p class="ipucu">${r.not?'Randevu notu mesaja eklendi.':'Randevuya not yazarsanız (örn. "işlemden önce bölgeyi tıraş edin") mesaja kendiliğinden eklenir.'} Mesaj göndermeye hazır; isterseniz değiştirin.</p>
+    <button class="btn btn-wa btn-tam btn-buyuk" style="margin-top:18px" ${m.tel?'':'disabled'} onclick="waGonder('${rid}')">${I('mesaj')}WhatsApp'ta aç</button>
+    <button class="btn btn-ikincil btn-tam" style="margin-top:8px" onclick="randevuDetay('${rid}')">Geri</button>`);
+}
+// toplu hatırlatma: günün tüm bekleyen randevuları, her mesaj hazır (istenirse düzenlenir), sırayla gönderilir
+function topluHatirlat(t){
+  const list=gununRandevulari(t).filter(r=>r.durum==='bekliyor');
+  if(!list.length)return bildir('Bu gün hatırlatılacak randevu yok');
+  const gitti=list.filter(r=>r.hatirlatildi).length;
+  ac(goreceli(t)+' · toplu hatırlatma',`
+    <p class="not" style="margin-top:14px">${list.length} randevu${gitti?`, ${gitti} tanesine gönderildi`:''}. Mesajlar müşteri kartı ve randevu bilgileriyle hazır; isterseniz değiştirin. "Gönder"e basınca WhatsApp açılır, orada gönderip buraya dönün, sıradaki kendiliğinden öne çıkar.</p>
+    ${list.map(r=>{const m=M(r.mid);return `<div class="toplu ${r.hatirlatildi?'gitti':''}" id="tp-${r.id}">
+      <div class="toplu-ust"><div class="avatar">${basHarf(m.ad)}</div><div class="orta"><div class="ad">${k(m.ad)}</div><div class="alt-yazi">${r.saat} · ${k(H(r.hid).ad)}${m.tel?'':' · <span style="color:var(--kirmizi)">telefon yok</span>'}</div></div>
+      <button class="btn ${r.hatirlatildi?'btn-ikincil':'btn-wa'}" style="flex:none" ${m.tel?'':'disabled'} onclick="topluGonder('${r.id}',this)">${r.hatirlatildi?I('tamam')+'Gönderildi':I('mesaj')+'Gönder'}</button></div>
+      <textarea id="tm-${r.id}">${k(hatirlatMesaji(r))}</textarea>
+    </div>`}).join('')}`);
+  topluSiradaki();
+}
+function topluGonder(rid,b){
+  const r=R(rid),metin=(document.getElementById('tm-'+rid)?.value||'').trim();
+  if(!metin)return bildir('Mesaj boş');
+  window.open(waLink(M(r.mid).tel,metin),'_blank');
+  r.hatirlatildi=true;kaydet();ciz();
+  document.getElementById('tp-'+rid)?.classList.add('gitti');b.className='btn btn-ikincil';b.innerHTML=I('tamam')+'Gönderildi';
+  topluSiradaki();
+}
+function topluSiradaki(){
+  document.querySelectorAll('.toplu').forEach(x=>x.classList.remove('sirada'));
+  const s=[...document.querySelectorAll('.toplu:not(.gitti)')].find(x=>!x.querySelector('button').disabled);
+  if(s){s.classList.add('sirada');s.scrollIntoView({block:'nearest',behavior:'smooth'})}
+}
+function waSec(b,i,rid){document.querySelectorAll('.wa-sec').forEach(x=>x.className='btn btn-ikincil wa-sec');b.className='btn btn-ince wa-sec';document.getElementById('waMetin').value=waMesajlari(R(rid))[i][1]}
+function waGonder(rid){const r=R(rid),metin=deger('waMetin');if(!metin)return hata('Mesaj boş.');window.open(waLink(M(r.mid).tel,metin),'_blank');if(r.durum==='bekliyor'&&document.querySelector('.wa-sec.btn-ince')===document.querySelector('.wa-sec')){r.hatirlatildi=true;kaydet();ciz()}}
 function waRandevu(rid){const r=R(rid);window.open(waLink(M(r.mid).tel,hatirlatMesaji(r)),'_blank');r.hatirlatildi=true;kaydet();ciz()}
 function waDogum(mid){const m=M(mid);window.open(waLink(m.tel,sablon(AYAR.sablonDogum,{ad:ilkAd(m.ad),firma:AYAR.firma})),'_blank')}
 function waBos(mid){window.open(waLink(M(mid).tel,'Merhaba '+ilkAd(M(mid).ad)+', '),'_blank')}
@@ -735,10 +811,10 @@ const simdiDk=()=>{const s=new Date();return s.getHours()*60+s.getMinutes()};
 function ekranBugun(){
   const bugun=gununRandevulari(BUGUN),yarin=gununRandevulari(gunEkle(BUGUN,1));
   const beklenen=bugun.filter(r=>r.durum!=='gelmedi'&&!r.paketli&&!r.odendi).reduce((s,r)=>s+Number(r.ucret||0)-Number(r.kapora||0),0);
-  const toplamBorc=V.randevular.reduce((s,r)=>s+borc(r),0);
+  const toplamBorc=toplamBorcHesap();
   const gorevler=V.gorevler.filter(g=>!g.bitti&&g.tarih<=gunEkle(BUGUN,1)).sort((a,b)=>(a.tarih+(a.saat||'99')).localeCompare(b.tarih+(b.saat||'99')));
   const dg=yaklasanDogumGunleri();
-  const izinli='Notification' in window&&Notification.permission==='granted';
+  const izinli=PUSH_DURUM==='acik';
   return `
   <div class="kpi">
     <div class="panel" onclick="git('takvim')"><div class="etk">Bugünkü randevu<span>${I('takvim')}</span></div><b>${bugun.length}</b></div>
@@ -748,7 +824,7 @@ function ekranBugun(){
   </div>
   <div class="izgara">
     <div class="panel">
-      <div class="panel-ust"><h2>${I('takvim')}Bugünün randevuları</h2><span class="sayi">${bugun.length} randevu</span></div>
+      <div class="panel-ust"><h2>${I('takvim')}Bugünün randevuları</h2><button class="btn btn-wa" style="height:32px;padding:0 10px;font-size:12.5px" ${bugun.some(r=>r.durum==='bekliyor')?'':'disabled'} onclick="topluHatirlat('${BUGUN}')">${I('mesaj')}Hepsine hatırlat</button></div>
       <div class="panel-ic">${bugun.length?bugun.map(randevuSatir).join(''):`<div class="bos">Bugün için randevu yok.<br><br><button class="btn btn-ince" onclick="randevuFormu()">${I('arti')}Randevu ekle</button></div>`}</div>
     </div>
     <div class="sutun">
@@ -757,7 +833,7 @@ function ekranBugun(){
         <div class="panel-ic">${gorevler.length?gorevler.slice(0,5).map(gorevSatir).join(''):'<div class="bos">Bekleyen hatırlatıcı yok.</div>'}</div>
       </div>
       <div class="panel">
-        <div class="panel-ust"><h2>${I('mesaj')}Yarın hatırlatılacaklar</h2><span class="sayi">${yarin.length} kişi</span></div>
+        <div class="panel-ust"><h2>${I('mesaj')}Yarın hatırlatılacaklar</h2><button class="btn btn-wa" style="height:32px;padding:0 10px;font-size:12.5px" ${yarin.some(r=>r.durum==='bekliyor')?'':'disabled'} onclick="topluHatirlat('${gunEkle(BUGUN,1)}')">${I('mesaj')}Hepsine (${yarin.length})</button></div>
         <div class="panel-ic">${yarin.length?yarin.map(r=>{const m=M(r.mid);return `<div class="kisa">
           <div class="avatar">${basHarf(m.ad)}</div>
           <div class="orta" onclick="randevuDetay('${r.id}')"><div class="ad">${k(m.ad)}</div><div class="alt-yazi">${r.saat} · ${k(H(r.hid).ad)}</div></div>
@@ -775,8 +851,8 @@ function ekranBugun(){
       <div class="panel">
         <div class="panel-ust"><h2>${I('zil')}Bildirimler</h2><span class="sayi">${izinli?'Açık':'Kapalı'}</span></div>
         <div style="padding:14px 18px 16px">
-          <p class="not">Randevudan 1 saat önce ve hatırlatıcı saati gelince bu cihaza bildirim düşer. Örnekte sayfa açıkken çalışır; asıl sürümde telefon kilitliyken de gelir.</p>
-          <button class="btn ${izinli?'btn-geldi':'btn-ince'} btn-tam" style="margin-top:12px" onclick="bildirimAc()">${izinli?I('tamam')+'Bildirimler açık':I('zil')+'Bildirimleri aç'}</button>
+          <p class="not">${bildirimOzetYazi()} Telefon kilitliyken ve uygulama kapalıyken de gelir.</p>
+          <button class="btn ${izinli?'btn-geldi':'btn-ince'} btn-tam" style="margin-top:12px" onclick="${izinli?"git('ayarlar')":'pushAc(this)'}">${izinli?I('tamam')+'Bildirimler açık':I('zil')+'Bildirimleri aç'}</button>
         </div>
       </div>
     </div>
@@ -807,7 +883,7 @@ function ekranTakvim(){
     <div class="panel-ust"><h2>${I('takvim')}${AYLAR[d.getMonth()]} ${d.getFullYear()}</h2>
       <span style="display:flex;gap:6px"><input class="tarih-git" type="date" value="${seciliGun}" onchange="if(this.value){seciliGun=this.value;ciz()}" style="height:34px;width:150px;font-size:13px" aria-label="Tarihe git"><button class="btn btn-ikincil" style="height:34px" onclick="seciliGun=BUGUN;ciz()">Bugün</button></span></div>
     <div class="hafta"><button class="ok" onclick="seciliGun=gunEkle(seciliGun,-7);ciz()" aria-label="Önceki hafta">${I('sol')}</button>${gunler}<button class="ok" onclick="seciliGun=gunEkle(seciliGun,7);ciz()" aria-label="Sonraki hafta">${I('sag')}</button></div>
-    <div class="gun-bilgi"><b>${guzelTarih(seciliGun)} · ${list.length} randevu</b><span class="not">Boş saate tıklayarak randevu ekleyin</span></div>
+    <div class="gun-bilgi"><b>${guzelTarih(seciliGun)} · ${list.length} randevu</b><span class="not">Boş saate tıklayarak randevu ekleyin</span>${list.some(r=>r.durum==='bekliyor')&&seciliGun>=BUGUN?`<button class="btn btn-wa" style="height:32px;padding:0 10px;font-size:12.5px;flex:none" onclick="topluHatirlat('${seciliGun}')">${I('mesaj')}Hepsine hatırlat</button>`:''}</div>
     <div class="kaydir-ipucu">Günü değiştirmek için sağa-sola kaydırın · boş saate dokunarak randevu ekleyin</div>
     <div class="zaman">${saatler}${bloklar}${cizgi}</div>
   </div>`;
@@ -855,6 +931,7 @@ function tahsilatOlaylari(){
     if(r.durum==='geldi'&&r.odendi&&!r.paketli){const t=Number(r.ucret||0)-Number(r.kapora||0);if(t>0)o.push({tarih:r.odemeTarihi||r.tarih,tutar:t,ad,mid:r.mid,aciklama:h})}
   });
   V.paketler.forEach(p=>{if(Number(p.odenen)>0)o.push({tarih:p.tarih||'',tutar:Number(p.odenen),ad:M(p.mid).ad,mid:p.mid,aciklama:'Paket · '+H(p.hid).ad+' ('+p.toplam+' seans)'})});
+  V.satislar.forEach(x=>{if(x.odendi&&Number(x.tutar)>0)o.push({tarih:x.odemeTarihi||x.tarih,tutar:Number(x.tutar),ad:satisAd(x),mid:x.mid,sid:x.id,aciklama:'Tek seferlik · '+x.aciklama})});
   return o.sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
 }
 function odemeHatirlat(rid){
@@ -868,8 +945,11 @@ function tahsilatGit(id){const el=document.getElementById(id);if(!el)return;cons
 function ekranTahsilat(){
   const olay=tahsilatOlaylari(),d=new Date(BUGUN+'T12:00'),pzt=gunEkle(BUGUN,-((d.getDay()+6)%7)),ay=BUGUN.slice(0,7);
   const top=f=>olay.filter(f).reduce((s,x)=>s+x.tutar,0);
-  const bekleyen=V.randevular.filter(r=>borc(r)>0).sort((a,b)=>(a.tarih+a.saat).localeCompare(b.tarih+b.saat));
-  const toplamBorc=bekleyen.reduce((s,r)=>s+borc(r),0);
+  // bekleyen ödemeler: ödenmemiş randevular + "sonra ödenecek" tek seferlik işlemler
+  const bekleyen=V.randevular.filter(r=>borc(r)>0).map(r=>{const m=M(r.mid);return{m,tarih:r.tarih+r.saat,tutar:borc(r),yazi:H(r.hid).ad+' · '+goreceli(r.tarih),ac:`randevuDetay('${r.id}')`,wa:`odemeHatirlat('${r.id}')`,al:`odemeAl('${r.id}')`}})
+    .concat(V.satislar.filter(x=>satisBorc(x)>0).map(x=>({m:x.mid?M(x.mid):{ad:satisAd(x),tel:''},tarih:x.tarih,tutar:satisBorc(x),yazi:'Tek seferlik · '+x.aciklama+' · '+goreceli(x.tarih),ac:`satisFormu('${x.id}')`,wa:`satisHatirlat('${x.id}')`,al:`satisOdemeAl('${x.id}')`})))
+    .sort((a,b)=>a.tarih.localeCompare(b.tarih));
+  const toplamBorc=bekleyen.reduce((s,x)=>s+x.tutar,0);
   const DON={bugun:['Bugün',x=>x.tarih===BUGUN],hafta:['Bu hafta',x=>x.tarih>=pzt&&x.tarih<=BUGUN],ay:['Bu ay',x=>(x.tarih||'').startsWith(ay)]};
   const liste=tahsilatDonem?olay.filter(DON[tahsilatDonem][1]):olay;
   const sec=d=>tahsilatDonem===d?' secili':'';
@@ -883,18 +963,18 @@ function ekranTahsilat(){
   <div class="izgara">
     <div class="panel" id="bekleyenOdeme">
       <div class="panel-ust"><h2>${I('uyari')}Bekleyen ödemeler</h2><span class="sayi">${bekleyen.length} işlem</span></div>
-      <div class="panel-ic">${bekleyen.length?bekleyen.map(r=>{const m=M(r.mid);return `<div class="kisa">
+      <div class="panel-ic">${bekleyen.length?bekleyen.map(x=>{const m=x.m;return `<div class="kisa">
         <div class="avatar">${basHarf(m.ad)}</div>
-        <div class="orta" onclick="randevuDetay('${r.id}')"><div class="ad">${k(m.ad)}</div><div class="alt-yazi">${k(H(r.hid).ad)} · ${goreceli(r.tarih)}</div><div class="etiketler"><span class="etiket e-borc">${tl(borc(r))}</span></div></div>
-        <button class="btn btn-wa" style="width:40px" title="WhatsApp'tan ödeme hatırlat" ${m.tel?'':'disabled'} onclick="odemeHatirlat('${r.id}')">${I('mesaj')}</button>
-        <button class="btn btn-geldi" onclick="odemeAl('${r.id}')">${I('tamam')}Alındı</button>
+        <div class="orta" onclick="${x.ac}"><div class="ad">${k(m.ad)}</div><div class="alt-yazi">${k(x.yazi)}</div><div class="etiketler"><span class="etiket e-borc">${tl(x.tutar)}</span></div></div>
+        <button class="btn btn-wa" style="width:40px" title="WhatsApp'tan ödeme hatırlat" ${m.tel?'':'disabled'} onclick="${x.wa}">${I('mesaj')}</button>
+        <button class="btn btn-geldi" onclick="${x.al}">${I('tamam')}Alındı</button>
       </div>`}).join(''):'<div class="bos">Bekleyen ödeme yok.</div>'}</div>
     </div>
     <div class="panel" id="sonTahsilat">
       <div class="panel-ust"><h2>${I('tahsilat')}${tahsilatDonem?DON[tahsilatDonem][0]+' tahsilatlar':'Son tahsilatlar'}</h2>${tahsilatDonem?`<button class="btn btn-ikincil" style="height:32px;padding:0 12px;font-size:12.5px" onclick="tahsilatSec(null)">Tümü</button>`:`<span class="sayi">${olay.length} kayıt</span>`}</div>
       <div class="panel-ic">${liste.length?liste.slice(0,tahsilatDonem?200:30).map(x=>`<div class="kisa">
         <div class="avatar">${basHarf(x.ad)}</div>
-        <div class="orta" onclick="musteriKarti('${x.mid}')"><div class="ad">${k(x.ad)}</div><div class="alt-yazi">${k(x.aciklama)}${x.tarih?' · '+goreceli(x.tarih):''}</div></div>
+        <div class="orta" onclick="${x.sid?`satisFormu('${x.sid}')`:`musteriKarti('${x.mid}')`}"><div class="ad">${k(x.ad)}</div><div class="alt-yazi">${k(x.aciklama)}${x.tarih?' · '+goreceli(x.tarih):''}</div></div>
         <b style="color:var(--yesil);white-space:nowrap;flex:none">${tl(x.tutar)}</b>
       </div>`).join(''):`<div class="bos">${tahsilatDonem?'Bu dönemde tahsilat yok.':'Henüz tahsilat yok.'}</div>`}${tahsilatDonem&&liste.length?`<div class="kisa" style="justify-content:space-between;font-weight:700"><span>Toplam</span><span style="color:var(--yesil)">${tl(liste.reduce((s,x)=>s+x.tutar,0))}</span></div>`:''}</div>
     </div>
@@ -943,12 +1023,13 @@ function ekranAyarlar(){
       </div>
     </div>
     <div class="sutun">
+      ${bildirimPaneli()}
       <div class="panel">
         <div class="panel-ust"><h2>${I('mesaj')}WhatsApp mesaj şablonları</h2></div>
         <div class="ayar-ic">
           <label>Randevu hatırlatma</label><textarea id="aSab1">${k(AYAR.sablonHatirlat)}</textarea>
           <label>Doğum günü</label><textarea id="aSab2" style="min-height:60px">${k(AYAR.sablonDogum)}</textarea>
-          <p class="ipucu">Kullanılabilir alanlar: <code>{ad}</code> <code>{gun}</code> <code>{saat}</code> <code>{hizmet}</code> <code>{firma}</code></p>
+          <p class="ipucu">Kullanılabilir alanlar: <code>{ad}</code> <code>{gun}</code> <code>{saat}</code> <code>{hizmet}</code> <code>{firma}</code> <code>{not}</code> (randevu notu)</p>
           <button class="btn btn-ana btn-tam" style="margin-top:16px" onclick="ayarKaydet()">${I('tamam')}Kaydet</button>
         </div>
       </div>
@@ -1011,8 +1092,43 @@ function yeniSecim(){
   ac('Yeni kayıt',`
     <button class="secim" onclick="randevuFormu()"><div class="avatar">${I('takvim')}</div><div><b>Randevu</b><small>Takvime yeni randevu ekle</small></div></button>
     <button class="secim" onclick="musteriFormu()"><div class="avatar">${I('kisiler')}</div><div><b>Müşteri</b><small>Yeni müşteri kartı aç</small></div></button>
+    <button class="secim" onclick="satisFormu()"><div class="avatar">${I('para')}</div><div><b>Tek seferlik işlem</b><small>Randevusuz satış: ürün, tek seans, hizmet</small></div></button>
     <button class="secim" onclick="gorevFormu()"><div class="avatar">${I('gorev')}</div><div><b>Hatırlatıcı</b><small>Arama, ödeme, iş takibi</small></div></button>`);
 }
+
+/* ---------- tek seferlik işlem (randevusuz satış) ---------- */
+function satisFormu(sid,mid){
+  const x=sid?S_(sid):{mid:mid||'',aciklama:'',tutar:'',tarih:BUGUN,odendi:true,not:''};
+  ac(sid?'Tek seferlik işlem':'Yeni tek seferlik işlem',`
+    <label>Müşteri</label>
+    <select id="sMus"><option value="">Kayıtsız müşteri</option>${V.musteriler.slice().sort((a,b)=>a.ad.localeCompare(b.ad,'tr')).map(m=>`<option value="${m.id}" ${m.id===x.mid?'selected':''}>${k(m.ad)}</option>`).join('')}<option value="__yeni">+ Yeni müşteri ekle</option></select>
+    <div id="sYeniMus" style="display:none" class="iki"><div><label>Ad Soyad</label><input id="sYAd" autocomplete="off"></div><div><label>Telefon</label><input id="sYTel" inputmode="tel" autocomplete="off"></div></div>
+    <label>Ne satıldı / yapıldı? *</label>
+    <input id="sAc" list="sHizListe" value="${k(x.aciklama)}" placeholder="Hizmet seçin ya da yazın (örn. ürün adı)" autocomplete="off">
+    <datalist id="sHizListe">${V.hizmetler.map(h=>`<option value="${k(h.ad)}">`).join('')}</datalist>
+    <div class="iki"><div><label>Tutar (₺)</label><input type="number" min="0" id="sTut" value="${x.tutar===''?'':x.tutar}" inputmode="numeric"></div><div><label>Tarih</label><input type="date" id="sTar" value="${x.tarih}"></div></div>
+    <label>Ödeme</label>
+    <select id="sOde"><option value="1" ${x.odendi?'selected':''}>Ödendi</option><option value="0" ${x.odendi?'':'selected'}>Sonra ödenecek (bekleyen ödemeye düşer)</option></select>
+    <label>Not</label><textarea id="sNot">${k(x.not)}</textarea>
+    <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="satisKaydet('${sid||''}')">Kaydet</button>
+    ${sid?`<button class="btn btn-sil btn-tam" style="margin-top:8px" onclick="if(ikiKez(this,'Silmek için tekrar basın'))satisSil('${sid}')">Sil</button>`:''}`);
+  document.getElementById('sMus').onchange=()=>{const y=deger('sMus')==='__yeni';document.getElementById('sYeniMus').style.display=y?'grid':'none';if(y)document.getElementById('sYAd').focus()};
+  document.getElementById('sAc').oninput=()=>{const h=V.hizmetler.find(h=>h.ad===deger('sAc'));if(h&&!deger('sTut'))document.getElementById('sTut').value=h.fiyat||0};
+  if(!sid)setTimeout(()=>document.getElementById('sAc')?.focus(),50);
+}
+function satisKaydet(sid){
+  let mid=deger('sMus');const aciklama=deger('sAc');
+  if(!aciklama)return hata('Ne satıldığını yazın.');
+  if(mid==='__yeni'){const ad=deger('sYAd');if(!ad)return hata('Yeni müşterinin adını yazın.');mid=yeniId();V.musteriler.push({id:mid,ad,tel:deger('sYTel'),eposta:'',dogum:'',adres:'',ek:'',uyari:'',kaynak:'',not:''})}
+  const odendi=deger('sOde')==='1',onceki=sid?S_(sid):null;
+  const v={mid,aciklama,tutar:Math.max(0,Number(deger('sTut')||0)),tarih:deger('sTar')||BUGUN,odendi,not:deger('sNot')};
+  v.odemeTarihi=odendi?((onceki&&onceki.odendi&&onceki.odemeTarihi)||(onceki?BUGUN:v.tarih)):null;
+  if(sid)Object.assign(onceki,v);else V.satislar.push({id:yeniId(),...v});
+  kaydet();kapat();ciz();bildir(sid?'İşlem güncellendi':'Tek seferlik işlem kaydedildi');
+}
+function satisOdemeAl(sid){const x=S_(sid);x.odendi=true;x.odemeTarihi=BUGUN;kaydet();ciz();bildir(tl(x.tutar)+' tahsilat kaydedildi')}
+function satisSil(sid){V.satislar=V.satislar.filter(x=>x.id!==sid);kaydet();kapat();ciz();bildir('İşlem silindi')}
+function satisHatirlat(sid){const x=S_(sid),m=M(x.mid);window.open(waLink(m.tel,'Merhaba '+ilkAd(m.ad)+', '+gunAy(x.tarih)+' tarihli '+x.aciklama+' işleminizden kalan '+tl(x.tutar)+' ödemeniz bulunmaktadır. İyi günler dileriz. '+AYAR.firma),'_blank')}
 
 /* ---------- randevu ---------- */
 function randevuFormu(rid,tarih,mid,saat){
@@ -1063,6 +1179,8 @@ function randevuDetay(rid){
   ac('Randevu',`
     <div class="profil"><div class="avatar buyuk">${basHarf(m.ad)}</div><div><b><a href="#" onclick="musteriKarti('${m.id}');return false">${k(m.ad)}</a></b><small>${k(m.tel)||'Telefon yok'}</small></div></div>
     ${m.uyari?`<div class="uyari">${I('uyari')}<span>${k(m.uyari)}</span></div>`:''}
+    <button class="btn btn-wa btn-tam btn-buyuk" style="margin-top:14px" ${m.tel?'':'disabled'} onclick="waMesajFormu('${r.id}')">${I('mesaj')}${r.durum==='bekliyor'?'WhatsApp ile randevu mesajı gönder':'WhatsApp mesajı gönder'}</button>
+    ${m.tel?'':'<p class="ipucu">Müşteri kartında telefon yok; WhatsApp için önce telefon ekleyin.</p>'}
     <div class="kutu" style="margin-top:14px">
       <div class="satir"><span>Hizmet</span><b>${k(h.ad)}</b></div>
       <div class="satir"><span>Tarih</span><b>${guzelTarih(r.tarih)}</b></div>
@@ -1077,7 +1195,6 @@ function randevuDetay(rid){
       ${r.durum==='bekliyor'?`<button class="btn btn-geldi" onclick="durum('${r.id}','geldi');randevuDetay('${r.id}')">${I('tamam')}Geldi</button><button class="btn btn-gelmedi" onclick="durum('${r.id}','gelmedi');randevuDetay('${r.id}')">${I('carpi')}Gelmedi</button>`
       :r.durum==='geldi'&&!r.paketli?`<button class="btn ${r.odendi?'btn-ikincil':'btn-geldi'}" onclick="odemeDegis('${r.id}')">${r.odendi?'Ödemeyi geri al':I('para')+'Ödeme alındı'}</button><button class="btn btn-ikincil" onclick="durumGeriAl('${r.id}')">Durumu geri al</button>`
       :`<button class="btn btn-ikincil" onclick="durumGeriAl('${r.id}')">Durumu geri al</button><button class="btn btn-ikincil" onclick="randevuFormu(null,null,'${m.id}')">${I('arti')}Yeni randevu</button>`}
-      <button class="btn btn-wa" ${m.tel?'':'disabled'} onclick="${r.durum==='bekliyor'?`waRandevu('${r.id}')`:`waBos('${m.id}')`}">${I('mesaj')}WhatsApp</button>
       <button class="btn btn-ikincil" onclick="randevuFormu('${r.id}')">${I('kalem')}Düzenle</button>
     </div>
     <button class="btn btn-sil btn-tam" style="margin-top:8px" onclick="if(ikiKez(this,'Silmek için tekrar basın'))randevuSil('${r.id}')">Randevuyu sil</button>`);
@@ -1091,7 +1208,8 @@ function musteriKarti(mid){
   const m=V.musteriler.find(x=>x.id===mid);if(!m)return;
   const S=SK(),gecmis=V.randevular.filter(r=>r.mid===mid).sort((a,b)=>(b.tarih+b.saat).localeCompare(a.tarih+a.saat));
   const paketler=V.paketler.filter(p=>p.mid===mid),gelmedi=gecmis.filter(r=>r.durum==='gelmedi').length,b=musteriBorc(mid);
-  const harcama=gecmis.filter(r=>r.durum==='geldi'&&(r.odendi||r.paketli)).reduce((s,r)=>s+Number(r.ucret||0),0)+paketler.reduce((s,p)=>s+Number(p.odenen||0),0);
+  const satislar=V.satislar.filter(x=>x.mid===mid).sort((a,b)=>b.tarih.localeCompare(a.tarih));
+  const harcama=gecmis.filter(r=>r.durum==='geldi'&&(r.odendi||r.paketli)).reduce((s,r)=>s+Number(r.ucret||0),0)+paketler.reduce((s,p)=>s+Number(p.odenen||0),0)+satislar.filter(x=>x.odendi).reduce((s,x)=>s+Number(x.tutar||0),0);
   const gorevler=V.gorevler.filter(g=>g.mid===mid&&!g.bitti);
   ac('Müşteri kartı',`<input type="hidden" id="kartMid" value="${mid}">
     <div class="profil"><div class="avatar buyuk">${basHarf(m.ad)}</div><div><b>${k(m.ad)}</b><small>${gecmis.length} randevu${gelmedi?` · <span style="color:var(--kirmizi)">${gelmedi} kez gelmedi</span>`:''}${m.kaynak?' · '+k(m.kaynak):''}</small></div></div>
@@ -1117,24 +1235,27 @@ function musteriKarti(mid){
     ${gorevler.length?`<div class="kutu">${gorevler.map(gorevSatir).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Açık hatırlatıcı yok.</div>'}
     <div class="bolum">Paketler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="paketFormu('${m.id}')">${I('arti')}Paket ekle</button></div>
     ${paketler.length?paketler.map(p=>`<div class="paket">
-      <div style="display:flex;justify-content:space-between;gap:10px;font-weight:600"><span>${k(H(p.hid).ad)}</span><span style="color:var(--ana);flex:none">${p.kullanilan}/${p.toplam}</span></div>
+      <div style="display:flex;justify-content:space-between;gap:10px;font-weight:600"><span>${k(H(p.hid).ad)}</span><span style="color:var(--vurgu);flex:none">${p.kullanilan}/${p.toplam}</span></div>
       <div class="ilerleme"><div style="width:${Math.round(p.kullanilan/p.toplam*100)}%"></div></div>
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
         <span class="not">${p.toplam-p.kullanilan>0?(p.toplam-p.kullanilan)+' seans kaldı':'Paket tamamlandı'} · Ödenen ${tl(p.odenen)}</span>
         <span style="display:flex;gap:6px;flex:none"><button class="btn btn-ikincil kucuk-sayi" aria-label="Seans azalt" ${p.kullanilan<=0?'disabled':''} onclick="seans('${p.id}',-1)">−</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Seans ekle" ${p.kullanilan>=p.toplam?'disabled':''} onclick="seans('${p.id}',1)">+</button><button class="btn btn-ikincil kucuk-sayi" aria-label="Paketi sil" onclick="if(ikiKez(this,'Sil?'))paketSil('${p.id}')">${I('carpi')}</button></span>
       </div></div>`).join(''):'<div class="kutu bos" style="padding:16px">Paket yok.</div>'}
+    <div class="bolum">Tek seferlik işlemler<button class="btn btn-ince" style="height:30px;padding:0 10px;font-size:12px" onclick="satisFormu(null,'${m.id}')">${I('arti')}Ekle</button></div>
+    ${satislar.length?`<div class="kutu">${satislar.map(x=>`<div class="satir" style="cursor:pointer" onclick="satisFormu('${x.id}')"><span>${kisaTarih(x.tarih)}</span><b>${k(x.aciklama)} · ${tl(x.tutar)}${x.odendi?'':` <span class="etiket e-borc">Ödenmedi</span>`}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Tek seferlik işlem yok.</div>'}
     <div class="bolum">Randevu geçmişi</div>
     ${gecmis.length?`<div class="kutu">${gecmis.map(r=>`<div class="satir" style="cursor:pointer" onclick="randevuDetay('${r.id}')"><span>${kisaTarih(r.tarih)}, ${r.saat}</span><b>${k(H(r.hid).ad)} <span class="etiket e-${r.durum}" style="margin-left:6px">${DURUM[r.durum]}</span>${borc(r)?` <span class="etiket e-borc">${tl(borc(r))}</span>`:''}</b></div>`).join('')}</div>`:'<div class="kutu bos" style="padding:16px">Henüz randevu yok.</div>'}
     <button class="btn btn-ikincil btn-tam" style="margin-top:14px" onclick="islemGecmisi('${m.id}')">${I('saat')}Bu müşterinin işlem geçmişi</button>`);
 }
 /* ---------- işlem geçmişi (log) — veritabanı tutar, değiştirilemez / silinemez ---------- */
-const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',firma:'Firma'};
-const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı'};
+const TUR_AD={musteri:'Müşteri',hizmet:'Hizmet',randevu:'Randevu',paket:'Paket',gorev:'Hatırlatıcı',satis:'Tek seferlik işlem',firma:'Firma'};
+const ALAN_AD={ad:'ad',tel:'telefon',eposta:'e-posta',dogum:'doğum günü',adres:'adres',ek:'ek bilgi',uyari:'uyarı notu',kaynak:'nereden geldi',not:'not',tarih:'tarih',saat:'saat',sure:'süre',ucret:'ücret',kapora:'kapora',odendi:'ödeme',durum:'durum',hatirlatildi:'WhatsApp hatırlatma',paketli:'paket',paketId:'paket',mid:'müşteri',hid:'hizmet',fiyat:'fiyat',toplam:'toplam seans',kullanilan:'kullanılan seans',odenen:'ödenen',baslik:'başlık',bitti:'tamamlandı',firma:'firma adı',sektor:'sektör',renk:'renk',sablonHatirlat:'hatırlatma mesajı',sablonDogum:'doğum günü mesajı',kuruldu:'ilk kurulum',hizmetAdi:'hizmet adı',aciklama:'açıklama',tutar:'tutar',odemeTarihi:'ödeme tarihi',kaporaTarihi:'kapora tarihi',bildirimDk:'randevu bildirimi',sabahOzet:'sabah özeti',sabahSaat:'sabah özeti saati'};
 function logDeger(a,v){
   if(v===undefined||v===null||v==='')return '—';
   if(a==='durum')return DURUM[v]||v;
   if(['odendi','bitti','hatirlatildi','paketli'].includes(a))return v?'evet':'hayır';
-  if(['ucret','kapora','fiyat','odenen'].includes(a))return tl(v);
+  if(['ucret','kapora','fiyat','odenen','tutar'].includes(a))return tl(v);
+  if(a==='sabahOzet')return v?'açık':'kapalı'; if(a==='bildirimDk')return Number(v)?v+' dk önce':'kapalı';
   if(a==='mid')return M(v).ad; if(a==='hid')return H(v).ad;
   if(a==='sektor')return (SEKTORLER[v]||{}).ad||v;
   if(a==='renk')return (RENKLER[v]||{}).ad||v;
@@ -1200,7 +1321,7 @@ function musteriKaydet(mid){
   kaydet();ciz();musteriKarti(mid);bildir('Müşteri kaydedildi');
 }
 function musteriSil(mid){
-  V.musteriler=V.musteriler.filter(x=>x.id!==mid);V.randevular=V.randevular.filter(x=>x.mid!==mid);V.paketler=V.paketler.filter(x=>x.mid!==mid);V.gorevler=V.gorevler.filter(x=>x.mid!==mid);
+  V.musteriler=V.musteriler.filter(x=>x.id!==mid);V.randevular=V.randevular.filter(x=>x.mid!==mid);V.paketler=V.paketler.filter(x=>x.mid!==mid);V.gorevler=V.gorevler.filter(x=>x.mid!==mid);V.satislar=V.satislar.filter(x=>x.mid!==mid);
   kaydet();kapat();ciz();bildir('Müşteri silindi');
 }
 function paketFormu(mid){
@@ -1255,16 +1376,104 @@ function hizmetKaydet(hid){
 }
 function hizmetSil(hid){const h=H(hid);V.randevular.forEach(r=>{if(r.hid===hid)r.hizmetAdi=h.ad});V.hizmetler=V.hizmetler.filter(x=>x.id!==hid);kaydet();kapat();ciz()}
 
-/* ---------- bildirim (örnek: sayfa açıkken) ---------- */
-function bildirimAc(){if(!('Notification' in window))return bildir('Bu tarayıcı bildirim desteklemiyor');Notification.requestPermission().then(()=>ciz())}
-const gonderilen=new Set();
-function bildirimKontrol(){
-  if(!('Notification' in window)||Notification.permission!=='granted')return;
-  const bg=tarihStr(new Date()),dk=simdiDk();
-  V.randevular.filter(r=>r.tarih===bg&&r.durum==='bekliyor').forEach(r=>{const f=dakika(r.saat)-dk;if(f<=60&&f>=0&&!gonderilen.has(r.id)){gonderilen.add(r.id);try{new Notification('Randevu '+r.saat+' · '+AYAR.firma,{body:M(r.mid).ad+' · '+H(r.hid).ad})}catch(e){}}});
-  V.gorevler.filter(g=>!g.bitti&&g.tarih===bg&&g.saat).forEach(g=>{const f=dakika(g.saat)-dk;if(f<=0&&f>-5&&!gonderilen.has(g.id)){gonderilen.add(g.id);try{new Notification('Hatırlatıcı · '+AYAR.firma,{body:g.baslik})}catch(e){}}});
+/* ---------- telefon bildirimi (Web Push) — sunucu her dakika bakar, telefon kilitliyken de gelir ---------- */
+// iPhone: yalnız ana ekrana eklenmiş uygulamada çalışır (iOS 16.4+). Safari sekmesinde PushManager yoktur.
+const PUSH_URL=CRM_AYAR.url+'/functions/v1/bildirim-gonder';
+const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const kurulu=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+let PUSH_DURUM='bilinmiyor'; // acik | kapali | engelli | ana-ekran | destek-yok
+const BILDIRIM_DK=[[0,'Kapalı'],[15,'15 dakika önce'],[30,'30 dakika önce'],[60,'1 saat önce'],[120,'2 saat önce']];
+const SABAH_SAAT=['07:00','07:30','08:00','08:30','09:00','09:30','10:00','10:30','11:00'];
+function bildirimOzetYazi(){
+  const dk=Number(AYAR.bildirimDk);
+  const r=dk>0?'Randevudan '+(BILDIRIM_DK.find(x=>x[0]===dk)||[0,dk+' dakika önce'])[1].replace(' önce','')+' önce':'Randevu bildirimi kapalı';
+  return r+(AYAR.sabahOzet?', sabah '+AYAR.sabahSaat+'\'da günün özeti':'')+'; saatli hatırlatıcılar saatinde.';
 }
-setInterval(()=>{if(!HAZIR)return;bildirimKontrol();if(tarihStr(new Date())!==BUGUN&&!document.getElementById('perde').classList.contains('acik'))ciz()},60000);
+function b64Bayt(s){s=s.replace(/-/g,'+').replace(/_/g,'/');const r=atob(s+'='.repeat((4-s.length%4)%4));return Uint8Array.from(r,c=>c.charCodeAt(0))}
+const cihazAdi=()=>(IOS?'iPhone':/Android/i.test(navigator.userAgent)?'Android':'Bilgisayar')+' · '+(kurulu()?'uygulama':'tarayıcı');
+async function pushDurumBul(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window)||!('Notification' in window))PUSH_DURUM=IOS&&!kurulu()?'ana-ekran':'destek-yok';
+  else if(Notification.permission==='denied')PUSH_DURUM='engelli';
+  else{try{const r=await navigator.serviceWorker.ready;const s=await r.pushManager.getSubscription();PUSH_DURUM=s&&Notification.permission==='granted'?'acik':'kapali'}catch(e){PUSH_DURUM='kapali'}}
+  return PUSH_DURUM;
+}
+async function aboneKaydet(s){
+  const j=s.toJSON();
+  const{error}=await sb.rpc('bildirim_abone_ol',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_cihaz:cihazAdi()});
+  if(error)throw error;
+}
+// açılışta: bu cihaz zaten açıksa aboneliği bu hesaba/firmaya yeniden bağla
+async function pushBasla(){
+  if(location.protocol!=='https:')return;
+  await pushDurumBul();
+  if(PUSH_DURUM==='acik'){try{const r=await navigator.serviceWorker.ready;const s=await r.pushManager.getSubscription();if(s)await aboneKaydet(s)}catch(e){console.error(e)}}
+  if(['bugun','ayarlar'].includes(ekran)&&!document.getElementById('perde').classList.contains('acik'))ciz();
+}
+async function pushAc(b){
+  if(PUSH_DURUM==='ana-ekran')return anaEkranYardim();
+  if(PUSH_DURUM==='destek-yok')return bildir('Bu tarayıcı bildirim desteklemiyor');
+  if(PUSH_DURUM==='engelli')return git('ayarlar');
+  if(b)b.disabled=true;
+  try{
+    const izin=await Notification.requestPermission(); // iPhone: dokunuşun hemen ardından sorulmalı
+    if(izin!=='granted'){await pushDurumBul();ciz();return bildir('Bildirim izni verilmedi')}
+    let{data:anahtar}=await sb.rpc('bildirim_acik_anahtar');
+    if(!anahtar){await fetch(PUSH_URL,{method:'POST'}).catch(()=>{});({data:anahtar}=await sb.rpc('bildirim_acik_anahtar'))}
+    if(!anahtar)throw new Error('Bildirim sunucusu hazır değil, biraz sonra tekrar deneyin.');
+    const reg=await navigator.serviceWorker.ready;
+    let s=await reg.pushManager.getSubscription();
+    if(!s)s=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64Bayt(anahtar)});
+    await aboneKaydet(s);
+    PUSH_DURUM='acik';ciz();
+    await pushDeneme();
+  }catch(e){console.error(e);bildir('Bildirim açılamadı: '+HATA_TR(e.message||String(e)))}
+  finally{if(b&&b.isConnected)b.disabled=false}
+}
+async function pushDeneme(b){
+  if(b)b.disabled=true;
+  const{error}=await sb.rpc('bildirim_deneme_iste');
+  if(error){if(b)b.disabled=false;return bildir('Gönderilemedi: '+HATA_TR(error.message))}
+  fetch(PUSH_URL,{method:'POST'}).catch(()=>{});
+  bildir('Deneme bildirimi gönderildi, birkaç saniye içinde gelir');
+  if(b)setTimeout(()=>{if(b.isConnected)b.disabled=false},4000);
+}
+async function pushKapat(b){
+  if(!ikiKez(b,'Bu cihazda kapatmak için tekrar basın'))return;
+  try{const r=await navigator.serviceWorker.ready;const s=await r.pushManager.getSubscription();if(s){await sb.rpc('bildirim_abonelik_sil',{p_endpoint:s.endpoint});await s.unsubscribe()}}catch(e){console.error(e)}
+  await pushDurumBul();ciz();bildir('Bu cihazda bildirimler kapatıldı');
+}
+function anaEkranYardim(){
+  ac('Bildirimleri açmak için',`
+    <p class="not" style="margin-top:14px">iPhone'da bildirim yalnız ana ekrana eklenen uygulamada çalışır (iOS 16.4 ve üstü).</p>
+    <div class="kutu" style="margin-top:12px">
+      <div class="satir"><span>1</span><b style="text-align:left;flex:1;margin-left:12px">Safari'de alttaki <u>Paylaş</u> simgesine (yukarı oklu kare) dokunun</b></div>
+      <div class="satir"><span>2</span><b style="text-align:left;flex:1;margin-left:12px">"<u>Ana Ekrana Ekle</u>"yi seçip "Ekle"ye basın</b></div>
+      <div class="satir"><span>3</span><b style="text-align:left;flex:1;margin-left:12px">Ana ekrandaki CRM simgesinden açıp giriş yapın</b></div>
+      <div class="satir"><span>4</span><b style="text-align:left;flex:1;margin-left:12px">Ayarlar → Bildirimler → "Bu telefonda bildirimleri aç"</b></div>
+    </div>
+    <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="kapat()">Tamam</button>`);
+}
+function bildirimPaneli(){
+  const d=PUSH_DURUM,dk=Number(AYAR.bildirimDk);
+  const etiket={acik:'Bu cihazda açık',kapali:'Bu cihazda kapalı',engelli:'İzin verilmedi','ana-ekran':'Ana ekrana ekleyin','destek-yok':'Desteklenmiyor',bilinmiyor:''}[d];
+  const ust=d==='acik'
+    ?`<div class="iki" style="margin-top:4px"><button class="btn btn-ikincil" onclick="pushDeneme(this)">${I('zil')}Deneme gönder</button><button class="btn btn-ikincil" onclick="pushKapat(this)">Bu cihazda kapat</button></div>`
+    :d==='engelli'
+    ?`<div class="uyari" style="margin-top:4px">${I('uyari')}<span>Bu cihazda bildirim izni verilmemiş. ${IOS?'iPhone Ayarlar → Bildirimler → CRM → "Bildirimlere İzin Ver"i açın.':'Tarayıcının site ayarlarından bildirime izin verin.'} Sonra uygulamayı kapatıp açın.</span></div>`
+    :`<button class="btn btn-ana btn-tam" style="margin-top:4px" onclick="pushAc(this)">${I('zil')}${IOS?'Bu telefonda':'Bu cihazda'} bildirimleri aç</button>`;
+  return `<div class="panel">
+    <div class="panel-ust"><h2>${I('zil')}Bildirimler</h2><span class="sayi">${etiket}</span></div>
+    <div class="ayar-ic">
+      ${ust}
+      <label>Randevu bildirimi</label>
+      <select onchange="AYAR.bildirimDk=Number(this.value);kaydet()">${BILDIRIM_DK.map(x=>`<option value="${x[0]}" ${x[0]===dk?'selected':''}>${x[1]}</option>`).join('')}</select>
+      <label>Sabah özeti</label>
+      <select onchange="if(this.value){AYAR.sabahOzet=true;AYAR.sabahSaat=this.value}else AYAR.sabahOzet=false;kaydet()"><option value="" ${AYAR.sabahOzet?'':'selected'}>Kapalı</option>${SABAH_SAAT.map(s=>`<option value="${s}" ${AYAR.sabahOzet&&AYAR.sabahSaat===s?'selected':''}>Her sabah ${s}</option>`).join('')}</select>
+      <p class="ipucu">Sabah özeti o gün randevu varsa gelir ("Bugün 5 randevunuz var"). Saati girilmiş hatırlatıcılar da saatinde bildirim olarak gelir. Bildirim, bu firmada bildirimi açmış tüm cihazlara gider; seçimler kendiliğinden kaydedilir.</p>
+    </div>
+  </div>`;
+}
+setInterval(()=>{if(!HAZIR)return;if(tarihStr(new Date())!==BUGUN&&!document.getElementById('perde').classList.contains('acik'))ciz()},60000);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){kapat();menuKapat()}});
 
 /* ---------- şifre göster/gizle (göz simgesi) — sonradan açılan pencerelerdeki şifre kutularına da eklenir ---------- */
