@@ -198,7 +198,7 @@ main{padding:26px 32px 60px;max-width:1200px}
 .mus .kim{display:flex;align-items:center;gap:12px;min-width:0}
 .mus .kim>div:last-child{min-width:0}
 .soluk{color:var(--soluk);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hiz-satir,.hiz-bas{display:grid;grid-template-columns:minmax(0,1fr) 110px 130px 72px 40px;gap:14px;align-items:center;padding:0 18px}
+.hiz-satir,.hiz-bas{display:grid;grid-template-columns:minmax(0,1fr) 130px 72px 40px;gap:14px;align-items:center;padding:0 18px}
 .hiz-satir{min-height:58px;border-bottom:1px solid var(--cizgi);cursor:pointer}
 .hiz-satir:last-child{border-bottom:0}
 .sira-btn{display:flex;gap:4px}
@@ -351,7 +351,7 @@ main{padding:26px 32px 60px;max-width:1200px}
   .mus .gizle{display:none}
   .arac{padding:12px 14px}
   .arac .btn span{display:none}.arac .btn{width:44px;height:44px;padding:0}
-  .hiz-satir{grid-template-columns:minmax(0,1fr) 54px 80px 72px;padding:0 14px;gap:8px}
+  .hiz-satir{grid-template-columns:minmax(0,1fr) 84px 72px;padding:0 14px;gap:8px}
   .hiz-satir .ikon,.hiz-bas{display:none}
   .gorev .zaman-etk{width:auto}
   .perde{align-items:flex-end;padding:0}
@@ -1092,8 +1092,8 @@ function gorevBitir(gid,b){const g=V.gorevler.find(x=>x.id===gid);g.bitti=b;kayd
 function ekranHizmetler(){
   return `<div class="panel">
     <div class="panel-ust"><h2>${I('hizmet')}Hizmetler</h2><span style="display:flex;gap:6px"><button class="btn btn-ikincil" style="height:36px" ${V.hizmetler.length>1?'':'disabled'} onclick="hizmetAZ(this)">A→Z</button><button class="btn btn-ana" style="height:36px" onclick="hizmetFormu()">${I('arti')}Yeni hizmet</button></span></div>
-    <div class="tablo-bas hiz-bas"><div>Hizmet</div><div>Süre</div><div>Fiyat</div><div>Sıra</div><div></div></div>
-    ${V.hizmetler.map((h,i,a)=>`<div class="hiz-satir" onclick="hizmetFormu('${h.id}')"><div class="ad" style="font-size:14px">${k(h.ad)}</div><div class="soluk">${h.sure} dk</div><div class="soluk">${h.fiyat?tl(h.fiyat):'Ücretsiz'}</div><div class="sira-btn" onclick="event.stopPropagation()"><button aria-label="Yukarı taşı" ${i?'':'disabled'} onclick="hizmetTasi('${h.id}',-1)">↑</button><button aria-label="Aşağı taşı" ${i<a.length-1?'':'disabled'} onclick="hizmetTasi('${h.id}',1)">↓</button></div><div class="soluk ikon">${I('kalem')}</div></div>`).join('')||'<div class="bos">Hizmet yok.</div>'}
+    <div class="tablo-bas hiz-bas"><div>Hizmet</div><div>Fiyat</div><div>Sıra</div><div></div></div>
+    ${V.hizmetler.map((h,i,a)=>`<div class="hiz-satir" onclick="hizmetFormu('${h.id}')"><div class="ad" style="font-size:14px">${k(h.ad)}</div><div class="soluk">${h.fiyat?tl(h.fiyat):'—'}</div><div class="sira-btn" onclick="event.stopPropagation()"><button aria-label="Yukarı taşı" ${i?'':'disabled'} onclick="hizmetTasi('${h.id}',-1)">↑</button><button aria-label="Aşağı taşı" ${i<a.length-1?'':'disabled'} onclick="hizmetTasi('${h.id}',1)">↓</button></div><div class="soluk ikon">${I('kalem')}</div></div>`).join('')||'<div class="bos">Hizmet yok.</div>'}
   </div>
   <p class="not" style="margin:12px 4px">Oklarla sırayı değiştirin; randevu formunda ve müşteri kartında hizmetler bu sırayla listelenir. Düzenlemek ya da silmek için hizmete dokunun. Fiyatlar yalnız size görünür.</p>`;
 }
@@ -1241,8 +1241,8 @@ function randevuFormu(rid,tarih,mid,saat,hid){
     <select id="fMus"><option value="">Seçin</option>${V.musteriler.slice().sort((a,b)=>a.ad.localeCompare(b.ad,'tr')).map(m=>`<option value="${m.id}" ${m.id===r.mid?'selected':''}>${k(m.ad)}</option>`).join('')}<option value="__yeni">+ Yeni müşteri ekle</option></select>
     <div id="yeniMus" style="display:none" class="iki"><div><label>Ad Soyad</label><input id="fYAd" autocomplete="off"></div><div><label>Telefon</label><input id="fYTel" inputmode="tel" autocomplete="off"></div></div>
     <label>Hizmet</label>
-    <select id="fHiz"><option value="">Seçin</option>${V.hizmetler.map(h=>`<option value="${h.id}" ${h.id===r.hid?'selected':''}>${k(h.ad)} · ${h.sure} dk</option>`).join('')}<option value="__yeni">+ Yeni hizmet ekle</option></select>
-    <div id="yeniHiz" style="display:none"><label>Yeni hizmetin adı</label><input id="fYHAd" autocomplete="off" placeholder="Örn. Lazer epilasyon (tüm bacak)"><p class="ipucu">Hizmetler listenize de eklenir; süre ve ücreti aşağıdan girin.</p></div>
+    <select id="fHiz"><option value="">Seçin</option>${V.hizmetler.map(h=>`<option value="${h.id}" ${h.id===r.hid?'selected':''}>${k(h.ad)}</option>`).join('')}<option value="__yeni">+ Yeni hizmet ekle</option></select>
+    <div id="yeniHiz" style="display:none"><label>Yeni hizmetin adı</label><input id="fYHAd" autocomplete="off" placeholder="Örn. Lazer epilasyon (tüm bacak)"><p class="ipucu">Hizmetler listenize de eklenir. Ücret isteğe bağlı.</p></div>
     <div id="paketBilgi"></div>
     <div class="iki"><div><label>Tarih</label><input type="date" id="fTar" value="${r.tarih}"></div><div><label>Saat</label><input type="time" id="fSaat" value="${r.saat}" step="300"></div></div>
     <div class="iki"><div><label>Süre (dk)</label><input type="number" min="5" step="5" id="fSure" value="${r.sure}" inputmode="numeric"></div><div><label>Ücret (₺)</label><input type="number" min="0" id="fUcr" value="${r.ucret===''?'':r.ucret}" inputmode="numeric"></div></div>
@@ -1269,8 +1269,8 @@ function randevuFormu(rid,tarih,mid,saat,hid){
   };
   document.getElementById('fHiz').onchange=()=>{
     const y=deger('fHiz')==='__yeni';document.getElementById('yeniHiz').style.display=y?'block':'none';
-    if(y){document.getElementById('fYHAd').focus();if(!deger('fSure'))document.getElementById('fSure').value=30}
-    else{const h=H(deger('fHiz'));if(h.sure)document.getElementById('fSure').value=h.sure;document.getElementById('fUcr').value=h.fiyat||0}
+    if(y){document.getElementById('fYHAd').focus();if(!deger('fSure'))document.getElementById('fSure').value=30;document.getElementById('fUcr').value=''}
+    else{const h=H(deger('fHiz'));if(h.sure)document.getElementById('fSure').value=h.sure;document.getElementById('fUcr').value=h.fiyat||''}
     kontrol()};
   document.getElementById('fMus').onchange=()=>{kontrol();if(deger('fMus')==='__yeni')document.getElementById('fYAd').focus()};
   ['fTar','fSaat','fSure'].forEach(i=>document.getElementById(i).addEventListener('input',kontrol));
@@ -1284,7 +1284,7 @@ function randevuKaydet(rid){
   let hid=deger('fHiz');
   if(hid==='__yeni'&&!deger('fYHAd'))return hata('Yeni hizmetin adını yazın.');
   if(mid==='__yeni'){const ad=deger('fYAd');if(!ad)return hata('Yeni müşterinin adını yazın.');mid=yeniId();V.musteriler.push({id:mid,ad,tel:deger('fYTel'),eposta:'',dogum:'',adres:'',ek:'',uyari:'',kaynak:'',not:''})}
-  if(hid==='__yeni'){const ad=deger('fYHAd'),var_=V.hizmetler.find(h=>h.ad.toLocaleLowerCase('tr')===ad.toLocaleLowerCase('tr'));if(var_)hid=var_.id;else{hid=yeniId();V.hizmetler.push({id:hid,ad,sure:Math.max(5,Number(deger('fSure')||30)),fiyat:paketli?0:Math.max(0,Number(deger('fUcr')||0))})}}
+  if(hid==='__yeni'){const ad=deger('fYHAd'),var_=V.hizmetler.find(h=>h.ad.toLocaleLowerCase('tr')===ad.toLocaleLowerCase('tr'));if(var_)hid=var_.id;else{hid=yeniId();const u=deger('fUcr');V.hizmetler.push({id:hid,ad,fiyat:paketli||u===''?'':Math.max(0,Number(u)||0)})}}
   const veri={mid,hid,tarih:deger('fTar'),saat:deger('fSaat'),sure:Math.max(5,Number(deger('fSure')||H(hid).sure||30)),ucret:paketli?0:Number(deger('fUcr')||0),kapora:Number(deger('fKap')||0),not:deger('fNot'),paketli};
   veri.kaporaTarihi=veri.kapora?((rid&&R(rid).kaporaTarihi)||BUGUN):null;
   if(rid)Object.assign(R(rid),veri);else V.randevular.push({id:yeniId(),durum:'bekliyor',odendi:false,...veri});
@@ -1494,15 +1494,15 @@ function gorevSil(gid){V.gorevler=V.gorevler.filter(x=>x.id!==gid);kaydet();kapa
 
 /* ---------- hizmet ---------- */
 function hizmetFormu(hid){
-  const h=hid?V.hizmetler.find(x=>x.id===hid):{ad:'',sure:60,fiyat:''};
+  const h=hid?V.hizmetler.find(x=>x.id===hid):{ad:'',fiyat:''};
   ac(hid?'Hizmeti düzenle':'Yeni hizmet',`
     <label>Hizmet adı *</label><input id="hAd" value="${k(h.ad)}" autocomplete="off">
-    <div class="iki"><div><label>Süre (dk)</label><input type="number" min="5" step="5" id="hSure" value="${h.sure}" inputmode="numeric"></div><div><label>Fiyat (₺)</label><input type="number" min="0" id="hFiy" value="${h.fiyat}" inputmode="numeric" placeholder="0 = ücretsiz"></div></div>
+    <label>Fiyat (₺) <span style="font-weight:400">· isteğe bağlı</span></label><input type="number" min="0" id="hFiy" value="${h.fiyat||''}" inputmode="numeric" placeholder="Boş bırakabilirsiniz">
     <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:18px" onclick="hizmetKaydet('${hid||''}')">Kaydet</button>
     ${hid?`<button class="btn btn-sil btn-tam" style="margin-top:8px" onclick="if(ikiKez(this,'Eski randevular etkilenmez. Tekrar basın'))hizmetSil('${hid}')">Hizmeti sil</button>`:''}`);
 }
 function hizmetKaydet(hid){
-  const v={ad:deger('hAd'),sure:Math.max(5,Number(deger('hSure')||30)),fiyat:Math.max(0,Number(deger('hFiy')||0))};
+  const f=deger('hFiy'),v={ad:deger('hAd'),fiyat:f===''?'':Math.max(0,Number(f)||0)};
   if(!v.ad)return hata('Hizmet adı yazın.');
   if(hid)Object.assign(V.hizmetler.find(x=>x.id===hid),v);else V.hizmetler.push({id:yeniId(),...v});
   kaydet();kapat();ciz();bildir('Hizmet kaydedildi');

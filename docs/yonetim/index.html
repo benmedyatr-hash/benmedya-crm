@@ -70,7 +70,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 28px 60px}
 .kimlik{background:#f6f6f7;border:1px dashed #d6d6db;border-radius:12px;padding:14px;font-family:Consolas,monospace;font-size:13.5px;line-height:1.8;margin-top:12px;white-space:pre-wrap;word-break:break-all}
 .hizli{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .bolum{font-size:11.5px;font-weight:600;color:var(--cok-soluk);text-transform:uppercase;letter-spacing:.06em;margin:22px 0 8px}
-.hz{display:grid;grid-template-columns:20px minmax(0,1fr) 66px 80px 30px;gap:6px;align-items:center;margin-top:6px}
+.hz{display:grid;grid-template-columns:20px minmax(0,1fr) 110px 30px;gap:6px;align-items:center;margin-top:6px}
 .hz input{height:38px;font-size:14px;padding:0 8px}
 .hz input[type=checkbox]{width:18px;height:18px;padding:0;accent-color:var(--vurgu)}
 .hz .kapat{width:30px;height:30px;font-size:18px}
@@ -211,7 +211,7 @@ function yeniFirma(){
     <div class="iki"><div><label>Sektör</label><select id="fS" onchange="hizmetListesi(this.value)">${sektorSecenekleri('genel')}</select></div>
     <div><label>Renk</label><select id="fR">${RENK.map((r,i)=>`<option value="${i}">${r}</option>`).join('')}</select></div></div>
     <label style="display:flex;justify-content:space-between"><span>Hazır hizmetler (düzenleyebilirsiniz)</span><span id="hzSay" style="font-weight:500"></span></label>
-    <div class="hz hz-bas"><span></span><span>Hizmet</span><span>Süre dk</span><span>Fiyat ₺</span><span></span></div>
+    <div class="hz hz-bas"><span></span><span>Hizmet</span><span>Fiyat ₺ (isteğe bağlı)</span><span></span></div>
     <div id="hzListe"></div>
     <button type="button" class="btn btn-ikincil kucuk" style="margin-top:8px" onclick="$('hzListe').insertAdjacentHTML('beforeend',hizmetSatiri());hzSay();$('hzListe').lastElementChild.querySelector('.hz-ad').focus()">+ Hizmet ekle</button>
     <p style="font-size:12px;color:var(--soluk);margin-top:6px">İşareti kaldırılan eklenmez. Firma sonradan uygulamadaki Hizmetler ekranından da değiştirebilir.</p>
@@ -226,11 +226,11 @@ function yeniFirma(){
 }
 // firma açarken sektörün hazır hizmetleri: ad / süre / fiyat düzenlenir, istenmeyen işareti kaldırılır
 function hizmetSatiri(ad='',sure=30,fiyat=''){
-  return `<div class="hz"><input type="checkbox" checked onchange="hzSay()" title="Eklensin"><input class="hz-ad" value="${k(ad)}" placeholder="Hizmet adı" oninput="hzSay()"><input class="hz-sure" type="number" min="5" step="5" value="${sure}" inputmode="numeric"><input class="hz-fiyat" type="number" min="0" value="${fiyat??''}" inputmode="numeric" placeholder="0"><button type="button" class="kapat" title="Satırı sil" onclick="this.parentNode.remove();hzSay()">×</button></div>`;
+  return `<div class="hz"><input type="checkbox" checked onchange="hzSay()" title="Eklensin"><input class="hz-ad" value="${k(ad)}" placeholder="Hizmet adı" oninput="hzSay()"><input class="hz-fiyat" type="number" min="0" value="${fiyat??''}" inputmode="numeric" placeholder="—"><button type="button" class="kapat" title="Satırı sil" onclick="this.parentNode.remove();hzSay()">×</button></div>`;
 }
 function hizmetListesi(s){const l=((window.SEKTORLER[s]||window.SEKTORLER.genel||{}).hizmetler)||[];$('hzListe').innerHTML=l.map(x=>hizmetSatiri(x[0],x[1],x[2])).join('');hzSay()}
 const hzOku=()=>[...document.querySelectorAll('#hzListe .hz')].filter(s=>s.querySelector('input[type=checkbox]').checked&&s.querySelector('.hz-ad').value.trim())
-  .map(s=>({ad:s.querySelector('.hz-ad').value.trim(),sure:Math.max(5,Number(s.querySelector('.hz-sure').value)||30),fiyat:Math.max(0,Number(s.querySelector('.hz-fiyat').value)||0)}));
+  .map(s=>({ad:s.querySelector('.hz-ad').value.trim(),fiyat:s.querySelector('.hz-fiyat').value.trim()}));
 function hzSay(){const e=$('hzSay');if(e)e.textContent=hzOku().length+' hizmet eklenecek'}
 async function kullaniciOlustur(eposta,sifre){
   const{data,error}=await sbKayit.auth.signUp({email:eposta,password:sifre});
