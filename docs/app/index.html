@@ -1113,6 +1113,7 @@ function hizmetAZ(b){
 /* ---------- ekran: ayarlar ---------- */
 function ekranAyarlar(){
   return `<div class="ayar-izgara">
+    <div class="sutun">
     <div class="panel">
       <div class="panel-ust"><h2>${I('bina')}Firma bilgileri</h2></div>
       <div class="ayar-ic">
@@ -1124,8 +1125,9 @@ function ekranAyarlar(){
         <button class="btn btn-ana btn-tam" style="margin-top:20px" onclick="ayarKaydet()">${I('tamam')}Kaydet</button>
       </div>
     </div>
+    ${bildirimPaneli()}
+    </div>
     <div class="sutun">
-      ${bildirimPaneli()}
       <div class="panel">
         <div class="panel-ust"><h2>${I('mesaj')}WhatsApp mesaj şablonları</h2></div>
         <div class="ayar-ic">
