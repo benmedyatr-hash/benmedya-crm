@@ -317,8 +317,10 @@ main:has(.muh-ust){max-width:none}
 .mh-alt button.gelen.secili,.mh-alt button.giden.secili{border-color:#fff}
 .hz b{display:block;font-size:14.5px;white-space:nowrap}.hz small{display:block;font-size:12px;color:var(--soluk);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hz>span:last-child{min-width:0}
-.mh-alacak{display:flex;align-items:center;gap:10px;padding:0 14px;height:46px;border-radius:14px;background:var(--sari-acik);color:var(--sari);font-weight:600;font-size:13.5px;text-align:left}
-.mh-alacak b{margin-left:auto;white-space:nowrap}.mh-alacak .i{width:17px;height:17px}
+.mh-alacak{display:flex;align-items:center;gap:12px;padding:8px 14px 8px 10px;min-height:56px;border-radius:16px;background:var(--sari);color:#fff;font-weight:600;font-size:14px;text-align:left;box-shadow:var(--golge);transition:transform .1s}
+.mh-alacak:active{transform:scale(.98)}
+.mh-alacak .yon{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.2);flex:none}
+.mh-alacak b{margin-left:auto;white-space:nowrap;font-size:15px}.mh-alacak .i{width:18px;height:18px}
 .mh-sekme{display:flex;gap:4px;padding:4px;background:var(--bg);border-radius:11px}
 .mh-sekme button{height:30px;padding:0 13px;border-radius:8px;font-size:13px;font-weight:600;color:var(--soluk)}
 .mh-sekme button.secili{background:var(--kart);color:var(--yazi);box-shadow:0 1px 3px rgba(20,20,30,.12)}
@@ -349,7 +351,7 @@ main:has(.muh-ust){max-width:none}
 @media(max-width:900px){main:has(.muh-ust) .sayfa-baslik{display:none}
   .muh-ust{grid-template-columns:1fr;gap:8px;margin:12px 0 12px}.mh-kart{padding:10px 12px 12px;border-radius:18px}
   .mh-bas{margin-bottom:6px}.mh-filtre{height:34px}.mh-ikon{width:34px;height:34px}
-  .mh-etk{display:none}.mh-net{font-size:30px}.mh-alt{margin-top:10px}.mh-sag{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mh-alacak{grid-column:1/-1;height:44px}.hz{padding:9px 10px;gap:9px;border-radius:14px}.hz .yon{width:36px;height:36px;font-size:20px;border-radius:11px}.hz b{font-size:13.5px}.hz small{font-size:11px}.mh-kat{margin:10px 14px 0}.mh-sekme button{padding:0 10px}}
+  .mh-etk{display:none}.mh-net{font-size:30px}.mh-alt{margin-top:10px}.mh-sag{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mh-alacak{grid-column:1/-1}.hz{padding:9px 10px;gap:9px;border-radius:14px}.hz .yon{width:36px;height:36px;font-size:20px;border-radius:11px}.hz b{font-size:13.5px}.hz small{font-size:11px}.mh-kat{margin:10px 14px 0}.mh-sekme button{padding:0 10px}}
 .panel.vurgu{animation:vurgu 1.4s ease}
 @keyframes vurgu{0%,40%{box-shadow:0 0 0 3px var(--ana)}100%{box-shadow:var(--golge)}}
 .yan-perde{display:none}
@@ -1671,7 +1673,7 @@ function ekranMuhasebe(){
     <div class="mh-sag">
       <button class="hz gelir" onclick="satisFormu()"><span class="yon">+</span><span><b>Gelir ekle</b><small>Harici ödeme</small></span></button>
       <button class="hz gider" onclick="masrafFormu()"><span class="yon">−</span><span><b>Masraf ekle</b><small>Yemek · Fatura · Diğer</small></span></button>
-      <button class="mh-alacak" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),30)">${I('uyari')}Bekleyen alacak<b>${tl(bekleyen)}</b>${I('sag')}</button>
+      <button class="mh-alacak" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),30)"><span class="yon">${I('saat')}</span>Bekleyen alacak<b>${tl(bekleyen)}</b>${I('sag')}</button>
     </div>
   </div>
   <div class="izgara">
