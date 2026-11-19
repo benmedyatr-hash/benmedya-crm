@@ -1675,7 +1675,7 @@ function ekranMuhasebe(){
     <div class="mh-kart">
       <div class="mh-bas"><button class="mh-filtre" onclick="muhFiltre()">${I('filtre')}<span>Filtre · ${k(etk)}</span>${I('sag').replace('class="i"','class="i ok"')}</button><button class="mh-ikon" title="Excel'e aktar" aria-label="Excel'e aktar" onclick="muhAktar()">${I('indir')}</button></div>
       <div class="mh-govde"><div class="mh-sol"><div class="mh-etk">Kalan (gelen − giden)</div>
-      <div class="mh-net">${isaretTl(net).replace('+ ','')}<small class="mh-net-ack">Net (gelen − giden)</small></div></div>
+      <div class="mh-net">${isaretTl(net).replace('+ ','')}<small class="mh-net-ack">Kasada kalan</small></div></div>
       <div class="mh-alt">
         <button class="gelen${muh.yon==='gelen'?' secili':''}" onclick="muhSec('yon','gelen')"><span class="yon" style="color:var(--yesil)">↑</span><span style="min-width:0"><small>Gelen</small><b>${tl(gelen)}</b></span></button>
         <button class="giden${muh.yon==='giden'?' secili':''}" onclick="muhSec('yon','giden')"><span class="yon" style="color:var(--kirmizi)">↓</span><span style="min-width:0"><small>Giden</small><b>${tl(giden)}</b></span></button>
