@@ -293,7 +293,7 @@ main{padding:26px 32px 60px;max-width:1200px}
 main:has(.muh-ust){max-width:none}
 .mh-kart{background:var(--ana);color:var(--ana-yazi);border-radius:20px;padding:18px 20px 16px;display:flex;flex-direction:column;gap:2px;box-shadow:0 10px 30px -14px color-mix(in srgb,var(--ana) 70%,transparent)}
 .mh-bas{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
-.mh-filtre{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:999px;background:color-mix(in srgb,var(--ana-yazi) 16%,transparent);color:inherit;font-weight:600;font-size:13.5px;max-width:100%;min-width:0}
+.mh-filtre{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 12px;border-radius:999px;background:transparent;border:1.5px solid color-mix(in srgb,var(--ana-yazi) 65%,transparent);color:inherit;font-weight:600;font-size:13.5px;max-width:100%;min-width:0}
 .mh-filtre span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mh-filtre .i{width:16px;height:16px}.mh-filtre .ok{width:14px;height:14px;opacity:.8;transform:rotate(90deg)}
 .mh-ikon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--ana-yazi) 16%,transparent);color:inherit;flex:none}
@@ -313,6 +313,8 @@ main:has(.muh-ust){max-width:none}
 .hz.gelir{background:var(--yesil);border-color:var(--yesil);color:#fff}.hz.gider{background:var(--kirmizi);border-color:var(--kirmizi);color:#fff}
 .hz.gelir .yon,.hz.gider .yon{background:rgba(255,255,255,.2);color:#fff}
 .hz.gelir small,.hz.gider small{color:rgba(255,255,255,.85)}
+.mh-alt button.gelen{background:var(--yesil);color:#fff}.mh-alt button.giden{background:var(--kirmizi);color:#fff}
+.mh-alt button.gelen.secili,.mh-alt button.giden.secili{border-color:#fff}
 .hz b{display:block;font-size:14.5px;white-space:nowrap}.hz small{display:block;font-size:12px;color:var(--soluk);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hz>span:last-child{min-width:0}
 .mh-alacak{display:flex;align-items:center;gap:10px;padding:0 14px;height:46px;border-radius:14px;background:var(--sari-acik);color:var(--sari);font-weight:600;font-size:13.5px;text-align:left}
@@ -347,11 +349,7 @@ main:has(.muh-ust){max-width:none}
 @media(max-width:900px){main:has(.muh-ust) .sayfa-baslik{display:none}
   .muh-ust{grid-template-columns:1fr;gap:8px;margin:12px 0 12px}.mh-kart{padding:10px 12px 12px;border-radius:18px}
   .mh-bas{margin-bottom:6px}.mh-filtre{height:34px}.mh-ikon{width:34px;height:34px}
-  .mh-govde{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.mh-sol{min-width:0}
-  .mh-etk{display:none}.mh-net{font-size:28px}
-  .mh-alt{display:flex;flex-direction:column;gap:3px;margin:0;flex:none}
-  .mh-alt button{padding:3px 8px 3px 4px;gap:6px;border-radius:999px;border-width:1px}
-  .mh-alt .yon{width:20px;height:20px;font-size:11px}.mh-alt small{display:none}.mh-alt b{font-size:13.5px}.mh-sag{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mh-alacak{grid-column:1/-1;height:44px}.hz{padding:9px 10px;gap:9px;border-radius:14px}.hz .yon{width:36px;height:36px;font-size:20px;border-radius:11px}.hz b{font-size:13.5px}.hz small{font-size:11px}.mh-kat{margin:10px 14px 0}.mh-sekme button{padding:0 10px}}
+  .mh-etk{display:none}.mh-net{font-size:30px}.mh-alt{margin-top:10px}.mh-sag{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mh-alacak{grid-column:1/-1;height:44px}.hz{padding:9px 10px;gap:9px;border-radius:14px}.hz .yon{width:36px;height:36px;font-size:20px;border-radius:11px}.hz b{font-size:13.5px}.hz small{font-size:11px}.mh-kat{margin:10px 14px 0}.mh-sekme button{padding:0 10px}}
 .panel.vurgu{animation:vurgu 1.4s ease}
 @keyframes vurgu{0%,40%{box-shadow:0 0 0 3px var(--ana)}100%{box-shadow:var(--golge)}}
 .yan-perde{display:none}
@@ -531,6 +529,7 @@ main:has(.muh-ust){max-width:none}
   <symbol id="i-tahsilat" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v.01M18 14.5v.01"/></symbol>
   <symbol id="i-yemek" viewBox="0 0 24 24"><path d="M7 3v18M4.5 3v5.5a2.5 2.5 0 0 0 5 0V3M17.5 21V3c-2.2 1-3.5 3.6-3.5 7v3h3.5"/></symbol>
   <symbol id="i-fatura" viewBox="0 0 24 24"><path d="M6 3h12v18l-2.5-1.6L13 21l-2.5-1.6L8 21l-2-1.4zM9 8h6M9 12h6M9 16h3.5"/></symbol>
+  <symbol id="i-filtre" viewBox="0 0 24 24"><path d="M4 5h16l-6.2 7.6V19l-3.6-1.8v-4.6z"/></symbol>
   <symbol id="i-kasa" viewBox="0 0 24 24"><rect x="4.5" y="3" width="15" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 11.5h7M8.5 15.5h4"/></symbol>
   <symbol id="i-para" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M16 15h2"/></symbol>
   <symbol id="i-paket" viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5zM3 7.5 12 12l9-4.5M12 12v9"/></symbol>
@@ -1609,7 +1608,7 @@ function masrafKaydet(id,yeni){
 function masrafSil(id){V.masraflar=V.masraflar.filter(x=>x.id!==id);kaydet();kapat();ciz();bildir('Masraf silindi')}
 
 /* ---------- ekran: ön muhasebe — gelen (tüm tahsilatlar) / giden (masraflar) ---------- */
-let muh={donem:'ay',bas:'',bit:'',yon:'',kat:''};
+let muh={donem:'bugun',bas:'',bit:'',yon:'',kat:''};
 const AY_AD=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 const ayBasi=t=>t.slice(0,7)+'-01',aySonu=t=>{const d=new Date(t.slice(0,4),Number(t.slice(5,7)),0);return t.slice(0,8)+String(d.getDate()).padStart(2,'0')};
 const oncekiAy=t=>{const y=Number(t.slice(0,4)),m=Number(t.slice(5,7));return m===1?(y-1)+'-12-01':y+'-'+String(m-1).padStart(2,'0')+'-01'};
@@ -1661,12 +1660,12 @@ function ekranMuhasebe(){
   return `
   <div class="muh-ust">
     <div class="mh-kart">
-      <div class="mh-bas"><button class="mh-filtre" onclick="muhFiltre()">${I('takvim')}<span>${k(etk)}</span>${I('sag').replace('class="i"','class="i ok"')}</button><button class="mh-ikon" title="Excel'e aktar" aria-label="Excel'e aktar" onclick="muhAktar()">${I('indir')}</button></div>
+      <div class="mh-bas"><button class="mh-filtre" onclick="muhFiltre()">${I('filtre')}<span>Filtre · ${k(etk)}</span>${I('sag').replace('class="i"','class="i ok"')}</button><button class="mh-ikon" title="Excel'e aktar" aria-label="Excel'e aktar" onclick="muhAktar()">${I('indir')}</button></div>
       <div class="mh-govde"><div class="mh-sol"><div class="mh-etk">Kalan (gelen − giden)</div>
       <div class="mh-net">${isaretTl(net).replace('+ ','')}</div></div>
       <div class="mh-alt">
-        <button class="${muh.yon==='gelen'?'secili':''}" onclick="muhSec('yon','gelen')"><span class="yon" style="color:var(--yesil)">↑</span><span style="min-width:0"><small>Gelen</small><b>${tl(gelen)}</b></span></button>
-        <button class="${muh.yon==='giden'?'secili':''}" onclick="muhSec('yon','giden')"><span class="yon" style="color:var(--kirmizi)">↓</span><span style="min-width:0"><small>Giden</small><b>${tl(giden)}</b></span></button>
+        <button class="gelen${muh.yon==='gelen'?' secili':''}" onclick="muhSec('yon','gelen')"><span class="yon" style="color:var(--yesil)">↑</span><span style="min-width:0"><small>Gelen</small><b>${tl(gelen)}</b></span></button>
+        <button class="giden${muh.yon==='giden'?' secili':''}" onclick="muhSec('yon','giden')"><span class="yon" style="color:var(--kirmizi)">↓</span><span style="min-width:0"><small>Giden</small><b>${tl(giden)}</b></span></button>
       </div></div>
     </div>
     <div class="mh-sag">
