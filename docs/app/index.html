@@ -805,12 +805,12 @@ function temaUygula(){
 }
 
 /* ---------- gezinme ---------- */
-const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Tahsilat','tahsilat'],muhasebe:['Gelir – Gider','kasa'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler & Fiyatlar','hizmet'],ayarlar:['Ayarlar','ayar']};
+const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Cari Hesap','tahsilat'],muhasebe:['Kasa','kasa'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler & Fiyatlar','hizmet'],ayarlar:['Ayarlar','ayar']};
 let ekran='bugun',seciliGun=BUGUN,aramaMetni='';
 function navCiz(){
   const n=acikGorevler().length,rs=randevusuzlar().seansli.length;
   const y=s=>`<button class="${s===ekran?'aktif':''}" onclick="git('${s}')">${I(EKRANLAR[s][1])}${EKRANLAR[s][0]}${s==='gorevler'&&n?`<span class="rozet">${n}</span>`:''}${s==='randevusuz'&&rs?`<span class="rozet">${rs}</span>`:''}</button>`;
-  document.getElementById('yanNav').innerHTML=['bugun','takvim','|','musteriler','randevulu','randevusuz','|','tahsilat','muhasebe','gorevler','hizmetler'].map(s=>s==='|'?'<div class="ayrac"></div>':y(s)).join('');
+  document.getElementById('yanNav').innerHTML=['bugun','takvim','|','musteriler','randevulu','randevusuz','|','tahsilat','muhasebe','|','gorevler','hizmetler'].map(s=>s==='|'?'<div class="ayrac"></div>':y(s)).join('');
   const bA=PUSH_DURUM==='acik',zd=`<span class="zil-durum ${bA?'acik':'kapali'}" title="${bA?'Bu cihazda bildirimler açık':'Bu cihazda bildirimler kapalı'}">${bA?ZIL_ACIK:ZIL_KAPALI}</span>`;
   document.getElementById('yanAlt').innerHTML=`<button class="${ekran==='bildirimler'?'aktif':''}" onclick="git('bildirimler')">${I('zil')}Bildirimler${zd}</button>`+y('ayarlar')+`<button class="cikis-btn" onclick="menuKapat();cikis()">${I('cikis')}Çıkış yap</button>`;
   const m=(s,ad)=>`<button class="sekme ${s===ekran||(s==='bugun'&&false)?'aktif':''}" onclick="git('${s}')"><span class="kap">${I(EKRANLAR[s][1])}</span>${ad}${s==='gorevler'&&n?`<span class="nokta">${n}</span>`:''}</button>`;
