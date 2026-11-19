@@ -111,6 +111,7 @@ main{padding:26px 32px 60px;max-width:1200px}
 .kpi .etk{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:var(--soluk);font-weight:500}
 .kpi .etk span{width:32px;height:32px;border-radius:9px;background:var(--ana-acik);color:var(--vurgu);display:grid;place-items:center}
 .kpi .etk span svg{width:16px;height:16px}
+.kpi .panel.kr{background:color-mix(in srgb,var(--r) 6%,var(--kart));border-color:color-mix(in srgb,var(--r) 28%,var(--cizgi))}.kpi .kr .etk span{background:color-mix(in srgb,var(--r) 15%,transparent);color:var(--r)}
 .kpi b{font-size:26px;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
 
 .izgara{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:20px;align-items:start}
@@ -435,7 +436,7 @@ main:has(.muh-ust){max-width:none}
   .kpi{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
   .kpi .panel{height:94px;padding:13px 14px}
   .kpi b{font-size:21px}
-  .izgara,.ayar-izgara{grid-template-columns:1fr;gap:14px}
+  .izgara,.ayar-izgara{grid-template-columns:minmax(0,1fr);gap:14px}.izgara>*,.sutun>*{min-width:0}
   .sutun{gap:14px}
   .panel-ic{padding:2px 14px}.panel-ust{padding:0 14px;height:54px}
   .rnd{grid-template-columns:4px 52px minmax(0,1fr);gap:0 12px}
@@ -546,6 +547,7 @@ main:has(.muh-ust){max-width:none}
   <symbol id="i-yemek" viewBox="0 0 24 24"><path d="M7 3v18M4.5 3v5.5a2.5 2.5 0 0 0 5 0V3M17.5 21V3c-2.2 1-3.5 3.6-3.5 7v3h3.5"/></symbol>
   <symbol id="i-fatura" viewBox="0 0 24 24"><path d="M6 3h12v18l-2.5-1.6L13 21l-2.5-1.6L8 21l-2-1.4zM9 8h6M9 12h6M9 16h3.5"/></symbol>
   <symbol id="i-filtre" viewBox="0 0 24 24"><path d="M4 5h16l-6.2 7.6V19l-3.6-1.8v-4.6z"/></symbol>
+  <symbol id="i-kumsaati" viewBox="0 0 24 24"><path d="M6 3h12M6 21h12M7 3c0 4.5 5 6 5 9s-5 4.5-5 9M17 3c0 4.5-5 6-5 9s5 4.5 5 9"/></symbol>
   <symbol id="i-kasa" viewBox="0 0 24 24"><rect x="4.5" y="3" width="15" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 11.5h7M8.5 15.5h4"/></symbol>
   <symbol id="i-para" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M16 15h2"/></symbol>
   <symbol id="i-paket" viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5zM3 7.5 12 12l9-4.5M12 12v9"/></symbol>
@@ -1090,10 +1092,10 @@ function ekranBugun(){
   const izinli=PUSH_DURUM==='acik';
   return `
   <div class="kpi">
-    <div class="panel" onclick="git('takvim')"><div class="etk">Bugünkü randevu<span>${I('takvim')}</span></div><b>${bugun.length}</b></div>
-    <div class="panel" onclick="git('tahsilat');tahsilatSec('bugun')"><div class="etk">Bugün tahsil edilen<span>${I('para')}</span></div><b style="color:${bugunTahsil?'var(--yesil)':'inherit'}">${tl(bugunTahsil)}</b></div>
-    <div class="panel" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),80)"><div class="etk">Bekleyen ödemeler<span>${I('uyari')}</span></div><b>${tl(toplamBorc)}</b></div>
-    <div class="panel" onclick="git('gorevler')"><div class="etk">Açık hatırlatıcı<span>${I('gorev')}</span></div><b>${acikGorevler().length}</b></div>
+    <div class="panel kr" style="--r:var(--ana)" onclick="git('takvim')"><div class="etk">Bugünkü randevu<span>${I('takvim')}</span></div><b>${bugun.length}</b></div>
+    <div class="panel kr" style="--r:var(--yesil)" onclick="git('tahsilat');tahsilatSec('bugun')"><div class="etk">Bugün tahsil edilen<span>${I('para')}</span></div><b style="color:${bugunTahsil?'var(--yesil)':'inherit'}">${tl(bugunTahsil)}</b></div>
+    <div class="panel kr" style="--r:var(--sari)" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),80)"><div class="etk">Bekleyen ödemeler<span>${I('saat')}</span></div><b>${tl(toplamBorc)}</b></div>
+    <div class="panel kr" style="--r:#3b6fc4" onclick="git('gorevler')"><div class="etk">Açık hatırlatıcı<span>${I('gorev')}</span></div><b>${acikGorevler().length}</b></div>
   </div>
   <div class="izgara">
     <div class="panel">
@@ -1101,9 +1103,9 @@ function ekranBugun(){
       <div class="panel-ic">${bugun.length?bugun.map(randevuSatir).join(''):`<div class="bos">Bugün için randevu yok.<br><br><button class="btn btn-ince" onclick="randevuFormu()">${I('arti')}Randevu ekle</button></div>`}</div>
     </div>
     <div class="sutun">
-      ${(()=>{const rs=randevusuzlar().seansli;return `<div class="panel">
-        <div class="panel-ust"><h2>${I('uyari')}Randevusu olmayan seanslı</h2><button class="btn btn-ince" style="height:32px;padding:0 10px;font-size:12.5px" onclick="git('randevusuz')">Tümü (${rs.length})</button></div>
-        <div class="panel-ic">${rs.length?rs.slice(0,4).map(randevusuzSatir).join(''):'<div class="bos">Seansı devam eden herkesin randevusu var.</div>'}</div>
+      ${(()=>{const{seansli,diger}=randevusuzlar(),rs=seansli.concat(diger);return `<div class="panel">
+        <div class="panel-ust"><h2>${I('kumsaati')}Randevusu olmayanlar</h2><button class="btn btn-ince" style="height:32px;padding:0 10px;font-size:12.5px" onclick="git('randevusuz')">Tümü (${rs.length})</button></div>
+        <div class="panel-ic">${rs.length?rs.slice(0,6).map(randevusuzSatir).join(''):'<div class="bos">Randevusuz müşteri yok.</div>'}</div>
       </div>`})()}
       <div class="panel">
         <div class="panel-ust"><h2>${I('gorev')}Hatırlatıcılar</h2><button class="btn btn-ince" style="height:32px;padding:0 10px;font-size:12.5px" onclick="gorevFormu()">${I('arti')}Ekle</button></div>
