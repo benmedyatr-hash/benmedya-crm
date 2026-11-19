@@ -285,6 +285,7 @@ main{padding:26px 32px 60px;max-width:1200px}
 /* ---------- ön muhasebe / harici ödeme / masraf ---------- */
 .segment{display:flex;gap:4px;padding:4px;background:var(--bg);border:1px solid var(--cizgi);border-radius:12px}
 .segment button{flex:1;height:38px;border-radius:9px;font-weight:600;font-size:13.5px;color:var(--soluk);transition:background .15s,color .15s}
+.segment-izgara .segment{display:grid;grid-template-columns:repeat(3,1fr)}.segment-izgara .segment button{font-size:12.5px;padding:0 4px;line-height:1.15}.segment-izgara .segment button:last-child:nth-child(3n+1){grid-column:1/-1}
 .segment button.secili{background:var(--kart);color:var(--vurgu);box-shadow:0 1px 3px rgba(20,20,30,.12)}
 .muh-kalan{min-height:18px;margin-top:8px;font-size:12.5px;font-weight:600;color:var(--soluk)}
 .muh-kalan.bekle{color:var(--sari)}.muh-kalan.tamam{color:var(--yesil)}.muh-kalan.hata{color:var(--kirmizi)}
@@ -783,7 +784,7 @@ const borc=r=>{if(r.durum!=='geldi'||r.odendi||r.paketli)return 0;const k=Number
 const satisAlinan=x=>Math.min(Number(x.alinan||0),Number(x.tutar||0));
 const satisBorc=x=>x.odendi?0:Math.max(0,Number(x.tutar||0)-satisAlinan(x));
 const ODEME_SEKLI=['Nakit','Kart','Havale / EFT'];
-const MASRAF_TUR=[['Yemek','#d9822b'],['Fatura','#3b6fc4'],['Diğer','#7c8089']];
+const MASRAF_TUR=[['Kira','#8e5bb5'],['Fatura','#3b6fc4'],['Personel','#2f9a8a'],['Malzeme','#c2557a'],['Yemek','#d9822b'],['Cihaz / Bakım','#5a6fa8'],['Makine Ekipman Bedeli','#4a7f5c'],['Reklam gideri','#c9a227'],['Reklamcı ödemesi','#b07a1f'],['Diğer','#7c8089']];
 const S_=i=>V.satislar.find(x=>x.id===i);
 const satisAd=x=>x.mid?M(x.mid).ad:'Kayıtsız müşteri';
 // müşteriye eklenen hizmet (paket): bedel (tutar) + ödemeler; eski kayıtlarda tek "odenen" alanı vardı
@@ -1261,12 +1262,12 @@ function tahsilatOlaylari(){
   const o=[];
   V.randevular.forEach(r=>{
     const ad=M(r.mid).ad,h=H(r.hid).ad;
-    if(Number(r.kapora)>0)o.push({tarih:r.kaporaTarihi||r.tarih,tutar:Number(r.kapora),ad,mid:r.mid,aciklama:'Kapora · '+h,kaynak:'Randevu',rid:r.id});
-    if(Number(r.alinan)>0)o.push({tarih:r.alinanTarihi||r.tarih,tutar:Number(r.alinan),ad,mid:r.mid,aciklama:'Randevuda alınan · '+h,kaynak:'Randevu',rid:r.id});
-    if(r.durum==='geldi'&&r.odendi&&!r.paketli){const t=Number(r.ucret||0)-Number(r.kapora||0)-Number(r.alinan||0);if(t>0)o.push({tarih:r.odemeTarihi||r.tarih,tutar:t,ad,mid:r.mid,aciklama:'Randevu ödemesi · '+h,kaynak:'Randevu',rid:r.id})}
+    if(Number(r.kapora)>0)o.push({tarih:r.kaporaTarihi||r.tarih,tutar:Number(r.kapora),ad,mid:r.mid,aciklama:'Kapora · '+h,hizmet:h,kaynak:'Randevu',rid:r.id});
+    if(Number(r.alinan)>0)o.push({tarih:r.alinanTarihi||r.tarih,tutar:Number(r.alinan),ad,mid:r.mid,aciklama:'Randevuda alınan · '+h,hizmet:h,kaynak:'Randevu',rid:r.id});
+    if(r.durum==='geldi'&&r.odendi&&!r.paketli){const t=Number(r.ucret||0)-Number(r.kapora||0)-Number(r.alinan||0);if(t>0)o.push({tarih:r.odemeTarihi||r.tarih,tutar:t,ad,mid:r.mid,aciklama:'Randevu ödemesi · '+h,hizmet:h,kaynak:'Randevu',rid:r.id})}
   });
   V.paketler.forEach(p=>paketOdemeleri(p).forEach(x=>{if(Number(x.tutar)>0)o.push({tarih:x.tarih||p.tarih||'',tutar:Number(x.tutar),ad:M(p.mid).ad,mid:p.mid,aciklama:(x.not||'Ödeme')+' · '+H(p.hid).ad+(p.tekIslem?'':' ('+p.toplam+' seans)'),seans:p.tekIslem?null:(x.seans??null),hizmet:H(p.hid).ad,not:x.not||'Ödeme',kaynak:'Müşteri hizmeti'})}));
-  V.satislar.forEach(x=>{const a=satisAlinan(x),b={ad:satisAd(x),mid:x.mid,sid:x.id,aciklama:'Harici · '+x.aciklama,kaynak:'Harici ödeme',sekil:x.sekil||''};
+  V.satislar.forEach(x=>{const a=satisAlinan(x),b={ad:satisAd(x),mid:x.mid,sid:x.id,aciklama:'Harici · '+x.aciklama,hizmet:x.aciklama,kaynak:'Harici ödeme',sekil:x.sekil||''};
     if(a>0)o.push({...b,tarih:x.tarih,tutar:a});
     const kalan=Number(x.tutar||0)-a;if(x.odendi&&kalan>0)o.push({...b,tarih:x.odemeTarihi||x.tarih,tutar:kalan,aciklama:b.aciklama+(a>0?' (kalan)':'')})});
   return o.sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||''));
@@ -1591,11 +1592,11 @@ function satisKaydet(sid,b){
 
 /* ---------- masraf: Yemek / Fatura / Diğer ---------- */
 const MF_=i=>V.masraflar.find(x=>x.id===i);
-const masrafRenk=t=>(MASRAF_TUR.find(x=>x[0]===t)||MASRAF_TUR[2])[1];
+const masrafRenk=t=>(MASRAF_TUR.find(x=>x[0]===t)||MASRAF_TUR[MASRAF_TUR.length-1])[1];
 function masrafFormu(id,tur){
   const x=id?MF_(id):{kategori:tur||'Yemek',tutar:'',tarih:BUGUN,aciklama:'',sekil:'Nakit'};
   ac(id?'Masrafı düzenle':'Yeni masraf',`
-    <label>Masraf türü</label>${segment('mfTur',MASRAF_TUR.map(t=>t[0]),x.kategori,"masrafTurDegisti()")}
+    <label>Masraf türü</label><div class="segment-izgara">${segment('mfTur',MASRAF_TUR.map(t=>t[0]),x.kategori,"masrafTurDegisti()")}</div>
     <div class="iki"><div><label>Tutar (₺) *</label><input type="number" min="0" id="mfTut" value="${x.tutar===''?'':x.tutar}" inputmode="decimal" placeholder="0"></div><div><label>Tarih</label><input type="date" id="mfTar" value="${x.tarih}"></div></div>
     <div class="hizli-tarih">${[['Bugün',0],['Dün',-1],['Önceki gün',-2]].map(t=>`<button type="button" class="btn btn-ikincil" onclick="document.getElementById('mfTar').value='${gunEkle(BUGUN,t[1])}'">${t[0]}</button>`).join('')}</div>
     <label>Açıklama <span id="mfAcEk" style="font-weight:400"></span></label><input id="mfAc" value="${k(x.aciklama)}" autocomplete="off">
@@ -1609,7 +1610,7 @@ function masrafFormu(id,tur){
 function masrafTurDegisti(){
   const t=deger('mfTur'),e=document.getElementById('mfAc');
   document.getElementById('mfAcEk').textContent=t==='Diğer'?'*':'· isteğe bağlı';
-  e.placeholder={Yemek:'Örn. öğle yemeği, çay-kahve',Fatura:'Örn. elektrik, su, doğalgaz, internet',Diğer:'Örn. kira, malzeme, temizlik'}[t];
+  e.placeholder={Kira:'Örn. dükkan kirası, aidat',Fatura:'Örn. elektrik, su, doğalgaz, internet',Personel:'Örn. maaş, prim, avans',Malzeme:'Örn. jel, krem, ağda, havlu',Yemek:'Örn. öğle yemeği, çay-kahve','Cihaz / Bakım':'Örn. lazer bakımı, başlık değişimi','Makine Ekipman Bedeli':'Örn. lazer cihazı taksiti, koltuk, sterilizatör','Reklam gideri':'Örn. Instagram, Google reklam bütçesi, broşür','Reklamcı ödemesi':'Örn. ajans / sosyal medya yöneticisi ücreti',Diğer:'Örn. temizlik, vergi, muhasebeci'}[t]||'';
 }
 function masrafKaydet(id,yeni){
   const v={kategori:deger('mfTur'),tutar:Math.round(Math.max(0,Number(deger('mfTut')||0))*100)/100,tarih:deger('mfTar')||BUGUN,aciklama:deger('mfAc'),sekil:deger('mfSek')};
@@ -1640,13 +1641,13 @@ function muhAralik(){
   }
 }
 function muhHareketler(){
-  const g=tahsilatOlaylari().map(x=>({yon:'gelen',tarih:x.tarih||'',tutar:x.tutar,baslik:x.ad,alt:x.aciklama,kat:x.kaynak||'Diğer gelir',sekil:x.sekil||'',
+  const g=tahsilatOlaylari().map(x=>({yon:'gelen',tarih:x.tarih||'',tutar:x.tutar,baslik:x.ad,alt:x.aciklama,kat:x.kaynak||'Diğer gelir',hiz:(x.hizmet||'').trim()||'Diğer',epi:x.kaynak!=='Harici ödeme',sekil:x.sekil||'',
     ac:x.sid?`satisFormu('${x.sid}')`:x.rid?`randevuDetay('${x.rid}')`:x.mid?`musteriKarti('${x.mid}')`:''}));
   const c=V.masraflar.map(m=>({yon:'giden',tarih:m.tarih||'',tutar:Number(m.tutar)||0,baslik:m.kategori+' masrafı',alt:m.aciklama||'',kat:m.kategori,sekil:m.sekil||'',ac:`masrafFormu('${m.id}')`}));
   return g.concat(c).sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||'')||(a.yon==='giden')-(b.yon==='giden'));
 }
 function muhSec(alan,d){muh[alan]=muh[alan]===d&&alan!=='donem'?'':d;if(alan==='donem'&&d==='ozel'&&!muh.bas){muh.bas=ayBasi(BUGUN);muh.bit=BUGUN}ciz()}
-const GELIR_IK={'Randevu':'takvim','Müşteri hizmeti':'paket','Harici ödeme':'tahsilat'},MASRAF_IK={Yemek:'yemek',Fatura:'fatura','Diğer':'para'};
+const GELIR_IK={'Randevu':'takvim','Müşteri hizmeti':'paket','Harici ödeme':'tahsilat'},MASRAF_IK={Kira:'bina',Fatura:'fatura',Personel:'kisiler',Malzeme:'paket',Yemek:'yemek','Cihaz / Bakım':'ayar','Makine Ekipman Bedeli':'kasa','Reklam gideri':'zil','Reklamcı ödemesi':'mesaj','Diğer':'para'};
 function donemAralik(d){const e=muh.donem;muh.donem=d;const r=muhAralik();muh.donem=e;return r}
 const kisaAralik=([b,s])=>b===s?gunAy(b):gunAy(b)+' – '+gunAy(s);
 // filtre: alttan açılan pencere — Bugün / Dün / Önceki gün / Bu hafta / Bu ay / Geçen ay / Özel tarih
@@ -1665,10 +1666,10 @@ function ekranMuhasebe(){
   const[bas,bit,etk]=muhAralik(),tum=muhHareketler(),don=tum.filter(x=>x.tarih>=bas&&x.tarih<=bit);
   const top=f=>don.filter(f).reduce((s,x)=>s+x.tutar,0),gelen=top(x=>x.yon==='gelen'),giden=top(x=>x.yon==='giden'),net=gelen-giden;
   const bekleyen=V.musteriler.reduce((s,m)=>s+musteriBorc(m.id),0)+V.satislar.filter(x=>!x.mid).reduce((s,x)=>s+satisBorc(x),0);
-  const liste=don.filter(x=>(!muh.yon||x.yon===muh.yon)&&(!muh.kat||x.kat===muh.kat));
+  const liste=don.filter(x=>(!muh.yon||x.yon===muh.yon)&&(!muh.kat||(muh.kat.startsWith('h:')?x.yon==='gelen'&&x.hiz===muh.kat.slice(2):x.kat===muh.kat)));
   const gunler=[];liste.slice(0,400).forEach(x=>{let g=gunler[gunler.length-1];if(!g||g.t!==x.tarih){g={t:x.tarih,l:[]};gunler.push(g)}g.l.push(x)});
-  const dagilim=(yon,adlar,renk)=>{const t=adlar.map(a=>[a,top(x=>x.yon===yon&&x.kat===a)]),mx=Math.max(1,...t.map(x=>x[1])),toplam=t.reduce((s,x)=>s+x[1],0);
-    return t.map(([a,v])=>`<button class="dag${muh.kat===a?' secili':''}" onclick="muhSec('kat','${a}')"><span class="dag-ust"><span>${a}</span><b>${tl(v)}<small>${toplam?Math.round(v/toplam*100):0}%</small></b></span><span class="dag-bar"><span style="width:${v/mx*100}%;background:${renk(a)}"></span></span></button>`).join('')};
+  const dagilim=(yon,adlar,renk)=>{const t=[...new Set(adlar.concat(don.filter(x=>x.yon===yon).map(x=>x.kat)))].map(a=>[a,top(x=>x.yon===yon&&x.kat===a)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...t.map(x=>x[1])),toplam=t.reduce((s,x)=>s+x[1],0);
+    return t.map(([a,v])=>`<button class="dag${muh.kat===a?' secili':''}" onclick="muhSec('kat','${a}')"><span class="dag-ust"><span>${a}</span><b>${tl(v)}<small>${toplam?Math.round(v/toplam*100):0}%</small></b></span><span class="dag-bar"><span style="width:${v/mx*100}%;background:${renk(a)}"></span></span></button>`).join('')||'<div class="bos" style="padding:14px 0">Bu dönemde masraf yok.</div>'};
   const aylar=[];for(let i=0,a=ayBasi(BUGUN);i<6;i++,a=oncekiAy(a)){const s=aySonu(a),f=y=>tum.filter(x=>x.yon===y&&x.tarih>=a&&x.tarih<=s).reduce((t,x)=>t+x.tutar,0);aylar.push([AY_AD[Number(a.slice(5,7))-1],f('gelen'),f('giden')])}
   const ik=x=>x.yon==='gelen'?`<div class="mh-ik gelen">${I(GELIR_IK[x.kat]||'tahsilat')}</div>`:`<div class="mh-ik" style="background:color-mix(in srgb,${masrafRenk(x.kat)} 14%,transparent);color:${masrafRenk(x.kat)}">${I(MASRAF_IK[x.kat]||'para')}</div>`;
   return `
@@ -1684,14 +1685,14 @@ function ekranMuhasebe(){
     </div>
     <div class="mh-sag">
       <button class="hz gelir" onclick="satisFormu()"><span class="yon">+</span><span><b>Gelir ekle</b><small>Harici ödeme</small></span></button>
-      <button class="hz gider" onclick="masrafFormu()"><span class="yon">−</span><span><b>Gider ekle</b><small>Yemek · Fatura · Diğer</small></span></button>
+      <button class="hz gider" onclick="masrafFormu()"><span class="yon">−</span><span><b>Gider ekle</b><small>Kira · Fatura · Malzeme…</small></span></button>
       <button class="mh-alacak" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),30)"><span class="yon">${I('saat')}</span>Bekleyen alacak<b>${tl(bekleyen)}</b>${I('sag')}</button>
     </div>
   </div>
   <div class="izgara">
     <div class="panel">
       <div class="panel-ust"><h2>${I('kasa')}Hareketler</h2><div class="mh-sekme">${[['','Tümü'],['gelen','Gelen'],['giden','Giden']].map(([d,a])=>`<button class="${muh.yon===d?'secili':''}" onclick="muh.yon='${d}';ciz()">${a}</button>`).join('')}</div></div>
-      ${muh.kat?`<button class="mh-kat" onclick="muh.kat='';ciz()">${k(muh.kat)} ${I('carpi')}</button>`:''}
+      ${muh.kat?`<button class="mh-kat" onclick="muh.kat='';ciz()">${k(muh.kat.replace(/^h:/,''))} ${I('carpi')}</button>`:''}
       <div class="panel-ic">${gunler.length?gunler.map(g=>{const gn=g.l.reduce((s,x)=>s+(x.yon==='gelen'?x.tutar:-x.tutar),0);return `<div class="mh-gun"><span>${k(gunBaslik(g.t))}</span><span style="color:${gn<0?'var(--kirmizi)':'var(--yesil)'}">${isaretTl(gn)}</span></div>`+g.l.map(x=>`<div class="mh-satir"${x.ac?` onclick="${x.ac}"`:''}>${ik(x)}
         <div class="orta"><div class="ad">${k(x.yon==='giden'?(x.alt||x.kat):x.baslik)}</div><div class="alt-yazi">${k(x.yon==='giden'?x.kat:x.alt)}${x.sekil?' · '+k(x.sekil):''}</div></div>
         <b class="muh-tutar ${x.yon}">${x.yon==='gelen'?'+':'−'} ${tl(x.tutar)}</b></div>`).join('')}).join('')
@@ -1701,7 +1702,17 @@ function ekranMuhasebe(){
       <div class="panel"><div class="panel-ust"><h2>${I('para')}Masraf dağılımı</h2><span class="sayi">${tl(giden)}</span></div>
         <div class="panel-ic dag-kap">${dagilim('giden',MASRAF_TUR.map(t=>t[0]),masrafRenk)}</div></div>
       <div class="panel"><div class="panel-ust"><h2>${I('tahsilat')}Gelir kaynakları</h2><span class="sayi">${tl(gelen)}</span></div>
-        <div class="panel-ic dag-kap">${dagilim('gelen',['Randevu','Müşteri hizmeti','Harici ödeme'],()=>'var(--yesil)')}</div></div>
+        <div class="panel-ic dag-kap">${(()=>{const m={},ep=new Set();
+          don.filter(x=>x.yon==='gelen').forEach(x=>{m[x.hiz]=(m[x.hiz]||0)+x.tutar;if(x.epi)ep.add(x.hiz)});
+          const isEpi=a=>ep.has(a)||/epilasyon/i.test(a),t=Object.entries(m).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'tr')),mx=Math.max(1,...t.map(x=>x[1]));
+          const sat=([a,v])=>`<button class="dag${muh.kat==='h:'+a?' secili':''}" onclick="muhSec('kat',${k(JSON.stringify('h:'+a))})"><span class="dag-ust"><span>${k(/[()]/.test(a)?a:a.replace(/^(.*?epilasyon)\s+(.+)$/i,'$1 ($2)'))}</span><b>${tl(v)}<small>${gelen?Math.round(v/gelen*100):0}%</small></b></span><span class="dag-bar"><span style="width:${v/mx*100}%;background:var(--yesil)"></span></span></button>`;
+          const e=t.filter(x=>isEpi(x[0])),o=t.filter(x=>!isEpi(x[0])),bas=y=>`<div class="bolum" style="margin:${y};min-height:0">`;
+          return (e.length?bas('4px 0 2px')+'Epilasyon (randevulu)</div>'+e.map(sat).join(''):'')+(o.length?bas(e.length?'12px 0 2px':'4px 0 2px')+'Diğer hizmetler</div>'+o.map(sat).join(''):'')||'<div class="bos" style="padding:14px 0">Bu dönemde gelir yok.</div>'})()}</div></div>
+      <div class="panel"><div class="panel-ust"><h2>${I('takvim')}Bu ay · ${AY_AD[Number(BUGUN.slice(5,7))-1]}</h2></div>
+        <div class="panel-ic"><div class="ay-tablo"><span class="bas">Gün</span><span class="bas">Gelen</span><span class="bas">Giden</span><span class="bas">Kalan</span>
+          ${(()=>{const gs=[];for(let t=BUGUN,b=ayBasi(BUGUN);t>=b;t=gunEkle(t,-1)){const f=y=>tum.filter(x=>x.yon===y&&x.tarih===t).reduce((q,x)=>q+x.tutar,0),g=f('gelen'),c=f('giden');gs.push([t===BUGUN?'Bugün':t===gunEkle(BUGUN,-1)?'Dün':t===gunEkle(BUGUN,-2)?'Önceki gün':gunAy(t),g,c])}
+            const tg=gs.reduce((q,x)=>q+x[1],0),tc=gs.reduce((q,x)=>q+x[2],0),sat=([a,g,c],kal)=>`<span${kal?' style="font-weight:700"':''}>${a}</span><span style="color:var(--yesil)">${tl(g)}</span><span style="color:var(--kirmizi)">${tl(c)}</span><b style="color:${g-c<0?'var(--kirmizi)':'inherit'}">${g-c<0?'− ':''}${tl(Math.abs(g-c))}</b>`;
+            return gs.length?gs.map(x=>sat(x)).join('')+sat(['Toplam',tg,tc],1):'<span style="grid-column:1/-1;text-align:center;color:var(--soluk)">Bu ay henüz hareket yok.</span>'})()}</div></div></div>
       <div class="panel"><div class="panel-ust"><h2>${I('takvim')}Son 6 ay</h2></div>
         <div class="panel-ic"><div class="ay-tablo"><span class="bas">Ay</span><span class="bas">Gelen</span><span class="bas">Giden</span><span class="bas">Kalan</span>
           ${aylar.map(([a,g,c])=>`<span>${a}</span><span style="color:var(--yesil)">${tl(g)}</span><span style="color:var(--kirmizi)">${tl(c)}</span><b style="color:${g-c<0?'var(--kirmizi)':'inherit'}">${g-c<0?'− ':''}${tl(Math.abs(g-c))}</b>`).join('')}</div></div></div>
