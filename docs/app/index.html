@@ -342,7 +342,14 @@ main:has(.muh-ust){max-width:none}
 .donem-sec .tik{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--cizgi);display:grid;place-items:center;flex:none}
 .donem-sec.secili{border-color:var(--ana);background:var(--ana-acik)}.donem-sec.secili .tik{background:var(--ana);border-color:var(--ana);color:var(--ana-yazi)}
 .donem-sec .tik .i{width:13px;height:13px;stroke-width:2.6}
-@media(max-width:900px){.muh-ust{grid-template-columns:1fr;gap:10px;margin-bottom:14px}.mh-kart{padding:14px 14px 12px;border-radius:18px}.mh-net{font-size:30px}.mh-sag{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mh-alacak{grid-column:1/-1;height:44px}.hz{padding:9px 10px;gap:9px;border-radius:14px}.hz .yon{width:36px;height:36px;font-size:20px;border-radius:11px}.hz b{font-size:13.5px}.hz small{font-size:11px}.mh-kat{margin:10px 14px 0}.mh-sekme button{padding:0 10px}}
+@media(max-width:900px){main:has(.muh-ust) .sayfa-baslik{display:none}
+  .muh-ust{grid-template-columns:1fr;gap:8px;margin:12px 0 12px}.mh-kart{padding:10px 12px 12px;border-radius:18px}
+  .mh-bas{margin-bottom:6px}.mh-filtre{height:34px}.mh-ikon{width:34px;height:34px}
+  .mh-govde{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}.mh-sol{min-width:0}
+  .mh-etk{display:none}.mh-net{font-size:28px}
+  .mh-alt{display:flex;flex-direction:column;gap:3px;margin:0;flex:none}
+  .mh-alt button{padding:3px 8px 3px 4px;gap:6px;border-radius:999px;border-width:1px}
+  .mh-alt .yon{width:20px;height:20px;font-size:11px}.mh-alt small{display:none}.mh-alt b{font-size:13.5px}.mh-sag{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mh-alacak{grid-column:1/-1;height:44px}.hz{padding:9px 10px;gap:9px;border-radius:14px}.hz .yon{width:36px;height:36px;font-size:20px;border-radius:11px}.hz b{font-size:13.5px}.hz small{font-size:11px}.mh-kat{margin:10px 14px 0}.mh-sekme button{padding:0 10px}}
 .panel.vurgu{animation:vurgu 1.4s ease}
 @keyframes vurgu{0%,40%{box-shadow:0 0 0 3px var(--ana)}100%{box-shadow:var(--golge)}}
 .yan-perde{display:none}
@@ -1653,12 +1660,12 @@ function ekranMuhasebe(){
   <div class="muh-ust">
     <div class="mh-kart">
       <div class="mh-bas"><button class="mh-filtre" onclick="muhFiltre()">${I('takvim')}<span>${k(etk)}</span>${I('sag').replace('class="i"','class="i ok"')}</button><button class="mh-ikon" title="Excel'e aktar" aria-label="Excel'e aktar" onclick="muhAktar()">${I('indir')}</button></div>
-      <div class="mh-etk">Kalan (gelen − giden)</div>
-      <div class="mh-net">${isaretTl(net).replace('+ ','')}</div>
+      <div class="mh-govde"><div class="mh-sol"><div class="mh-etk">Kalan (gelen − giden)</div>
+      <div class="mh-net">${isaretTl(net).replace('+ ','')}</div></div>
       <div class="mh-alt">
         <button class="${muh.yon==='gelen'?'secili':''}" onclick="muhSec('yon','gelen')"><span class="yon" style="color:var(--yesil)">↑</span><span style="min-width:0"><small>Gelen</small><b>${tl(gelen)}</b></span></button>
         <button class="${muh.yon==='giden'?'secili':''}" onclick="muhSec('yon','giden')"><span class="yon" style="color:var(--kirmizi)">↓</span><span style="min-width:0"><small>Giden</small><b>${tl(giden)}</b></span></button>
-      </div>
+      </div></div>
     </div>
     <div class="mh-sag">
       <button class="hz gelir" onclick="satisFormu()"><span class="yon">+</span><span><b>Gelir ekle</b><small>Harici ödeme</small></span></button>
