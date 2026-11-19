@@ -289,31 +289,60 @@ main{padding:26px 32px 60px;max-width:1200px}
 .muh-kalan{min-height:18px;margin-top:8px;font-size:12.5px;font-weight:600;color:var(--soluk)}
 .muh-kalan.bekle{color:var(--sari)}.muh-kalan.tamam{color:var(--yesil)}.muh-kalan.hata{color:var(--kirmizi)}
 .hizli-tarih{display:flex;gap:6px;margin-top:8px}.hizli-tarih .btn{height:32px;font-size:12.5px;padding:0 12px}
-.muh-filtre{padding:12px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px}
-.cipler{display:flex;gap:6px;flex-wrap:wrap}
-.cip{flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 15px;border-radius:999px;border:1px solid var(--cizgi);background:var(--kart);font-weight:600;font-size:13px;color:var(--yazi);transition:background .15s,border-color .15s}
-.cip .i{width:15px;height:15px}
-.cip:hover{background:var(--hover)}
-.cip.secili{background:var(--ana);border-color:var(--ana);color:var(--ana-yazi)}
-.muh-ozel label{margin-top:0}
-.muh-eylem{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
-.muh-sekme{display:flex;gap:6px;padding:10px 18px 4px;flex-wrap:wrap}
-.muh-sekme button{height:30px;padding:0 13px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--soluk);background:var(--bg)}
-.muh-sekme button.secili{background:var(--yazi);color:var(--kart)}
-.muh-sekme .muh-kat{display:inline-flex;align-items:center;gap:4px;background:var(--ana-acik);color:var(--vurgu);margin-left:auto}.muh-kat .i{width:13px;height:13px}
-.muh-satir{cursor:pointer}
-.avatar.gelen{background:var(--yesil-acik);color:var(--yesil);font-size:18px;font-weight:700}
-.avatar.giden{background:var(--kirmizi-acik);color:var(--kirmizi);font-size:18px;font-weight:700}
+.muh-ust{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:20px;margin-bottom:20px;align-items:stretch}
+main:has(.muh-ust){max-width:none}
+.mh-kart{background:var(--ana);color:var(--ana-yazi);border-radius:20px;padding:18px 20px 16px;display:flex;flex-direction:column;gap:2px;box-shadow:0 10px 30px -14px color-mix(in srgb,var(--ana) 70%,transparent)}
+.mh-bas{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.mh-filtre{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:999px;background:color-mix(in srgb,var(--ana-yazi) 16%,transparent);color:inherit;font-weight:600;font-size:13.5px;max-width:100%;min-width:0}
+.mh-filtre span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mh-filtre .i{width:16px;height:16px}.mh-filtre .ok{width:14px;height:14px;opacity:.8;transform:rotate(90deg)}
+.mh-ikon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--ana-yazi) 16%,transparent);color:inherit;flex:none}
+.mh-ikon .i{width:17px;height:17px}
+.mh-etk{font-size:12.5px;opacity:.8;font-weight:500}
+.mh-net{font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1.15;white-space:nowrap}
+.mh-alt{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.mh-alt button{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:14px;background:color-mix(in srgb,var(--ana-yazi) 12%,transparent);color:inherit;text-align:left;min-width:0;border:1.5px solid transparent}
+.mh-alt button.secili{border-color:color-mix(in srgb,var(--ana-yazi) 75%,transparent)}
+.mh-alt .yon{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--kart);flex:none;font-weight:700;font-size:15px}
+.mh-alt small{display:block;font-size:11.5px;opacity:.8;font-weight:500}
+.mh-alt b{display:block;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mh-sag{display:flex;flex-direction:column;gap:10px}
+.hz{flex:1;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:var(--kart);border:1px solid var(--cizgi);text-align:left;box-shadow:var(--golge);transition:transform .1s;min-width:0}
+.hz:active{transform:scale(.98)}
+.hz .yon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:22px;font-weight:600;flex:none}
+.hz.gelir .yon{background:var(--yesil-acik);color:var(--yesil)}.hz.gider .yon{background:var(--kirmizi-acik);color:var(--kirmizi)}
+.hz b{display:block;font-size:14.5px;white-space:nowrap}.hz small{display:block;font-size:12px;color:var(--soluk);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hz>span:last-child{min-width:0}
+.mh-alacak{display:flex;align-items:center;gap:10px;padding:0 14px;height:46px;border-radius:14px;background:var(--sari-acik);color:var(--sari);font-weight:600;font-size:13.5px;text-align:left}
+.mh-alacak b{margin-left:auto;white-space:nowrap}.mh-alacak .i{width:17px;height:17px}
+.mh-sekme{display:flex;gap:4px;padding:4px;background:var(--bg);border-radius:11px}
+.mh-sekme button{height:30px;padding:0 13px;border-radius:8px;font-size:13px;font-weight:600;color:var(--soluk)}
+.mh-sekme button.secili{background:var(--kart);color:var(--yazi);box-shadow:0 1px 3px rgba(20,20,30,.12)}
+.mh-kat{display:inline-flex;align-items:center;gap:6px;margin:12px 18px 0;height:30px;padding:0 10px 0 12px;border-radius:999px;background:var(--ana-acik);color:var(--vurgu);font-size:12.5px;font-weight:600}.mh-kat .i{width:13px;height:13px}
+.mh-gun{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 6px;font-size:11.5px;font-weight:700;color:var(--soluk);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--cizgi)}
+.mh-gun span:last-child{text-transform:none;letter-spacing:0;font-weight:600;font-size:12.5px}
+.mh-satir{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--cizgi);cursor:pointer}
+.mh-ik{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex:none}
+.mh-ik .i{width:19px;height:19px}
+.mh-ik.gelen{background:var(--yesil-acik);color:var(--yesil)}
+.mh-satir .orta{flex:1;min-width:0}.mh-satir .ad{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mh-satir .alt-yazi{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .muh-tutar{white-space:nowrap;flex:none;font-size:14.5px}.muh-tutar.gelen{color:var(--yesil)}.muh-tutar.giden{color:var(--kirmizi)}
 .dag-kap{padding-top:8px;padding-bottom:10px}
-.dag{display:block;width:100%;text-align:left;padding:9px 8px;border-radius:10px;margin:0 -8px;width:calc(100% + 16px)}
+.dag{display:block;text-align:left;padding:9px 8px;border-radius:10px;margin:0 -8px;width:calc(100% + 16px)}
 .dag:hover{background:var(--hover)}.dag.secili{background:var(--ana-acik)}
 .dag-ust{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;font-weight:500;margin-bottom:7px}
 .dag-ust b small{font-weight:500;color:var(--soluk);font-size:11.5px;margin-left:6px}
 .dag-bar{display:block;height:8px;border-radius:99px;background:var(--bg);overflow:hidden}.dag-bar span{display:block;height:100%;border-radius:99px;min-width:2px}
 .ay-tablo{display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:9px 10px;padding:12px 0;font-size:13px;text-align:right}
 .ay-tablo>:nth-child(4n+1){text-align:left}.ay-tablo .bas{font-size:11.5px;font-weight:600;color:var(--soluk)}
-@media(max-width:900px){.muh-eylem{grid-template-columns:1fr 1fr}.muh-eylem .btn-ikincil{grid-column:1/-1;height:36px}.muh-sekme{padding:10px 14px 4px}}
+.donem-liste{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.donem-sec{display:flex;align-items:center;gap:12px;height:52px;padding:0 14px;border-radius:13px;border:1px solid var(--cizgi);background:var(--kart);text-align:left}
+.donem-sec b{font-size:14.5px;font-weight:600}.donem-sec small{margin-left:auto;color:var(--soluk);font-size:12.5px;white-space:nowrap}
+.donem-sec .tik{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--cizgi);display:grid;place-items:center;flex:none}
+.donem-sec.secili{border-color:var(--ana);background:var(--ana-acik)}.donem-sec.secili .tik{background:var(--ana);border-color:var(--ana);color:var(--ana-yazi)}
+.donem-sec .tik .i{width:13px;height:13px;stroke-width:2.6}
+@media(max-width:900px){.muh-ust{grid-template-columns:1fr;gap:10px;margin-bottom:14px}.mh-kart{padding:14px 14px 12px;border-radius:18px}.mh-net{font-size:30px}.mh-sag{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mh-alacak{grid-column:1/-1;height:44px}.hz{padding:9px 10px;gap:9px;border-radius:14px}.hz .yon{width:36px;height:36px;font-size:20px;border-radius:11px}.hz b{font-size:13.5px}.hz small{font-size:11px}.mh-kat{margin:10px 14px 0}.mh-sekme button{padding:0 10px}}
 .panel.vurgu{animation:vurgu 1.4s ease}
 @keyframes vurgu{0%,40%{box-shadow:0 0 0 3px var(--ana)}100%{box-shadow:var(--golge)}}
 .yan-perde{display:none}
@@ -491,6 +520,8 @@ main{padding:26px 32px 60px;max-width:1200px}
   <symbol id="i-mesaj" viewBox="0 0 24 24"><path d="M4 20l1.3-3.9A8 8 0 1 1 8.2 19z"/><path d="M9 10.5h.01M12 10.5h.01M15 10.5h.01"/></symbol>
   <symbol id="i-saat" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-tahsilat" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v.01M18 14.5v.01"/></symbol>
+  <symbol id="i-yemek" viewBox="0 0 24 24"><path d="M7 3v18M4.5 3v5.5a2.5 2.5 0 0 0 5 0V3M17.5 21V3c-2.2 1-3.5 3.6-3.5 7v3h3.5"/></symbol>
+  <symbol id="i-fatura" viewBox="0 0 24 24"><path d="M6 3h12v18l-2.5-1.6L13 21l-2.5-1.6L8 21l-2-1.4zM9 8h6M9 12h6M9 16h3.5"/></symbol>
   <symbol id="i-kasa" viewBox="0 0 24 24"><rect x="4.5" y="3" width="15" height="18" rx="2.5"/><path d="M8.5 7.5h7M8.5 11.5h7M8.5 15.5h4"/></symbol>
   <symbol id="i-para" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10.5h18M16 15h2"/></symbol>
   <symbol id="i-paket" viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5zM3 7.5 12 12l9-4.5M12 12v9"/></symbol>
@@ -752,7 +783,7 @@ function temaUygula(){
 }
 
 /* ---------- gezinme ---------- */
-const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Tahsilat','tahsilat'],muhasebe:['Ön Muhasebe','kasa'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler & Fiyatlar','hizmet'],ayarlar:['Ayarlar','ayar']};
+const EKRANLAR={bugun:['Genel Bakış','ev'],takvim:['Takvim','takvim'],musteriler:['Müşteriler','kisiler'],randevulu:['Randevulu Müşteriler','takvim'],randevusuz:['Randevusuz Müşteriler','saat'],bildirimler:['Bildirimler','zil'],tahsilat:['Tahsilat','tahsilat'],muhasebe:['Gelir – Gider','kasa'],gorevler:['Hatırlatıcılar','gorev'],hizmetler:['Hizmetler & Fiyatlar','hizmet'],ayarlar:['Ayarlar','ayar']};
 let ekran='bugun',seciliGun=BUGUN,aramaMetni='';
 function navCiz(){
   const n=acikGorevler().length,rs=randevusuzlar().seansli.length;
@@ -1593,55 +1624,67 @@ function muhHareketler(){
   return g.concat(c).sort((a,b)=>(b.tarih||'').localeCompare(a.tarih||'')||(a.yon==='giden')-(b.yon==='giden'));
 }
 function muhSec(alan,d){muh[alan]=muh[alan]===d&&alan!=='donem'?'':d;if(alan==='donem'&&d==='ozel'&&!muh.bas){muh.bas=ayBasi(BUGUN);muh.bit=BUGUN}ciz()}
-function muhOzel(){muh.bas=deger('muhBas');muh.bit=deger('muhBit');ciz()}
+const GELIR_IK={'Randevu':'takvim','Müşteri hizmeti':'paket','Harici ödeme':'tahsilat'},MASRAF_IK={Yemek:'yemek',Fatura:'fatura','Diğer':'para'};
+function donemAralik(d){const e=muh.donem;muh.donem=d;const r=muhAralik();muh.donem=e;return r}
+const kisaAralik=([b,s])=>b===s?gunAy(b):gunAy(b)+' – '+gunAy(s);
+// filtre: alttan açılan pencere — Bugün / Dün / Önceki gün / Bu hafta / Bu ay / Geçen ay / Özel tarih
+function muhFiltre(){
+  const[b0,s0]=muhAralik();
+  ac('Filtre',`
+    <div class="donem-liste">${MUH_DONEM.filter(x=>x[0]!=='ozel').map(([d,a])=>`<button class="donem-sec${muh.donem===d?' secili':''}" onclick="muh.donem='${d}';kapat();ciz()"><span class="tik">${muh.donem===d?I('tamam'):''}</span><b>${a}</b><small>${kisaAralik(donemAralik(d))}</small></button>`).join('')}</div>
+    <div class="bolum" style="margin-top:18px">Özel tarih aralığı</div>
+    <div class="iki"><div><label style="margin-top:0">Başlangıç</label><input type="date" id="muhBas" value="${muh.donem==='ozel'?b0:ayBasi(BUGUN)}"></div><div><label style="margin-top:0">Bitiş</label><input type="date" id="muhBit" value="${muh.donem==='ozel'?s0:BUGUN}"></div></div>
+    <button class="btn btn-ana btn-tam btn-buyuk" style="margin-top:14px" onclick="muhOzel()">${I('takvim')}Bu tarihleri göster</button>`);
+}
+function muhOzel(){const b=deger('muhBas'),s=deger('muhBit');if(!b||!s)return hata('İki tarihi de seçin.');muh.donem='ozel';muh.bas=b<=s?b:s;muh.bit=b<=s?s:b;kapat();ciz()}
+const gunBaslik=t=>t===BUGUN?'Bugün':t===gunEkle(BUGUN,-1)?'Dün':gunAy(t)+' '+new Date(t+'T12:00').toLocaleDateString('tr-TR',{weekday:'long'});
+const isaretTl=n=>(n<0?'− ':n>0?'+ ':'')+tl(Math.abs(n));
 function ekranMuhasebe(){
   const[bas,bit,etk]=muhAralik(),tum=muhHareketler(),don=tum.filter(x=>x.tarih>=bas&&x.tarih<=bit);
   const top=f=>don.filter(f).reduce((s,x)=>s+x.tutar,0),gelen=top(x=>x.yon==='gelen'),giden=top(x=>x.yon==='giden'),net=gelen-giden;
   const bekleyen=V.musteriler.reduce((s,m)=>s+musteriBorc(m.id),0)+V.satislar.filter(x=>!x.mid).reduce((s,x)=>s+satisBorc(x),0);
   const liste=don.filter(x=>(!muh.yon||x.yon===muh.yon)&&(!muh.kat||x.kat===muh.kat));
-  const lTop=liste.reduce((s,x)=>s+(x.yon==='gelen'?x.tutar:-x.tutar),0);
-  const sec=(a,d)=>muh[a]===d?' secili':'';
+  const gunler=[];liste.slice(0,400).forEach(x=>{let g=gunler[gunler.length-1];if(!g||g.t!==x.tarih){g={t:x.tarih,l:[]};gunler.push(g)}g.l.push(x)});
   const dagilim=(yon,adlar,renk)=>{const t=adlar.map(a=>[a,top(x=>x.yon===yon&&x.kat===a)]),mx=Math.max(1,...t.map(x=>x[1])),toplam=t.reduce((s,x)=>s+x[1],0);
     return t.map(([a,v])=>`<button class="dag${muh.kat===a?' secili':''}" onclick="muhSec('kat','${a}')"><span class="dag-ust"><span>${a}</span><b>${tl(v)}<small>${toplam?Math.round(v/toplam*100):0}%</small></b></span><span class="dag-bar"><span style="width:${v/mx*100}%;background:${renk(a)}"></span></span></button>`).join('')};
   const aylar=[];for(let i=0,a=ayBasi(BUGUN);i<6;i++,a=oncekiAy(a)){const s=aySonu(a),f=y=>tum.filter(x=>x.yon===y&&x.tarih>=a&&x.tarih<=s).reduce((t,x)=>t+x.tutar,0);aylar.push([AY_AD[Number(a.slice(5,7))-1],f('gelen'),f('giden')])}
+  const ik=x=>x.yon==='gelen'?`<div class="mh-ik gelen">${I(GELIR_IK[x.kat]||'tahsilat')}</div>`:`<div class="mh-ik" style="background:color-mix(in srgb,${masrafRenk(x.kat)} 14%,transparent);color:${masrafRenk(x.kat)}">${I(MASRAF_IK[x.kat]||'para')}</div>`;
   return `
-  <div class="panel muh-filtre">
-    <div class="cipler">${MUH_DONEM.map(([d,a])=>`<button class="cip${sec('donem',d)}" onclick="muhSec('donem','${d}')">${d==='ozel'?I('takvim'):''}${a}</button>`).join('')}</div>
-    ${muh.donem==='ozel'?`<div class="iki muh-ozel"><div><label>Başlangıç</label><input type="date" id="muhBas" value="${bas}" max="${BUGUN}" onchange="muhOzel()"></div><div><label>Bitiş</label><input type="date" id="muhBit" value="${bit}" onchange="muhOzel()"></div></div>`:''}
-    <div class="muh-eylem">
-      <button class="btn btn-ana" onclick="masrafFormu()">${I('arti')}Masraf ekle</button>
-      <button class="btn btn-ince" onclick="satisFormu()">${I('tahsilat')}Harici ödeme</button>
-      <button class="btn btn-ikincil" onclick="muhAktar()">${I('indir')}Excel</button>
+  <div class="muh-ust">
+    <div class="mh-kart">
+      <div class="mh-bas"><button class="mh-filtre" onclick="muhFiltre()">${I('takvim')}<span>${k(etk)}</span>${I('sag').replace('class="i"','class="i ok"')}</button><button class="mh-ikon" title="Excel'e aktar" aria-label="Excel'e aktar" onclick="muhAktar()">${I('indir')}</button></div>
+      <div class="mh-etk">Kalan (gelen − giden)</div>
+      <div class="mh-net">${isaretTl(net).replace('+ ','')}</div>
+      <div class="mh-alt">
+        <button class="${muh.yon==='gelen'?'secili':''}" onclick="muhSec('yon','gelen')"><span class="yon" style="color:var(--yesil)">↑</span><span style="min-width:0"><small>Gelen</small><b>${tl(gelen)}</b></span></button>
+        <button class="${muh.yon==='giden'?'secili':''}" onclick="muhSec('yon','giden')"><span class="yon" style="color:var(--kirmizi)">↓</span><span style="min-width:0"><small>Giden</small><b>${tl(giden)}</b></span></button>
+      </div>
     </div>
-  </div>
-  <div class="kpi">
-    <div class="panel${sec('yon','gelen')}" onclick="muhSec('yon','gelen')"><div class="etk">Gelen<span style="background:var(--yesil-acik);color:var(--yesil)">${I('tahsilat')}</span></div><b style="color:var(--yesil)">${tl(gelen)}</b></div>
-    <div class="panel${sec('yon','giden')}" onclick="muhSec('yon','giden')"><div class="etk">Giden (masraf)<span style="background:var(--kirmizi-acik);color:var(--kirmizi)">${I('para')}</span></div><b style="color:var(--kirmizi)">${tl(giden)}</b></div>
-    <div class="panel" onclick="muh.yon='';muh.kat='';ciz()"><div class="etk">Kalan (net)<span>${I('kasa')}</span></div><b style="color:${net<0?'var(--kirmizi)':'inherit'}">${net<0?'− ':''}${tl(Math.abs(net))}</b></div>
-    <div class="panel" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),30)"><div class="etk">Bekleyen alacak<span style="background:var(--sari-acik);color:var(--sari)">${I('uyari')}</span></div><b style="color:${bekleyen?'var(--sari)':'inherit'}">${tl(bekleyen)}</b></div>
+    <div class="mh-sag">
+      <button class="hz gelir" onclick="satisFormu()"><span class="yon">+</span><span><b>Gelir ekle</b><small>Harici ödeme</small></span></button>
+      <button class="hz gider" onclick="masrafFormu()"><span class="yon">−</span><span><b>Masraf ekle</b><small>Yemek · Fatura · Diğer</small></span></button>
+      <button class="mh-alacak" onclick="git('tahsilat');setTimeout(()=>tahsilatGit('bekleyenOdeme'),30)">${I('uyari')}Bekleyen alacak<b>${tl(bekleyen)}</b>${I('sag')}</button>
+    </div>
   </div>
   <div class="izgara">
     <div class="panel">
-      <div class="panel-ust"><h2>${I('kasa')}${k(etk)}</h2><span class="sayi">${liste.length} hareket</span></div>
-      <div class="muh-sekme">${[['','Tümü'],['gelen','Gelen'],['giden','Giden']].map(([d,a])=>`<button class="${muh.yon===d?'secili':''}" onclick="muh.yon='${d}';ciz()">${a}</button>`).join('')}${muh.kat?`<button class="muh-kat" onclick="muh.kat='';ciz()">${k(muh.kat)} ${I('carpi')}</button>`:''}</div>
-      <div class="panel-ic">${liste.length?liste.slice(0,300).map(x=>`<div class="kisa muh-satir"${x.ac?` onclick="${x.ac}"`:''}>
-        <div class="avatar ${x.yon}">${x.yon==='gelen'?'+':'−'}</div>
-        <div class="orta"><div class="ad">${k(x.baslik)}</div><div class="alt-yazi">${k(x.alt)}${x.alt?' · ':''}${x.tarih?gunAy(x.tarih):''}${x.sekil?' · '+k(x.sekil):''}</div></div>
-        <b class="muh-tutar ${x.yon}">${x.yon==='gelen'?'+':'−'} ${tl(x.tutar)}</b>
-      </div>`).join('')+`<div class="kisa" style="justify-content:space-between;font-weight:700;min-height:52px"><span>${muh.yon==='gelen'?'Toplam gelen':muh.yon==='giden'?'Toplam giden':'Net'}</span><span style="color:${lTop<0?'var(--kirmizi)':'var(--yesil)'}">${lTop<0?'− ':''}${tl(Math.abs(lTop))}</span></div>`
-        :`<div class="bos">Bu dönemde hareket yok.<br><span style="font-size:12.5px">Randevu ve hizmet ödemeleri otomatik gelir; masrafları "Masraf ekle" ile girin.</span></div>`}</div>
+      <div class="panel-ust"><h2>${I('kasa')}Hareketler</h2><div class="mh-sekme">${[['','Tümü'],['gelen','Gelen'],['giden','Giden']].map(([d,a])=>`<button class="${muh.yon===d?'secili':''}" onclick="muh.yon='${d}';ciz()">${a}</button>`).join('')}</div></div>
+      ${muh.kat?`<button class="mh-kat" onclick="muh.kat='';ciz()">${k(muh.kat)} ${I('carpi')}</button>`:''}
+      <div class="panel-ic">${gunler.length?gunler.map(g=>{const gn=g.l.reduce((s,x)=>s+(x.yon==='gelen'?x.tutar:-x.tutar),0);return `<div class="mh-gun"><span>${k(gunBaslik(g.t))}</span><span style="color:${gn<0?'var(--kirmizi)':'var(--yesil)'}">${isaretTl(gn)}</span></div>`+g.l.map(x=>`<div class="mh-satir"${x.ac?` onclick="${x.ac}"`:''}>${ik(x)}
+        <div class="orta"><div class="ad">${k(x.yon==='giden'?(x.alt||x.kat):x.baslik)}</div><div class="alt-yazi">${k(x.yon==='giden'?x.kat:x.alt)}${x.sekil?' · '+k(x.sekil):''}</div></div>
+        <b class="muh-tutar ${x.yon}">${x.yon==='gelen'?'+':'−'} ${tl(x.tutar)}</b></div>`).join('')}).join('')
+        :`<div class="bos">Bu dönemde hareket yok.<br><span style="font-size:12.5px">Randevu ve hizmet ödemeleri kendiliğinden gelir olarak yazılır; masrafları "Masraf ekle" ile girin.</span></div>`}</div>
     </div>
-    <div>
+    <div class="sutun">
       <div class="panel"><div class="panel-ust"><h2>${I('para')}Masraf dağılımı</h2><span class="sayi">${tl(giden)}</span></div>
         <div class="panel-ic dag-kap">${dagilim('giden',MASRAF_TUR.map(t=>t[0]),masrafRenk)}</div></div>
-      <div class="panel" style="margin-top:14px"><div class="panel-ust"><h2>${I('tahsilat')}Gelir kaynakları</h2><span class="sayi">${tl(gelen)}</span></div>
+      <div class="panel"><div class="panel-ust"><h2>${I('tahsilat')}Gelir kaynakları</h2><span class="sayi">${tl(gelen)}</span></div>
         <div class="panel-ic dag-kap">${dagilim('gelen',['Randevu','Müşteri hizmeti','Harici ödeme'],()=>'var(--yesil)')}</div></div>
-      <div class="panel" style="margin-top:14px"><div class="panel-ust"><h2>${I('takvim')}Son 6 ay</h2></div>
-        <div class="panel-ic"><div class="ay-tablo"><span class="bas">Ay</span><span class="bas">Gelen</span><span class="bas">Giden</span><span class="bas">Net</span>
+      <div class="panel"><div class="panel-ust"><h2>${I('takvim')}Son 6 ay</h2></div>
+        <div class="panel-ic"><div class="ay-tablo"><span class="bas">Ay</span><span class="bas">Gelen</span><span class="bas">Giden</span><span class="bas">Kalan</span>
           ${aylar.map(([a,g,c])=>`<span>${a}</span><span style="color:var(--yesil)">${tl(g)}</span><span style="color:var(--kirmizi)">${tl(c)}</span><b style="color:${g-c<0?'var(--kirmizi)':'inherit'}">${g-c<0?'− ':''}${tl(Math.abs(g-c))}</b>`).join('')}</div></div></div>
     </div>
-  </div>
-  <p class="not" style="margin:12px 4px">Gelen: randevu ödemeleri, kaporalar, müşteri kartındaki hizmet ödemeleri ve harici ödemeler otomatik yazılır. Giden: girdiğiniz masraflar. Bir satıra dokunarak açabilir, düzeltebilirsiniz.</p>`;
+  </div>`;
 }
 function muhAktar(){
   const[bas,bit,etk]=muhAralik(),l=muhHareketler().filter(x=>x.tarih>=bas&&x.tarih<=bit&&(!muh.yon||x.yon===muh.yon)&&(!muh.kat||x.kat===muh.kat));
