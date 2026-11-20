@@ -1,6 +1,6 @@
 // Firma uygulamasını "uygulama olarak kur" için. Veri önbelleğe alınmaz; önce ağ, olmazsa önbellek.
 // Ayrıca telefon bildirimlerini (Web Push) gösterir — uygulama kapalı / telefon kilitliyken de.
-const SURUM = 'crm-app-v36';
+const SURUM = 'crm-app-v37';
 const ISKELET = ['./', 'index.html', '../ayar.js', '../sektorler.js?v=2', 'manifest.webmanifest', 'ikon-192.png'];
 
 self.addEventListener('install', e => {
